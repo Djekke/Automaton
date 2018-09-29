@@ -1,0 +1,64 @@
+﻿<base:BaseUserControl
+    x:Class="AtomicTorch.CBND.Automaton.UI.Controls.Core.AutomatonOverlay"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:base="clr-namespace:AtomicTorch.GameEngine.Common.Client.MonoGame.UI;assembly=AtomicTorch.CBND.GameApi.WPF.Stubs"
+    HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+    Background="Transparent"
+    x:Name="Overlay">
+
+    <base:BaseUserControl.Resources>
+        <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="FontFamily" Value="{StaticResource CondensedFontFamily}" />
+        </Style>
+    </base:BaseUserControl.Resources>
+
+    <!-- A small hack - we put everything into a button - it will catch mouse clicks and prevent closing of overlay if you click inside border -->
+    <Button Style="{x:Null}"
+            Margin="-370,0,0,0">
+        <Button.Template>
+            <ControlTemplate>
+                <ContentPresenter />
+            </ControlTemplate>
+        </Button.Template>
+
+        <Border HorizontalAlignment="Center" VerticalAlignment="Center"
+                Background="#55000000"
+                CornerRadius="5"
+                Padding="5">
+            <StackPanel Orientation="Vertical">
+                <TextBlock Text ="Automaton Options"
+                           FontSize="14"
+                           HorizontalAlignment="Center" />
+
+                <Control Style="{StaticResource ControlHorizontalSeparator}" />
+
+                <CheckBox Content="AutoPickUp"
+                          IsChecked="{Binding IsAutoPickUpEnabled}" 
+                          base:ToolTipServiceExtend.ToolTip="PickUp items on ground (including twigs, stones, grass)" />
+                <CheckBox Content="AutoLoot"
+                          IsChecked="{Binding IsAutoLootEnabled}" 
+                          IsEnabled="{Binding IsAutoPickUpEnabled}"
+                          Margin="25,0,0,0"
+                          base:ToolTipServiceExtend.ToolTip="Start interact with loot crates in rad towns" />
+
+                <Control Style="{StaticResource ControlHorizontalSeparator}" />
+
+                <CheckBox Content="AutoGather"
+                          IsChecked="{Binding IsAutoGatherEnabled}" 
+                          base:ToolTipServiceExtend.ToolTip="Gather berry, herbs and other vegetation" />
+
+                <Control Style="{StaticResource ControlHorizontalSeparator}" />
+
+                <CheckBox Content="AutoWoodcutting"
+                          IsChecked="{Binding IsAutoWoodcuttingEnabled}" 
+                          base:ToolTipServiceExtend.ToolTip="AutoAttack near trees if axe selected" />
+                <CheckBox Content="AutoMining"
+                          IsChecked="{Binding IsAutoMiningEnabled}" 
+                          base:ToolTipServiceExtend.ToolTip="AutoAttack near minerals if pickaxe selected" />
+            </StackPanel>
+        </Border>
+    </Button>
+</base:BaseUserControl>

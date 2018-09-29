@@ -1,0 +1,16 @@
+﻿<?xml
+  version="1.0"
+  encoding="utf-8"?>
+
+<root>
+  <id>automaton</id>
+  <title>Automaton mod</title>
+  <author>Djekke</author>
+  <description>Automaton mod for CryoFall. Simple tasks automation.</description>
+  <version>0.1.0</version>
+  <updated>29.09.2018</updated>
+  <!-- Mod type: 1 - server, 2 - client-server, 3 - client -->
+  <!-- Please note: mods of type 1 and 2 are ignored
+                    when you're connecting to the server which is missing them -->
+  <modtype>3</modtype>  
+</root>
