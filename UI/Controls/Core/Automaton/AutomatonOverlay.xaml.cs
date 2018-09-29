@@ -5,6 +5,7 @@
     using System.Windows.Input;
     using AtomicTorch.CBND.Automaton.ClientComponents.Actions;
     using AtomicTorch.CBND.CoreMod.ClientComponents.Input;
+    using AtomicTorch.CBND.CoreMod.ClientOptions.General;
     using AtomicTorch.CBND.CoreMod.UI.Controls.Core.DebugTools;
     using AtomicTorch.CBND.GameApi.Scripting;
     using AtomicTorch.GameEngine.Common.Client.MonoGame.UI;
@@ -27,7 +28,7 @@
             }
             else
             {
-                if (DebugToolsOverlay.IsInstanceExist)
+                if (DebugToolsOverlay.IsInstanceExist || !GeneralOptionDeveloperMode.IsEnabled)
                 {
                     CreateInstance();
                 }
