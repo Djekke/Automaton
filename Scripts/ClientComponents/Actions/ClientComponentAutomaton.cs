@@ -313,7 +313,7 @@
                         var request = new WorldActionRequest(playerCharacter, staticWorldObject);
                         GatheringSystem.Instance.SharedStartAction(request);
                         ClientComponentTimersManager.AddAction(
-                            protoGatherable.DurationGatheringSeconds + Client.CurrentGame.PingGame * 2,
+                            protoGatherable.DurationGatheringSeconds + Client.CurrentGame.PingGameSeconds * 2,
                             () => currentlyGathering = false);
                         return;
                     }
