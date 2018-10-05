@@ -1,7 +1,7 @@
-﻿namespace AtomicTorch.CBND.Automaton.UI.Controls.Core
+﻿namespace CryoFall.Automaton.UI.Controls.Core
 {
-    using AtomicTorch.CBND.Automaton.ClientComponents.Actions;
     using AtomicTorch.CBND.CoreMod.UI.Controls.Core;
+    using CryoFall.Automaton.ClientComponents.Actions;
     using System;
 
     public class ViewModelAutomatonOverlay : BaseViewModel
@@ -16,19 +16,19 @@
             }
 
             ClientComponentAutomaton.IsAutoPickUpEnabledChanged
-                += () => this.NotifyPropertyChanged(nameof(this.IsAutoPickUpEnabled));
+                += () => NotifyPropertyChanged(nameof(IsAutoPickUpEnabled));
 
             ClientComponentAutomaton.IsAutoGatherEnabledChanged
-                += () => this.NotifyPropertyChanged(nameof(this.IsAutoGatherEnabled));
+                += () => NotifyPropertyChanged(nameof(IsAutoGatherEnabled));
 
             ClientComponentAutomaton.IsAutoLootEnabledChanged
-                += () => this.NotifyPropertyChanged(nameof(this.IsAutoLootEnabled));
+                += () => NotifyPropertyChanged(nameof(IsAutoLootEnabled));
 
             ClientComponentAutomaton.IsAutoWoodcuttingEnabledChanged
-                += () => this.NotifyPropertyChanged(nameof(this.IsAutoWoodcuttingEnabled));
+                += () => NotifyPropertyChanged(nameof(IsAutoWoodcuttingEnabled));
 
             ClientComponentAutomaton.IsAutoMiningEnabledChanged
-                += () => this.NotifyPropertyChanged(nameof(this.IsAutoMiningEnabled));
+                += () => NotifyPropertyChanged(nameof(IsAutoMiningEnabled));
         }
 
         public static ViewModelAutomatonOverlay Instance

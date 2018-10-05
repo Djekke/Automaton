@@ -1,14 +1,14 @@
-﻿namespace AtomicTorch.CBND.Automaton.UI.Controls.Core
+﻿namespace CryoFall.Automaton.UI.Controls.Core
 {
-    using System.Windows;
-    using System.Windows.Controls;
-    using System.Windows.Input;
-    using AtomicTorch.CBND.Automaton.ClientComponents.Actions;
     using AtomicTorch.CBND.CoreMod.ClientComponents.Input;
     using AtomicTorch.CBND.CoreMod.ClientOptions.General;
     using AtomicTorch.CBND.CoreMod.UI.Controls.Core.DebugTools;
     using AtomicTorch.CBND.GameApi.Scripting;
     using AtomicTorch.GameEngine.Common.Client.MonoGame.UI;
+    using CryoFall.Automaton.ClientComponents.Actions;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Input;
 
     public partial class AutomatonOverlay : BaseUserControl
     {
@@ -48,24 +48,24 @@
             var character = Api.Client.Characters.CurrentPlayerCharacter;
             var sceneObject = Api.Client.Scene.GetSceneObject(character);
             sceneObject.AddComponent<ClientComponentAutomaton>();
-            this.overlay = this.GetByName<FrameworkElement>("Overlay");
+            overlay = this.GetByName<FrameworkElement>("Overlay");
         }
 
         protected override void OnLoaded()
         {
-            this.DataContext = ViewModelAutomatonOverlay.Instance;
-            this.overlay.MouseLeftButtonDown += this.OverlayMouseLeftButtonDownHandler;
-            this.inputContext = ClientInputContext
+            DataContext = ViewModelAutomatonOverlay.Instance;
+            overlay.MouseLeftButtonDown += OverlayMouseLeftButtonDownHandler;
+            inputContext = ClientInputContext
                                 .Start("Automaton overlay")
-                                .HandleButtonDown(GameButton.CancelOrClose, () => Close());
+                                .HandleButtonDown(GameButton.CancelOrClose, Close);
         }
 
         protected override void OnUnloaded()
         {
-            this.DataContext = null;
-            this.overlay.MouseLeftButtonDown -= this.OverlayMouseLeftButtonDownHandler;
-            this.inputContext.Stop();
-            this.inputContext = null;
+            DataContext = null;
+            overlay.MouseLeftButtonDown -= OverlayMouseLeftButtonDownHandler;
+            inputContext.Stop();
+            inputContext = null;
         }
 
         private static void CreateInstance()

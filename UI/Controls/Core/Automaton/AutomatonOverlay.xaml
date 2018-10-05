@@ -1,5 +1,5 @@
 ﻿<base:BaseUserControl
-    x:Class="AtomicTorch.CBND.Automaton.UI.Controls.Core.AutomatonOverlay"
+    x:Class="CryoFall.Automaton.UI.Controls.Core.AutomatonOverlay"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:base="clr-namespace:AtomicTorch.GameEngine.Common.Client.MonoGame.UI;assembly=AtomicTorch.CBND.GameApi.WPF.Stubs"

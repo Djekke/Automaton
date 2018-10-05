@@ -1,4 +1,4 @@
-﻿namespace AtomicTorch.CBND.Automaton.ClientComponents.Actions
+﻿namespace CryoFall.Automaton.ClientComponents.Actions
 {
     using AtomicTorch.CBND.CoreMod.Characters;
     using AtomicTorch.CBND.CoreMod.Characters.Input;
@@ -186,8 +186,8 @@
         protected override void OnEnable()
         {
             instance = this;
-            this.playerCharacter = Api.Client.Characters.CurrentPlayerCharacter;
-            this.privateState = PlayerCharacter.GetPrivateState(this.playerCharacter);
+            playerCharacter = Api.Client.Characters.CurrentPlayerCharacter;
+            privateState = PlayerCharacter.GetPrivateState(playerCharacter);
             weaponOffset = new Vector2D(0, playerCharacter.ProtoCharacter.CharacterWorldWeaponOffset);
             currentTarget.targetObject = null;
             currentTarget.intersectionPoint = null;
@@ -198,8 +198,8 @@
         {
             CheckInteractionQueue();
 
-            this.accumulatedTime += deltaTime;
-            if (this.accumulatedTime < UpdateInterval)
+            accumulatedTime += deltaTime;
+            if (accumulatedTime < UpdateInterval)
             {
                 return;
             }
@@ -213,7 +213,7 @@
                 }
                 if (IsAutoGatherEnabled)
                 {
-                    if (!currentlyGathering && !(this.privateState.CurrentActionState is IActionState))
+                    if (!currentlyGathering && !(privateState.CurrentActionState is IActionState))
                     {
                         AutoGather();
                     }
@@ -268,7 +268,7 @@
                 return;
             }
             var staticWorldObject = interactionQueue.FirstOrDefault();
-            
+
             if (staticWorldObject.IsDestroyed ||
                  !(staticWorldObject.ProtoStaticWorldObject
                    .SharedCanInteract(playerCharacter, staticWorldObject, false)))
@@ -352,17 +352,13 @@
                 AttackTarget();
                 // add timer for next attack
                 ClientComponentTimersManager.AddAction(
-                    ((IProtoItemWeapon)selectedItem.ProtoItem).FireInterval,
-                    () => FindAndAttackHarvestableObject());
+                    ((IProtoItemWeapon)selectedItem.ProtoItem).FireInterval, FindAndAttackHarvestableObject);
             }
         }
 
         private void StopItemUse()
         {
-            if (selectedItem != null)
-            {
-                selectedItem.ProtoItem.ClientItemUseFinish(selectedItem);
-            }
+            selectedItem?.ProtoItem.ClientItemUseFinish(selectedItem);
         }
 
         private void FindNextObjectToAttack()
@@ -408,15 +404,14 @@
                 var rotationAngleRad = Math.Abs(Math.PI
                                     + Math.Atan2(deltaPositionToMouseCursor.Value.Y,
                                                  deltaPositionToMouseCursor.Value.X));
-                CharacterMoveModes moveModes = this.privateState.Input.MoveModes;
+                CharacterMoveModes moveModes = privateState.Input.MoveModes;
                 // TODO: dont prevent mooving
                 var command = new CharacterInputUpdate(moveModes, (float)rotationAngleRad);
                 ((PlayerCharacter)playerCharacter.ProtoCharacter).ClientSetInput(command);
                 // TODO: prevent user mousemove to interrupt it
                 selectedItem.ProtoItem.ClientItemUseStart(selectedItem);
                 ClientComponentTimersManager.AddAction(
-                    ((IProtoItemWeapon)selectedItem.ProtoItem).DamageApplyDelay,
-                    () => StopItemUse());
+                    ((IProtoItemWeapon)selectedItem.ProtoItem).DamageApplyDelay, StopItemUse);
             }
         }
 
@@ -437,11 +432,11 @@
         private double GetCurrentWeaponRange()
         {
             var toolItem = selectedItem.ProtoItem as IProtoItemWeaponMelee;
-            if (toolItem.OverrideDamageDescription != null)
+            if (toolItem?.OverrideDamageDescription != null)
             { // TODO: investigate this and rewrite it
                 return toolItem.OverrideDamageDescription.RangeMax;
             }
-            Api.Logger.Error("OverrideDamageDescription is null for " + toolItem);
+            Api.Logger.Error("Automaton: OverrideDamageDescription is null for " + toolItem);
             return 0d;
         }
 
@@ -520,8 +515,8 @@
         {
             var testShape = worldObject.PhysicsBody.Shapes.FirstOrDefault(e =>
                     e.CollisionGroup == CollisionGroups.HitboxMelee);
-            if (testShape.CollisionGroup == CollisionGroups.HitboxMelee &&
-                testShape.ShapeType == ShapeType.Rectangle &&
+            if (testShape?.CollisionGroup == CollisionGroups.HitboxMelee &&
+                testShape?.ShapeType == ShapeType.Rectangle &&
                 testShape is RectangleShape meleeShape)
             {
                 return (meleeShape.Size / 2 + meleeShape.Position);
