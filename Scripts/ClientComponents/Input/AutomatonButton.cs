@@ -13,5 +13,12 @@
             InputKey.F6,
             Category = "Automaton")]
         OpenSettings,
+
+        [ButtonInfo(
+            "Toggle mod features",
+            "Turn on or off all features granted by this mod.",
+            InputKey.X,
+            Category = "Automaton")]
+        Toggle,
     }
 }
