@@ -3,7 +3,6 @@
     using AtomicTorch.CBND.CoreMod.ClientComponents.Input;
     using AtomicTorch.CBND.GameApi.Scripting;
     using AtomicTorch.GameEngine.Common.Client.MonoGame.UI;
-    using CryoFall.Automaton.ClientComponents.Actions;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Input;
@@ -40,9 +39,6 @@
 
         protected override void InitControl()
         {
-            var character = Api.Client.Characters.CurrentPlayerCharacter;
-            var sceneObject = Api.Client.Scene.GetSceneObject(character);
-            sceneObject.AddComponent<ClientComponentAutomaton>();
             overlay = this.GetByName<FrameworkElement>("Overlay");
         }
 
