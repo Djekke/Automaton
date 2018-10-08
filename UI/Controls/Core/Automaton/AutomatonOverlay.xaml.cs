@@ -1,8 +1,6 @@
 ﻿namespace CryoFall.Automaton.UI.Controls.Core
 {
     using AtomicTorch.CBND.CoreMod.ClientComponents.Input;
-    using AtomicTorch.CBND.CoreMod.ClientOptions.General;
-    using AtomicTorch.CBND.CoreMod.UI.Controls.Core.DebugTools;
     using AtomicTorch.CBND.GameApi.Scripting;
     using AtomicTorch.GameEngine.Common.Client.MonoGame.UI;
     using CryoFall.Automaton.ClientComponents.Actions;
@@ -28,10 +26,7 @@
             }
             else
             {
-                if (DebugToolsOverlay.IsInstanceExist || !GeneralOptionDeveloperMode.IsEnabled)
-                {
-                    CreateInstance();
-                }
+                CreateInstance();
             }
         }
 
