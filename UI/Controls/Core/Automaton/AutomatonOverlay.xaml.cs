@@ -3,6 +3,7 @@
     using AtomicTorch.CBND.CoreMod.ClientComponents.Input;
     using AtomicTorch.CBND.GameApi.Scripting;
     using AtomicTorch.GameEngine.Common.Client.MonoGame.UI;
+    using CryoFall.Automaton.ClientComponents.Actions;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Input;
@@ -53,6 +54,7 @@
 
         protected override void OnUnloaded()
         {
+            ClientComponentAutomaton.SaveSettings();
             DataContext = null;
             overlay.MouseLeftButtonDown -= OverlayMouseLeftButtonDownHandler;
             inputContext.Stop();

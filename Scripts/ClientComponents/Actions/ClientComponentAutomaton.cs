@@ -37,7 +37,9 @@
 
         private PlayerCharacterPrivateState privateState;
 
-        private static readonly IClientStorage SessionStorage;
+        private static readonly IClientStorage Storage;
+
+        private static bool PendingSettingsChanges = false;
 
         public static event Action IsAutoPickUpEnabledChanged;
 
@@ -70,37 +72,36 @@
 
         static ClientComponentAutomaton()
         {
-            SessionStorage = Api.Client.Storage.GetSessionStorage(
-                nameof(ClientComponentAutomaton) + ".Settings");
-            SessionStorage.RegisterType(typeof(Settings));
-            if (SessionStorage.TryLoad(out settingsInstance))
+            Storage = Api.Client.Storage.GetStorage("Mods/Automaton.Settings");
+            Storage.RegisterType(typeof(Settings));
+            if (Storage.TryLoad(out settingsInstance))
             {
-                IsAutoPickUpEnabled = settingsInstance.isAutoPickUpEnabled;
-                IsAutoGatherEnabled = settingsInstance.isAutoGatherEnabled;
-                IsAutoWoodcuttingEnabled = settingsInstance.isAutoWoodcuttingEnabled;
-                IsAutoMiningEnabled = settingsInstance.isAutoMiningEnabled;
+                IsAutoPickUpEnabled = settingsInstance.IsAutoPickUpEnabled;
+                IsAutoGatherEnabled = settingsInstance.IsAutoGatherEnabled;
+                IsAutoWoodcuttingEnabled = settingsInstance.IsAutoWoodcuttingEnabled;
+                IsAutoMiningEnabled = settingsInstance.IsAutoMiningEnabled;
             }
             else
             {
                 // Auto-actions are disabled by default
-                settingsInstance.isAutoPickUpEnabled = IsAutoPickUpEnabled = false;
-                settingsInstance.isAutoGatherEnabled = IsAutoGatherEnabled = false;
-                settingsInstance.isAutoWoodcuttingEnabled = IsAutoWoodcuttingEnabled = false;
-                settingsInstance.isAutoMiningEnabled = IsAutoMiningEnabled = false;
+                settingsInstance.IsAutoPickUpEnabled = IsAutoPickUpEnabled = false;
+                settingsInstance.IsAutoGatherEnabled = IsAutoGatherEnabled = false;
+                settingsInstance.IsAutoWoodcuttingEnabled = IsAutoWoodcuttingEnabled = false;
+                settingsInstance.IsAutoMiningEnabled = IsAutoMiningEnabled = false;
             }
         }
 
         public static bool IsAutoPickUpEnabled
         {
-            get => settingsInstance.isAutoPickUpEnabled;
+            get => settingsInstance.IsAutoPickUpEnabled;
             set
             {
                 if (IsAutoPickUpEnabled == value)
                 {
                     return;
                 }
-                settingsInstance.isAutoPickUpEnabled = value;
-                SessionStorage.Save(settingsInstance);
+                settingsInstance.IsAutoPickUpEnabled = value;
+                PendingSettingsChanges = true;
 
                 IsAutoPickUpEnabledChanged?.Invoke();
             }
@@ -108,15 +109,15 @@
 
         public static bool IsAutoGatherEnabled
         {
-            get => settingsInstance.isAutoGatherEnabled;
+            get => settingsInstance.IsAutoGatherEnabled;
             set
             {
                 if (IsAutoGatherEnabled == value)
                 {
                     return;
                 }
-                settingsInstance.isAutoGatherEnabled = value;
-                SessionStorage.Save(settingsInstance);
+                settingsInstance.IsAutoGatherEnabled = value;
+                PendingSettingsChanges = true;
 
                 IsAutoGatherEnabledChanged?.Invoke();
             }
@@ -124,15 +125,15 @@
 
         public static bool IsAutoLootEnabled
         {
-            get => settingsInstance.isAutoLootEnabled;
+            get => settingsInstance.IsAutoLootEnabled;
             set
             {
                 if (IsAutoLootEnabled == value)
                 {
                     return;
                 }
-                settingsInstance.isAutoLootEnabled = value;
-                SessionStorage.Save(settingsInstance);
+                settingsInstance.IsAutoLootEnabled = value;
+                PendingSettingsChanges = true;
 
                 IsAutoLootEnabledChanged?.Invoke();
             }
@@ -140,15 +141,15 @@
 
         public static bool IsAutoWoodcuttingEnabled
         {
-            get => settingsInstance.isAutoWoodcuttingEnabled;
+            get => settingsInstance.IsAutoWoodcuttingEnabled;
             set
             {
                 if (IsAutoWoodcuttingEnabled == value)
                 {
                     return;
                 }
-                settingsInstance.isAutoWoodcuttingEnabled = value;
-                SessionStorage.Save(settingsInstance);
+                settingsInstance.IsAutoWoodcuttingEnabled = value;
+                PendingSettingsChanges = true;
 
                 IsAutoWoodcuttingEnabledChanged?.Invoke();
             }
@@ -156,15 +157,15 @@
 
         public static bool IsAutoMiningEnabled
         {
-            get => settingsInstance.isAutoMiningEnabled;
+            get => settingsInstance.IsAutoMiningEnabled;
             set
             {
                 if (IsAutoMiningEnabled == value)
                 {
                     return;
                 }
-                settingsInstance.isAutoMiningEnabled = value;
-                SessionStorage.Save(settingsInstance);
+                settingsInstance.IsAutoMiningEnabled = value;
+                PendingSettingsChanges = true;
 
                 IsAutoMiningEnabledChanged?.Invoke();
             }
@@ -174,6 +175,15 @@
 
         public static bool IsAutomatonEnabled => IsAutoPickUpEnabled || IsAutoGatherEnabled ||
                     IsAutoLootEnabled || IsAutoWoodcuttingEnabled || IsAutoMiningEnabled;
+
+        public static void SaveSettings()
+        {
+            if (PendingSettingsChanges)
+            {
+                Storage.Save(settingsInstance);
+                PendingSettingsChanges = false;
+            }
+        }
 
         protected override void OnDisable()
         {
@@ -189,9 +199,9 @@
             playerCharacter = Api.Client.Characters.CurrentPlayerCharacter;
             privateState = PlayerCharacter.GetPrivateState(playerCharacter);
             weaponOffset = new Vector2D(0, playerCharacter.ProtoCharacter.CharacterWorldWeaponOffset);
-            currentTarget.targetObject = null;
-            currentTarget.intersectionPoint = null;
-            currentTarget.checkedForObstacles = false;
+            currentTarget.TargetObject = null;
+            currentTarget.IntersectionPoint = null;
+            currentTarget.CheckedForObstacles = false;
         }
 
         public override void Update(double deltaTime)
@@ -336,17 +346,17 @@
             // or if current object out of range
             // search for new one
             FindAndCheckIntersectionPoint();
-            if (currentTarget.targetObject?.PhysicsBody == null ||
-                !currentTarget.intersectionPoint.HasValue)
+            if (currentTarget.TargetObject?.PhysicsBody == null ||
+                !currentTarget.IntersectionPoint.HasValue)
             {
                 FindNextObjectToAttack();
             }
             // check if object valid
             // check if weapon valid for this object
             // check if no obstacles
-            if (currentTarget.targetObject?.PhysicsBody != null &&
-                IsAppropriateObject(currentTarget.targetObject) &&
-                currentTarget.checkedForObstacles)
+            if (currentTarget.TargetObject?.PhysicsBody != null &&
+                IsAppropriateObject(currentTarget.TargetObject) &&
+                currentTarget.CheckedForObstacles)
             {
                 // attack
                 AttackTarget();
@@ -363,7 +373,7 @@
 
         private void FindNextObjectToAttack()
         {
-            currentTarget.targetObject = null;
+            currentTarget.TargetObject = null;
             var fromPos = playerCharacter.Position + weaponOffset;
             using (var objectsNearby = playerCharacter.PhysicsBody.PhysicsSpace
                     .TestCircle(position: fromPos,
@@ -387,9 +397,9 @@
                     }
                     if (NoObstaclesBetween(testWorldObject, fromPos + obj.Penetration))
                     {
-                        currentTarget.targetObject = testWorldObject;
-                        currentTarget.intersectionPoint = fromPos + obj.Penetration;
-                        currentTarget.checkedForObstacles = true;
+                        currentTarget.TargetObject = testWorldObject;
+                        currentTarget.IntersectionPoint = fromPos + obj.Penetration;
+                        currentTarget.CheckedForObstacles = true;
                     }
                 }
             }
@@ -397,10 +407,10 @@
 
         public void AttackTarget()
         {
-            if (currentTarget.targetObject != null)
+            if (currentTarget.TargetObject != null)
             {
                 var deltaPositionToMouseCursor = playerCharacter.Position + weaponOffset -
-                                        (currentTarget.intersectionPoint);
+                                        (currentTarget.IntersectionPoint);
                 var rotationAngleRad = Math.Abs(Math.PI
                                     + Math.Atan2(deltaPositionToMouseCursor.Value.Y,
                                                  deltaPositionToMouseCursor.Value.X));
@@ -495,20 +505,19 @@
 
         private void FindAndCheckIntersectionPoint()
         {
-            currentTarget.intersectionPoint = null;
-            currentTarget.checkedForObstacles = false;
-            if (currentTarget.targetObject?.PhysicsBody == null)
+            currentTarget.IntersectionPoint = null;
+            currentTarget.CheckedForObstacles = false;
+            if (currentTarget.TargetObject?.PhysicsBody == null)
             {
                 return;
             }
-            var centerOffset = GetMeleeCenterOffset(currentTarget.targetObject);
-            var point = centerOffset + currentTarget.targetObject.PhysicsBody.Position;
-            if (NoObstaclesBetween(currentTarget.targetObject, point))
+            var centerOffset = GetMeleeCenterOffset(currentTarget.TargetObject);
+            var point = centerOffset + currentTarget.TargetObject.PhysicsBody.Position;
+            if (NoObstaclesBetween(currentTarget.TargetObject, point))
             {
-                currentTarget.intersectionPoint = point;
-                currentTarget.checkedForObstacles = true;
+                currentTarget.IntersectionPoint = point;
+                currentTarget.CheckedForObstacles = true;
             }
-            
         }
 
         private Vector2D GetMeleeCenterOffset(IWorldObject worldObject)
@@ -526,18 +535,18 @@
 
         private struct Settings
         {
-            public bool isAutoPickUpEnabled;
-            public bool isAutoGatherEnabled;
-            public bool isAutoLootEnabled;
-            public bool isAutoWoodcuttingEnabled;
-            public bool isAutoMiningEnabled;
+            public bool IsAutoPickUpEnabled;
+            public bool IsAutoGatherEnabled;
+            public bool IsAutoLootEnabled;
+            public bool IsAutoWoodcuttingEnabled;
+            public bool IsAutoMiningEnabled;
         }
 
         private struct Target
         {
-            public IWorldObject targetObject;
-            public Vector2D? intersectionPoint;
-            public bool checkedForObstacles;
+            public IWorldObject TargetObject;
+            public Vector2D? IntersectionPoint;
+            public bool CheckedForObstacles;
         }
     }
 }
