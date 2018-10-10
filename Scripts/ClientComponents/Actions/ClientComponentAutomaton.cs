@@ -317,6 +317,7 @@
                         continue;
                     }
                     if (staticWorldObject.ProtoGameObject is IProtoObjectGatherableVegetation protoGatherable &&
+                        protoGatherable.SharedIsCanGather(staticWorldObject) &&
                         protoGatherable.SharedCanInteract(playerCharacter, staticWorldObject, false))
                     {
                         currentlyGathering = true;
