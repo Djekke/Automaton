@@ -8,6 +8,7 @@
     using CryoFall.Automaton.ClientComponents.Actions;
     using CryoFall.Automaton.ClientComponents.Input;
     using CryoFall.Automaton.UI.Controls.Core;
+    using CryoFall.Automaton.UI.Controls.Core.Managers;
 
     public class BootstrapperClientAutomaton : BaseBootstrapper
     {
@@ -20,6 +21,8 @@
         public override void ClientInitialize()
         {
             ClientInputManager.RegisterButtonsEnum<AutomatonButton>();
+
+            AutomatonManager.Init();
 
             BootstrapperClientGame.InitCallback += GameInitHandler;
 
