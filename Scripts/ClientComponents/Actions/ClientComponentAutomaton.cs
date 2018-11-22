@@ -6,10 +6,7 @@
     using AtomicTorch.CBND.CoreMod.ClientComponents.Timer;
     using AtomicTorch.CBND.CoreMod.Items.Tools;
     using AtomicTorch.CBND.CoreMod.Items.Weapons;
-    using AtomicTorch.CBND.CoreMod.StaticObjects;
-    using AtomicTorch.CBND.CoreMod.StaticObjects.Loot;
     using AtomicTorch.CBND.CoreMod.StaticObjects.Minerals;
-    using AtomicTorch.CBND.CoreMod.StaticObjects.Vegetation;
     using AtomicTorch.CBND.CoreMod.StaticObjects.Vegetation.Trees;
     using AtomicTorch.CBND.CoreMod.Systems;
     using AtomicTorch.CBND.CoreMod.Systems.InteractionChecker;
@@ -23,8 +20,8 @@
     using AtomicTorch.CBND.GameApi.Data.World;
     using AtomicTorch.CBND.GameApi.Scripting;
     using AtomicTorch.CBND.GameApi.Scripting.ClientComponents;
-    using AtomicTorch.CBND.GameApi.ServicesClient;
     using AtomicTorch.GameEngine.Common.Primitives;
+    using CryoFall.Automaton.UI.Controls.Core.Managers;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -36,10 +33,6 @@
         private static Settings settingsInstance;
 
         private PlayerCharacterPrivateState privateState;
-
-        private static readonly IClientStorage Storage;
-
-        private static bool PendingSettingsChanges = false;
 
         public static event Action IsAutoPickUpEnabledChanged;
 
@@ -70,120 +63,24 @@
 
         private IItem selectedItem = null;
 
-        static ClientComponentAutomaton()
+        private Dictionary<string, List<string>> featuresDictionary;
+
+        public ClientComponentAutomaton()
         {
-            Storage = Api.Client.Storage.GetStorage("Mods/Automaton.Settings");
-            Storage.RegisterType(typeof(Settings));
-            if (Storage.TryLoad(out settingsInstance))
-            {
-                IsAutoPickUpEnabled = settingsInstance.IsAutoPickUpEnabled;
-                IsAutoGatherEnabled = settingsInstance.IsAutoGatherEnabled;
-                IsAutoWoodcuttingEnabled = settingsInstance.IsAutoWoodcuttingEnabled;
-                IsAutoMiningEnabled = settingsInstance.IsAutoMiningEnabled;
-            }
-            else
-            {
-                // Auto-actions are disabled by default
-                settingsInstance.IsAutoPickUpEnabled = IsAutoPickUpEnabled = false;
-                settingsInstance.IsAutoGatherEnabled = IsAutoGatherEnabled = false;
-                settingsInstance.IsAutoWoodcuttingEnabled = IsAutoWoodcuttingEnabled = false;
-                settingsInstance.IsAutoMiningEnabled = IsAutoMiningEnabled = false;
-            }
+            featuresDictionary = AutomatonManager.GetFeaturesDictionary();
         }
 
-        public static bool IsAutoPickUpEnabled
-        {
-            get => settingsInstance.IsAutoPickUpEnabled;
-            set
-            {
-                if (IsAutoPickUpEnabled == value)
-                {
-                    return;
-                }
-                settingsInstance.IsAutoPickUpEnabled = value;
-                PendingSettingsChanges = true;
+        public bool IsAutoPickUpEnabled => featuresDictionary["AutoPickUp"]?.Count > 0;
 
-                IsAutoPickUpEnabledChanged?.Invoke();
-            }
-        }
+        public bool IsAutoGatherEnabled => featuresDictionary["AutoGather"]?.Count > 0;
 
-        public static bool IsAutoGatherEnabled
-        {
-            get => settingsInstance.IsAutoGatherEnabled;
-            set
-            {
-                if (IsAutoGatherEnabled == value)
-                {
-                    return;
-                }
-                settingsInstance.IsAutoGatherEnabled = value;
-                PendingSettingsChanges = true;
+        public bool IsAutoWoodcuttingEnabled => featuresDictionary["AutoWoodcutting"]?.Count > 0;
 
-                IsAutoGatherEnabledChanged?.Invoke();
-            }
-        }
+        public bool IsAutoMiningEnabled => featuresDictionary["AutoMining"]?.Count > 0;
 
-        public static bool IsAutoLootEnabled
-        {
-            get => settingsInstance.IsAutoLootEnabled;
-            set
-            {
-                if (IsAutoLootEnabled == value)
-                {
-                    return;
-                }
-                settingsInstance.IsAutoLootEnabled = value;
-                PendingSettingsChanges = true;
+        public bool IsAutoHarvestEnabled => IsAutoWoodcuttingEnabled || IsAutoMiningEnabled;
 
-                IsAutoLootEnabledChanged?.Invoke();
-            }
-        }
-
-        public static bool IsAutoWoodcuttingEnabled
-        {
-            get => settingsInstance.IsAutoWoodcuttingEnabled;
-            set
-            {
-                if (IsAutoWoodcuttingEnabled == value)
-                {
-                    return;
-                }
-                settingsInstance.IsAutoWoodcuttingEnabled = value;
-                PendingSettingsChanges = true;
-
-                IsAutoWoodcuttingEnabledChanged?.Invoke();
-            }
-        }
-
-        public static bool IsAutoMiningEnabled
-        {
-            get => settingsInstance.IsAutoMiningEnabled;
-            set
-            {
-                if (IsAutoMiningEnabled == value)
-                {
-                    return;
-                }
-                settingsInstance.IsAutoMiningEnabled = value;
-                PendingSettingsChanges = true;
-
-                IsAutoMiningEnabledChanged?.Invoke();
-            }
-        }
-
-        public static bool IsAutoHarvestEnabled => IsAutoWoodcuttingEnabled || IsAutoMiningEnabled;
-
-        public static bool IsAutomatonEnabled => IsAutoPickUpEnabled || IsAutoGatherEnabled ||
-                    IsAutoLootEnabled || IsAutoWoodcuttingEnabled || IsAutoMiningEnabled;
-
-        public static void SaveSettings()
-        {
-            if (PendingSettingsChanges)
-            {
-                Storage.Save(settingsInstance);
-                PendingSettingsChanges = false;
-            }
-        }
+        public bool IsAutomatonEnabled => IsAutoPickUpEnabled || IsAutoGatherEnabled || IsAutoHarvestEnabled;
 
         protected override void OnDisable()
         {
@@ -237,30 +134,28 @@
 
         private void AutoPickUp()
         {
-            using (var objectsInCharacterInteractionArea = InteractionCheckerSystem.
-                    SharedGetTempObjectsInCharacterInteractionArea(playerCharacter))
+            using (var objectsInCharacterInteractionArea = InteractionCheckerSystem
+                   .SharedGetTempObjectsInCharacterInteractionArea(playerCharacter))
             {
                 if (objectsInCharacterInteractionArea == null)
                 {
                     return;
                 }
-                foreach (var testResult in objectsInCharacterInteractionArea)
+                var objectOfInterest = objectsInCharacterInteractionArea
+                                       .Where(t => featuresDictionary["AutoPickUp"]
+                                                   .Contains(t.PhysicsBody?.AssociatedWorldObject.ProtoGameObject.Id))
+                                       .ToList();
+                if (!(objectOfInterest?.Count > 0))
+                {
+                    return;
+                }
+                foreach (var testResult in objectOfInterest)
                 {
                     if (!(testResult.PhysicsBody?.AssociatedWorldObject is IStaticWorldObject staticWorldObject))
                     {
                         continue;
                     }
-                    if (staticWorldObject == playerCharacter)
-                    {
-                        continue;
-                    }
-                    if (!IsAutoLootEnabled && staticWorldObject.ProtoGameObject is ProtoObjectLootContainer)
-                    {
-                        continue;
-                    }
-                    if ((staticWorldObject.ProtoGameObject is IProtoObjectLoot ||
-                        staticWorldObject.ProtoGameObject is ObjectGroundItemsContainer) &&
-                        staticWorldObject.ProtoStaticWorldObject.SharedCanInteract(playerCharacter, staticWorldObject, false))
+                    if (staticWorldObject.ProtoStaticWorldObject.SharedCanInteract(playerCharacter, staticWorldObject, false))
                     {
                         if (!interactionQueue.Contains(staticWorldObject))
                         {
@@ -306,17 +201,21 @@
                 {
                     return;
                 }
-                foreach (var testResult in objectsInCharacterInteractionArea)
+                var objectOfInterest = objectsInCharacterInteractionArea
+                    .Where(t => featuresDictionary["AutoGather"]
+                        .Contains(t.PhysicsBody?.AssociatedWorldObject.ProtoGameObject.Id))
+                    .ToList();
+                if (!(objectOfInterest?.Count > 0))
+                {
+                    return;
+                }
+                foreach (var testResult in objectOfInterest)
                 {
                     if (!(testResult.PhysicsBody?.AssociatedWorldObject is IStaticWorldObject staticWorldObject))
                     {
                         continue;
                     }
-                    if (staticWorldObject == playerCharacter)
-                    {
-                        continue;
-                    }
-                    if (staticWorldObject.ProtoGameObject is IProtoObjectGatherableVegetation protoGatherable &&
+                    if (staticWorldObject.ProtoGameObject is IProtoObjectGatherable protoGatherable &&
                         protoGatherable.SharedIsCanGather(staticWorldObject) &&
                         protoGatherable.SharedCanInteract(playerCharacter, staticWorldObject, false))
                     {
@@ -385,12 +284,19 @@
                 {
                     return; // do we need this?
                 }
-                foreach (var obj in objectsNearby)
+                var objectOfInterest = objectsNearby
+                    .Where(t => 
+                        featuresDictionary["AutoWoodcutting"]
+                            .Contains(t.PhysicsBody?.AssociatedWorldObject.ProtoGameObject.Id) ||
+                        featuresDictionary["AutoMining"]
+                            .Contains(t.PhysicsBody?.AssociatedWorldObject.ProtoGameObject.Id))
+                    .ToList();
+                if (!(objectOfInterest?.Count > 0))
                 {
-                    if (obj.PhysicsBody?.AssociatedWorldObject == null)
-                    {
-                        continue;
-                    }
+                    return;
+                }
+                foreach (var obj in objectOfInterest)
+                {
                     var testWorldObject = obj.PhysicsBody.AssociatedWorldObject;
                     if (!IsAppropriateObject(testWorldObject))
                     {

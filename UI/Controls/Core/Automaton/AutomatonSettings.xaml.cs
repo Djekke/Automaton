@@ -3,6 +3,7 @@
     using AtomicTorch.CBND.CoreMod.UI.Controls.Core;
     using AtomicTorch.CBND.GameApi.Scripting;
     using CryoFall.Automaton.UI.Controls.Core.Data;
+    using CryoFall.Automaton.UI.Controls.Core.Managers;
 
     public partial class AutomatonOverlay : BaseUserControlWithWindow
     {
@@ -29,6 +30,12 @@
                     Instance.Window.Open();
                 }
             }
+        }
+
+        protected override void WindowClosed()
+        {
+            AutomatonManager.SaveSettings();
+            base.WindowClosed();
         }
 
         protected override void OnLoaded()
