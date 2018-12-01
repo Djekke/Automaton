@@ -7,7 +7,7 @@
     using AtomicTorch.CBND.GameApi.Scripting;
     using System.Collections.Generic;
 
-    public class ProtoFeatureAutoWoodcutting: ProtoFeatureAutoHarvest
+    public class FeatureAutoWoodcutting: ProtoFeatureAutoHarvest
     {
         public override string Name => "AutoWoodcutting";
 

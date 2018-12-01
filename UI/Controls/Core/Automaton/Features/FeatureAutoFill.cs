@@ -11,7 +11,7 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    public class ProtoFeatureAutoFill: ProtoFeature
+    public class FeatureAutoFill: ProtoFeature
     {
         public override string Name => "AutoFill";
 

@@ -26,11 +26,11 @@
         {
             FeaturesDictionary = new Dictionary<string, ProtoFeature>()
             {
-                {"AutoPickUp", new ProtoFeatureAutoPickUp()},
-                {"AutoGather", new ProtoFeatureAutoGather()},
-                {"AutoMining", new ProtoFeatureAutoMining()},
-                {"AutoWoodcutting", new ProtoFeatureAutoWoodcutting()},
-                {"AutoFill", new ProtoFeatureAutoFill()},
+                {"AutoPickUp", new FeatureAutoPickUp()},
+                {"AutoGather", new FeatureAutoGather()},
+                {"AutoMining", new FeatureAutoMining()},
+                {"AutoWoodcutting", new FeatureAutoWoodcutting()},
+                {"AutoFill", new FeatureAutoFill()},
             };
 
             foreach (ProtoFeature feature in FeaturesDictionary.Values)

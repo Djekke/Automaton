@@ -6,7 +6,7 @@
     using AtomicTorch.CBND.GameApi.Scripting;
     using System.Collections.Generic;
 
-    public class ProtoFeatureAutoPickUp: ProtoFeatureWithInteractionQueue
+    public class FeatureAutoPickUp: ProtoFeatureWithInteractionQueue
     {
         public override string Name => "AutoPickUp";
 

@@ -7,7 +7,7 @@
     using AtomicTorch.CBND.GameApi.Scripting;
     using System.Collections.Generic;
 
-    public class ProtoFeatureAutoMining: ProtoFeatureAutoHarvest
+    public class FeatureAutoMining: ProtoFeatureAutoHarvest
     {
         public override string Name => "AutoMining";
 

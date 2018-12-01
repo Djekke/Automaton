@@ -9,7 +9,7 @@
     using AtomicTorch.CBND.GameApi.Scripting;
     using System.Collections.Generic;
 
-    public class ProtoFeatureAutoGather: ProtoFeatureWithInteractionQueue
+    public class FeatureAutoGather: ProtoFeatureWithInteractionQueue
     {
         public override string Name => "AutoGather";
 
