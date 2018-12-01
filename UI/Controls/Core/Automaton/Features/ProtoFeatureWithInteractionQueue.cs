@@ -12,7 +12,7 @@
         /// <summary>
         /// Called by client component every tick.
         /// </summary>
-        public override void Update()
+        public override void Update(double deltaTime)
         {
             if (!(IsEnabled && CheckPrecondition()))
             {

@@ -4,6 +4,7 @@
     using AtomicTorch.CBND.CoreMod.StaticObjects.Loot;
     using AtomicTorch.CBND.CoreMod.UI.Controls.Core;
     using AtomicTorch.CBND.GameApi.Data;
+    using AtomicTorch.CBND.GameApi.Data.Items;
     using AtomicTorch.CBND.GameApi.Data.World;
     using AtomicTorch.CBND.GameApi.Resources;
     using AtomicTorch.CBND.GameApi.Scripting;
@@ -65,9 +66,14 @@
                 {
                     if (!IconBlackList.Contains(Entity.GetType()))
                     {
-                        if (Entity is IProtoStaticWorldObject staticWorldObject)
+                        switch (Entity)
                         {
-                            iconResource = staticWorldObject.Icon ?? staticWorldObject.DefaultTexture;
+                            case IProtoStaticWorldObject staticWorldObject:
+                                iconResource = staticWorldObject.Icon ?? staticWorldObject.DefaultTexture;
+                                break;
+                            case IProtoItem protoItem:
+                                iconResource = protoItem.Icon;
+                                break;
                         }
                     }
                     if (iconResource == null)

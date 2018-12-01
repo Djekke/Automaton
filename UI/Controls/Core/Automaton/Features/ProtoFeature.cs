@@ -47,7 +47,7 @@
         /// <summary>
         /// Called by client component every tick.
         /// </summary>
-        public virtual void Update()
+        public virtual void Update(double deltaTime)
         {
             if (!(IsEnabled && CheckPrecondition()))
             {

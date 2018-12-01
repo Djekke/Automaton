@@ -45,7 +45,7 @@
         {
             foreach (var feature in featuresDictionary.Values)
             {
-                feature.Update();
+                feature.Update(deltaTime);
             }
 
             accumulatedTime += deltaTime;

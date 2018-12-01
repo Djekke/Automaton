@@ -30,6 +30,7 @@
                 {"AutoGather", new ProtoFeatureAutoGather()},
                 {"AutoMining", new ProtoFeatureAutoMining()},
                 {"AutoWoodcutting", new ProtoFeatureAutoWoodcutting()},
+                {"AutoFill", new ProtoFeatureAutoFill()},
             };
 
             foreach (ProtoFeature feature in FeaturesDictionary.Values)
@@ -65,6 +66,10 @@
 
             foreach (KeyValuePair<string, ProtoFeature> pair in FeaturesDictionary)
             {
+                if (!settingsInstance.Features.ContainsKey(pair.Key))
+                {
+                    settingsInstance.Features.Add(pair.Key, new List<string>());
+                }
                 pair.Value.LoadSettings(settingsInstance.Features[pair.Key]);
             }
         }
