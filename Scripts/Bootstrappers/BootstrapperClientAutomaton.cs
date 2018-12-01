@@ -16,8 +16,6 @@
 
         private static ClientComponentAutomaton clientComponentAutomaton;
 
-        private static bool IsAutomatonEnabled = true;
-
         public override void ClientInitialize()
         {
             ClientInputManager.RegisterButtonsEnum<AutomatonButton>();
@@ -32,7 +30,7 @@
         private static void GameInitHandler(ICharacter currentCharacter)
         {
             clientComponentAutomaton = Api.Client.Scene.GetSceneObject(currentCharacter)
-                .AddComponent<ClientComponentAutomaton>(IsAutomatonEnabled);
+                .AddComponent<ClientComponentAutomaton>(AutomatonManager.IsEnabled);
 
             gameplayInputContext = ClientInputContext
                 .Start("Automaton options toggle")
@@ -43,10 +41,10 @@
                     {
                         return;
                     }
-                    IsAutomatonEnabled = !clientComponentAutomaton.IsEnabled;
-                    clientComponentAutomaton.IsEnabled = IsAutomatonEnabled;
+                    AutomatonManager.IsEnabled = !clientComponentAutomaton.IsEnabled;
+                    clientComponentAutomaton.IsEnabled = AutomatonManager.IsEnabled;
                     NotificationSystem.ClientShowNotification(
-                        "Automaton is " + (IsAutomatonEnabled ? "enabled." : "disabled."));
+                        "Automaton is " + (AutomatonManager.IsEnabled ? "enabled." : "disabled."));
                 });
         }
 

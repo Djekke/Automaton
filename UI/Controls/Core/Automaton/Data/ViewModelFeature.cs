@@ -16,15 +16,16 @@
             Description = description;
             EntityCollection = new ObservableCollection<ViewModelEntity>(
                 entityList.OrderBy(entity => entity.Id)
-                          .Select(entity => new ViewModelEntity(entity, this)));
-            if (enabledList?.Count > 0)
+                          .Select(entity => new ViewModelEntity(entity)));
+
+            foreach (var viewModelEntity in EntityCollection)
             {
-                foreach (var viewModelEntity in EntityCollection)
+                viewModelEntity.IsEnabledChanged +=
+                    () => NotifyPropertyChanged(nameof(IsEnabled));
+
+                if (enabledList?.Count > 0 && enabledList.Contains(viewModelEntity.Id))
                 {
-                    if (enabledList.Contains(viewModelEntity.Id))
-                    {
-                        viewModelEntity.IsEnabled = true;
-                    }
+                    viewModelEntity.IsEnabled = true;
                 }
             }
 
@@ -58,9 +59,9 @@
 
         public ObservableCollection<ViewModelEntity> EntityCollection { get; set; }
 
-        public void RefreshIsEnabledStatus()
+        public List<IProtoEntity> GetEnabledEntityList()
         {
-            NotifyPropertyChanged(nameof(IsEnabled));
+            return EntityCollection.Where(e => e.IsEnabled).Select(e => e.Entity).ToList();
         }
     }
 }

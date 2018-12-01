@@ -10,9 +10,13 @@
 
         public ViewModelFeature SelectedFeature { get; set; }
 
+        public bool IsEnabled => AutomatonManager.IsEnabled;
+
         public ViewModelAutomatonSettings()
         {
             Features = AutomatonManager.GetFeatures();
+            AutomatonManager.IsEnabledChanged +=
+                () => NotifyPropertyChanged(nameof(IsEnabled));
         }
     }
 }

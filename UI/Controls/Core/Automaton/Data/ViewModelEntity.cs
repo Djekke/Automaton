@@ -25,17 +25,14 @@
 
         private bool isEnabled;
 
-        private readonly IProtoEntity entity;
+        public readonly IProtoEntity Entity;
 
-        private ViewModelFeature parentViewModelFeature = null;
-
-        public ViewModelEntity(IProtoEntity entity, ViewModelFeature parentViewModel)
+        public ViewModelEntity(IProtoEntity entity)
         {
-            this.entity = entity;
+            Entity = entity;
             Name = entity.Name;
             Id = entity.Id;
             isEnabled = false;
-            parentViewModelFeature = parentViewModel;
         }
 
         public string Name { get; }
@@ -54,9 +51,11 @@
 
                 isEnabled = value;
                 NotifyThisPropertyChanged();
-                parentViewModelFeature?.RefreshIsEnabledStatus();
+                IsEnabledChanged?.Invoke();
             }
         }
+
+        public event Action IsEnabledChanged;
 
         public TextureBrush Icon
         {
@@ -64,9 +63,9 @@
             {
                 if (icon == null)
                 {
-                    if (!IconBlackList.Contains(entity.GetType()))
+                    if (!IconBlackList.Contains(Entity.GetType()))
                     {
-                        if (entity is IProtoStaticWorldObject staticWorldObject)
+                        if (Entity is IProtoStaticWorldObject staticWorldObject)
                         {
                             iconResource = staticWorldObject.Icon ?? staticWorldObject.DefaultTexture;
                         }

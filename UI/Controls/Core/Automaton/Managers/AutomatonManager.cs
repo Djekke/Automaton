@@ -1,69 +1,50 @@
 ﻿namespace CryoFall.Automaton.UI.Controls.Core.Managers
 {
-    using AtomicTorch.CBND.CoreMod.StaticObjects;
-    using AtomicTorch.CBND.CoreMod.StaticObjects.Loot;
-    using AtomicTorch.CBND.CoreMod.StaticObjects.Minerals;
-    using AtomicTorch.CBND.CoreMod.StaticObjects.Vegetation.Trees;
-    using AtomicTorch.CBND.CoreMod.Systems.Resources;
-    using AtomicTorch.CBND.GameApi.Data;
     using AtomicTorch.CBND.GameApi.Scripting;
     using AtomicTorch.CBND.GameApi.ServicesClient;
+    using CryoFall.Automaton.UI.Controls.Core.Automaton.Features;
     using CryoFall.Automaton.UI.Controls.Core.Data;
+    using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
 
     public static class AutomatonManager
     {
-        private static ObservableCollection<ViewModelFeature> Features;
-
-        private static Dictionary<string, ViewModelFeature> FeaturesDictionary;
+        private static ObservableCollection<ViewModelFeature> ViewModelFeaturesCollection;
 
         private static IClientStorage settingsStorage;
 
         private static Settings settingsInstance;
 
-        /// <summary>
-        /// List of Features name with description in dictionary form.
-        /// </summary>
-        private static readonly Dictionary<string, string> FeaturesDescriptions
-            = new Dictionary<string, string>()
-            {
-                { "AutoPickUp", "PickUp items from ground (including twigs, stones, grass)"},
-                { "AutoGather", "Gather berry, herbs and other vegetation, harvest corpses, loot radtowns"},
-                { "AutoWoodcutting", "Auto-attack near trees if axe in hands"},
-                { "AutoMining", "Auto-attack near minerals if pickaxe in hands"},
-            };
+        private static Dictionary<string, ProtoFeature> FeaturesDictionary;
 
         /// <summary>
-        /// Dictionary of EntityLists for every feature.
+        /// Init on game load.
         /// </summary>
-        private static readonly Dictionary<string, List<IProtoEntity>> FeaturesEntityLists
-            = new Dictionary<string, List<IProtoEntity>>()
-            {
-                { "AutoPickUp", Api.FindProtoEntities<ProtoObjectLoot>().ToList<IProtoEntity>()
-                    .Concat(Api.FindProtoEntities<ObjectGroundItemsContainer>()).ToList()},
-                { "AutoGather", Api.FindProtoEntities<IProtoObjectGatherable>().ToList<IProtoEntity>()},
-                { "AutoWoodcutting", Api.FindProtoEntities<IProtoObjectTree>().ToList<IProtoEntity>()},
-                { "AutoMining", Api.FindProtoEntities<IProtoObjectMineral>().ToList<IProtoEntity>()},
-            };
-
-        /// <summary>
-        /// Init features veiw models.
-        /// </summary>
-        private static void InitFeatures()
+        public static void Init()
         {
-            Features = new ObservableCollection<ViewModelFeature>();
-            FeaturesDictionary = new Dictionary<string, ViewModelFeature>();
-            foreach (string feature in FeaturesDescriptions.Keys)
+            FeaturesDictionary = new Dictionary<string, ProtoFeature>()
             {
-                FeaturesDictionary.Add(feature, new ViewModelFeature(
-                        feature,
-                        FeaturesDescriptions[feature],
-                        FeaturesEntityLists[feature],
-                        settingsInstance.Features[feature]));
-                Features.Add(FeaturesDictionary[feature]);
+                {"AutoPickUp", new ProtoFeatureAutoPickUp()},
+                {"AutoGather", new ProtoFeatureAutoGather()},
+                {"AutoMining", new ProtoFeatureAutoMining()},
+                {"AutoWoodcutting", new ProtoFeatureAutoWoodcutting()},
+            };
+
+            foreach (ProtoFeature feature in FeaturesDictionary.Values)
+            {
+                feature.PrepareProto();
             }
+
+            LoadSettings();
+
+            ViewModelFeaturesCollection = new ObservableCollection<ViewModelFeature>(
+                FeaturesDictionary.Values.Select(feature => new ViewModelFeature(
+                    feature.Name,
+                    feature.Description,
+                    feature.EntityList,
+                    settingsInstance.Features[feature.Name])));
         }
 
         /// <summary>
@@ -78,10 +59,14 @@
                 // Init default settings. (All disabled by default)
                 settingsInstance.IsEnabled = false;
                 settingsInstance.Features
-                    = FeaturesDescriptions.Keys.ToDictionary(name => name, name => new List<string>());
+                    = FeaturesDictionary.ToDictionary(p => p.Key, p => new List<string>());
+                // TODO: May be add default options in ProtoFeature
             }
 
-            InitFeatures();
+            foreach (KeyValuePair<string, ProtoFeature> pair in FeaturesDictionary)
+            {
+                pair.Value.LoadSettings(settingsInstance.Features[pair.Key]);
+            }
         }
 
         /// <summary>
@@ -90,16 +75,16 @@
         public static void SaveSettings()
         {
             bool pendingChanges = false;
-            foreach (ViewModelFeature feature in Features)
+            foreach (ViewModelFeature feature in ViewModelFeaturesCollection)
             {
-                var tempList = feature.EntityCollection
-                                      .Where(entityViewModel => entityViewModel.IsEnabled)
-                                      .Select(entityViewModel => entityViewModel.Id)
-                                      .ToList();
-                if (!(settingsInstance.Features[feature.Name].Count == tempList.Count &&
-                      settingsInstance.Features[feature.Name].All(tempList.Contains)))
+                var enabledEntityList = feature.GetEnabledEntityList();
+
+                if(!Enumerable.SequenceEqual(
+                        enabledEntityList.OrderBy(e => e.Id),
+                        FeaturesDictionary[feature.Name].EnabledEntityList.OrderBy(e => e.Id)))
                 {
-                    settingsInstance.Features[feature.Name] = tempList;
+                    settingsInstance.Features[feature.Name] = enabledEntityList.Select(entity => entity.Id).ToList();
+                    FeaturesDictionary[feature.Name].EnabledEntityList = enabledEntityList;
                     pendingChanges = true;
                 }
             }
@@ -115,16 +100,16 @@
         /// <returns>ObservableCollection with view models of all features.</returns>
         public static ObservableCollection<ViewModelFeature> GetFeatures()
         {
-            return Features;
+            return ViewModelFeaturesCollection;
         }
 
         /// <summary>
-        /// Get Dictionary with view models of all features.
+        /// Get Dictionary of all features by their name.
         /// </summary>
-        /// <returns>Dictionary with view models of all features.</returns>
-        public static Dictionary<string, List<string>> GetFeaturesDictionary()
+        /// <returns>Dictionary with all features using their names as key.</returns>
+        public static Dictionary<string, ProtoFeature> GetFeaturesDictionary()
         {
-            return settingsInstance.Features;
+            return FeaturesDictionary;
         }
 
         public static bool IsEnabled
@@ -138,19 +123,12 @@
                 }
 
                 settingsInstance.IsEnabled = value;
-                // TODO: Add turn off component.
+                IsEnabledChanged?.Invoke();
                 settingsStorage.Save(settingsInstance);
             }
         }
 
-        /// <summary>
-        /// Init on game load.
-        /// </summary>
-        public static void Init()
-        {
-            LoadSettings();
-        }
-
+        public static event Action IsEnabledChanged;
 
         public struct Settings
         {

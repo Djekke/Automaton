@@ -4,7 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:core="clr-namespace:AtomicTorch.CBND.CoreMod.UI.Controls.Core;assembly=AtomicTorch.CBND.CoreMod"
     xmlns:base="clr-namespace:AtomicTorch.GameEngine.Common.Client.MonoGame.UI;assembly=AtomicTorch.CBND.GameApi.WPF.Stubs"
-    xmlns:data="clr-namespace:CryoFall.Automaton.UI.Controls.Core.Data">
+    xmlns:data="clr-namespace:CryoFall.Automaton.UI.Controls.Core.Data"
+    xmlns:helpers="clr-namespace:CryoFall.Automaton.UI.Controls.Core.Helpers">
 
     <base:BaseUserControl.Resources>
         <ResourceDictionary>
@@ -117,7 +118,35 @@
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
 
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Column="0"
+                        Grid.ColumnSpan="4"
+                        Grid.Row="0"
+                        Visibility="{Binding Path=IsEnabled,
+                                                Converter={StaticResource BoolToVisibilityConverter},
+                                                ConverterParameter=Reverse}"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Margin="0,5,0,5">
+                <TextBlock Foreground="Red"
+                           FontWeight="Bold"
+                           Text="Automaton is currently disabled, press "/>
+                <core:LabelWithButton Content=" to enabled it again"
+                                      Foreground="Red"
+                                      FontWeight="Bold">
+                    <core:LabelWithButton.Button>
+                        <helpers:AutomatonButtonReference Button="Toggle" />
+                    </core:LabelWithButton.Button>
+                </core:LabelWithButton>
+            </StackPanel>
+
             <ListBox Grid.Column="1"
+                     Grid.Row="1"
                      ItemsSource="{Binding Features}"
                      SelectedItem="{Binding SelectedFeature}">
                 <ListBox.ItemsPanel>
@@ -141,10 +170,13 @@
                 </ListBox.ItemTemplate>
             </ListBox>
 
-            <Control Style="{StaticResource ControlVerticalSeparatorLeft}" />
-            <Control Style="{StaticResource ControlVerticalSeparatorRight}" />
+            <Control Grid.Row="1"
+                     Style="{StaticResource ControlVerticalSeparatorLeft}" />
+            <Control Grid.Row="1"
+                     Style="{StaticResource ControlVerticalSeparatorRight}" />
 
             <Grid Grid.Column="3"
+                  Grid.Row="1"
                   Visibility="{Binding SelectedFeature,
                                        Converter={StaticResource NullToVisibilityConverter},
                                        ConverterParameter=Reverse}">
@@ -154,6 +186,7 @@
             </Grid>
 
             <Grid Grid.Column="3"
+                  Grid.Row="1"
                   DataContext="{Binding SelectedFeature}"
                   Visibility="{Binding DataContext.SelectedFeature,
                                        RelativeSource={RelativeSource AncestorType=Grid},
