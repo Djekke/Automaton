@@ -66,7 +66,7 @@
                     return; // do we need this?
                 }
                 var objectOfInterest = objectsNearby
-                    .Where(t => EntityList.Contains(t.PhysicsBody?.AssociatedWorldObject.ProtoGameObject))
+                    .Where(t => EnabledEntityList.Contains(t.PhysicsBody?.AssociatedWorldObject?.ProtoGameObject))
                     .ToList();
                 if (!(objectOfInterest?.Count > 0))
                 {
