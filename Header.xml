@@ -6,8 +6,8 @@
   <title>Automaton mod</title>
   <author>Djekke</author>
   <description>Automaton mod for CryoFall. Simple tasks automation.</description>
-  <version>0.2.1</version>
-  <updated>22.01.2019</updated>
+  <version>0.2.2</version>
+  <updated>09.03.2019</updated>
   <!-- Mod type: 1 - server, 2 - client-server, 3 - client -->
   <!-- Please note: mods of type 1 and 2 are ignored
                     when you're connecting to the server which is missing them -->
