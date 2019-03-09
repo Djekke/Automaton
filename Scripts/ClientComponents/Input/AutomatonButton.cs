@@ -3,22 +3,17 @@
     using AtomicTorch.CBND.CoreMod.ClientComponents.Input;
     using AtomicTorch.CBND.GameApi;
     using AtomicTorch.CBND.GameApi.ServicesClient;
+    using System.ComponentModel;
 
     [NotPersistent]
     public enum AutomatonButton
     {
-        [ButtonInfo(
-            "Open mod settings",
-            "Open Automaton settings menu",
-            InputKey.F6,
-            Category = "Automaton")]
+        [Description("Open mod settings")]
+        [ButtonInfo(InputKey.F6, Category = "Automaton")]
         OpenSettings,
 
-        [ButtonInfo(
-            "Toggle mod features",
-            "Turn on or off all features granted by this mod.",
-            InputKey.X,
-            Category = "Automaton")]
+        [Description("Toggle mod features")]
+        [ButtonInfo(InputKey.X, Category = "Automaton")]
         Toggle,
     }
 }
