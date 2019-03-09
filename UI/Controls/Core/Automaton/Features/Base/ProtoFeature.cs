@@ -1,10 +1,13 @@
 ﻿namespace CryoFall.Automaton.UI.Controls.Core.Automaton.Features
 {
+    using AtomicTorch.CBND.CoreMod.Characters;
+    using AtomicTorch.CBND.CoreMod.Characters.Player;
     using AtomicTorch.CBND.CoreMod.UI.Controls.Game.Items.Controls;
     using AtomicTorch.CBND.GameApi.Data;
     using AtomicTorch.CBND.GameApi.Data.Characters;
     using AtomicTorch.CBND.GameApi.Data.Items;
     using AtomicTorch.CBND.GameApi.Scripting;
+    using AtomicTorch.CBND.GameApi.Scripting.ClientComponents;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -25,6 +28,8 @@
         protected IItem SelectedItem => ClientHotbarSelectedItemManager.SelectedItem;
 
         protected ICharacter CurrentCharacter => Api.Client.Characters.CurrentPlayerCharacter;
+
+        protected PlayerCharacterPrivateState PrivateState => PlayerCharacter.GetPrivateState(CurrentCharacter);
 
         public void PrepareProto()
         {
@@ -92,7 +97,13 @@
         /// </summary>
         public virtual void Stop()
         {
+        }
 
+        /// <summary>
+        /// Setup any of subscriptions
+        /// </summary>
+        public virtual void SetupSubscriptions(ClientComponent parentComponent)
+        {
         }
     }
 }

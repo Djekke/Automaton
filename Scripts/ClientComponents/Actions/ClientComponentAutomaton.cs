@@ -26,6 +26,7 @@
 
         protected override void OnDisable()
         {
+            ReleaseSubscriptions();
             if (ReferenceEquals(this, instance))
             {
                 foreach (var feature in featuresDictionary.Values)
@@ -39,6 +40,10 @@
         protected override void OnEnable()
         {
             instance = this;
+            foreach (var feature in featuresDictionary.Values)
+            {
+                feature.SetupSubscriptions(this);
+            }
         }
 
         public override void Update(double deltaTime)
