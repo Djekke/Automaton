@@ -1,5 +1,6 @@
 ﻿namespace CryoFall.Automaton.UI.Controls.Core.Automaton.Features
 {
+    using System;
     using AtomicTorch.CBND.CoreMod.StaticObjects.Loot;
     using AtomicTorch.CBND.CoreMod.Systems;
     using AtomicTorch.CBND.CoreMod.Systems.InteractionChecker;
@@ -17,7 +18,7 @@
 
         public override string Description => "Gather berry, herbs and other vegetation, harvest corpses, loot radtowns.";
 
-        private ProtoObjectLootContainer openedLootContainer = null;
+        private IWorldObject openedLootContainer = null;
 
         private bool readyForInteraction = true;
 
@@ -32,21 +33,21 @@
         {
             if (openedLootContainer != null)
             {
-                if (!openedLootContainer.SharedCanInteract(CurrentCharacter, interactionQueue[0], false))
+                if (InteractionCheckerSystem.HasInteraction(CurrentCharacter, openedLootContainer, true))
                 {
-                    openedLootContainer = null;
-                } else if (interactionQueue[0].ClientHasPrivateState)
-                {
-                    // Take all items from container.
-                    var q = lastActionState.TargetWorldObject.GetPrivateState<LootContainerPrivateState>();
+                    // We get container private state, now take all items from container.
+                    var q = openedLootContainer.GetPrivateState<LootContainerPrivateState>();
                     CurrentCharacter.ProtoCharacter.ClientTryTakeAllItems(CurrentCharacter, q.ItemsContainer, true);
                     InteractionCheckerSystem.CancelCurrentInteraction(CurrentCharacter);
-                    openedLootContainer = null;
                 }
-                else
+                else if (openedLootContainer.ProtoWorldObject
+                                            .SharedCanInteract(CurrentCharacter, openedLootContainer, false))
                 {
+                    // Waiting for container private state from server.
                     return;
                 }
+                openedLootContainer = null;
+                readyForInteraction = true;
             }
 
             if (!readyForInteraction)
@@ -98,10 +99,10 @@
             {
                 interactionQueue.Clear();
                 InteractionCheckerSystem.CancelCurrentInteraction(CurrentCharacter);
-                lastActionState = null;
-                readyForInteraction = true;
-                openedLootContainer = null;
             }
+            readyForInteraction = true;
+            lastActionState = null;
+            openedLootContainer = null;
         }
 
         /// <summary>
@@ -117,23 +118,54 @@
                 parentComponent);
         }
 
+        /// <summary>
+        /// Init on component enabled.
+        /// </summary>
+        public override void Start(ClientComponent parentComponent)
+        {
+            base.Start(parentComponent);
+
+            // Check if there an action in progress.
+            if (PrivateState.CurrentActionState != null)
+            {
+                readyForInteraction = false;
+                lastActionState = PrivateState.CurrentActionState;
+            }
+
+            // Check if we openned loot container before enabling component.
+            var currentInteractionObject = InteractionCheckerSystem.GetCurrentInteraction(CurrentCharacter);
+            if (currentInteractionObject != null &&
+                currentInteractionObject.ProtoWorldObject is ProtoObjectLootContainer)
+            {
+                readyForInteraction = false;
+                openedLootContainer = currentInteractionObject;
+            }
+        }
+
         private void OnActionStateChanged()
         {
             if (PrivateState.CurrentActionState != null)
             {
+                // Action was started.
                 readyForInteraction = false;
                 openedLootContainer = null;
                 lastActionState = PrivateState.CurrentActionState;
             }
             else
             {
-                if (lastActionState.IsCompleted &&
+                // Action is finished.
+                // Check if we openned a loot container.
+                if (lastActionState != null &&
+                    lastActionState.IsCompleted &&
                     !lastActionState.IsCancelled && !lastActionState.IsCancelledByServer &&
-                    lastActionState.TargetWorldObject.ProtoGameObject is ProtoObjectLootContainer lootContainer)
+                    lastActionState.TargetWorldObject?.ProtoGameObject is ProtoObjectLootContainer)
                 {
-                    openedLootContainer = lootContainer;
+                    openedLootContainer = lastActionState.TargetWorldObject;
                 }
-                readyForInteraction = true;
+                else
+                {
+                    readyForInteraction = true;
+                }
             }
         }
     }

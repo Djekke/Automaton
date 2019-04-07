@@ -42,7 +42,7 @@
             instance = this;
             foreach (var feature in featuresDictionary.Values)
             {
-                feature.SetupSubscriptions(this);
+                feature.Start(this);
             }
         }
 

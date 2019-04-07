@@ -100,6 +100,14 @@
         }
 
         /// <summary>
+        /// Init on component enabled.
+        /// </summary>
+        public virtual void Start(ClientComponent parentComponent)
+        {
+            SetupSubscriptions(parentComponent);
+        }
+
+        /// <summary>
         /// Setup any of subscriptions
         /// </summary>
         public virtual void SetupSubscriptions(ClientComponent parentComponent)
