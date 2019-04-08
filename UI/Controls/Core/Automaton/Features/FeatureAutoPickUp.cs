@@ -2,9 +2,11 @@
 {
     using AtomicTorch.CBND.CoreMod.StaticObjects;
     using AtomicTorch.CBND.CoreMod.StaticObjects.Loot;
+    using AtomicTorch.CBND.CoreMod.Systems.Notifications;
     using AtomicTorch.CBND.GameApi.Data;
     using AtomicTorch.CBND.GameApi.Scripting;
     using System.Collections.Generic;
+    using System.Linq;
 
     public class FeatureAutoPickUp: ProtoFeatureWithInteractionQueue
     {
@@ -26,8 +28,30 @@
                     interactionQueue[0].ProtoStaticWorldObject
                         .SharedCanInteract(CurrentCharacter, interactionQueue[0], false))
                 {
-                    interactionQueue[0].ProtoWorldObject.ClientInteractStart(interactionQueue[0]);
-                    interactionQueue[0].ProtoWorldObject.ClientInteractFinish(interactionQueue[0]);
+                    if (interactionQueue[0].ProtoWorldObject is ObjectGroundItemsContainer)
+                    {
+                        var containerGround = interactionQueue[0]
+                            .GetPublicState<ObjectGroundItemsContainer.PublicState>().ItemsContainer;
+
+                        // try pickup all the items
+                        var result = CurrentCharacter.ProtoCharacter.ClientTryTakeAllItems(
+                            CurrentCharacter,
+                            containerGround,
+                            showNotificationIfInventoryFull: true);
+                        if (result.MovedItems.Count > 0)
+                        {
+                            // at least one item taken from ground
+                            NotificationSystem.ClientShowItemsNotification(
+                                itemsChangedCount: result.MovedItems
+                                    .GroupBy(p => p.Key.ProtoItem)
+                                    .ToDictionary(p => p.Key, p => p.Sum(v => v.Value)));
+                        }
+                    }
+                    else
+                    {
+                        interactionQueue[0].ProtoWorldObject.ClientInteractStart(interactionQueue[0]);
+                        interactionQueue[0].ProtoWorldObject.ClientInteractFinish(interactionQueue[0]);
+                    }
                 }
                 interactionQueue.RemoveAt(0);
             }
