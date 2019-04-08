@@ -1,9 +1,9 @@
 ﻿namespace CryoFall.Automaton.UI.Controls.Core.Automaton.Features
 {
-    using System;
     using AtomicTorch.CBND.CoreMod.StaticObjects.Loot;
     using AtomicTorch.CBND.CoreMod.Systems;
     using AtomicTorch.CBND.CoreMod.Systems.InteractionChecker;
+    using AtomicTorch.CBND.CoreMod.Systems.Notifications;
     using AtomicTorch.CBND.CoreMod.Systems.Resources;
     using AtomicTorch.CBND.GameApi.Data;
     using AtomicTorch.CBND.GameApi.Data.State;
@@ -11,6 +11,7 @@
     using AtomicTorch.CBND.GameApi.Scripting;
     using AtomicTorch.CBND.GameApi.Scripting.ClientComponents;
     using System.Collections.Generic;
+    using System.Linq;
 
     public class FeatureAutoGather: ProtoFeatureWithInteractionQueue
     {
@@ -37,7 +38,15 @@
                 {
                     // We get container private state, now take all items from container.
                     var q = openedLootContainer.GetPrivateState<LootContainerPrivateState>();
-                    CurrentCharacter.ProtoCharacter.ClientTryTakeAllItems(CurrentCharacter, q.ItemsContainer, true);
+                    var result =
+                        CurrentCharacter.ProtoCharacter.ClientTryTakeAllItems(CurrentCharacter, q.ItemsContainer, true);
+                    if (result.MovedItems.Count > 0)
+                    {
+                        NotificationSystem.ClientShowItemsNotification(
+                            itemsChangedCount: result.MovedItems
+                                .GroupBy(p => p.Key.ProtoItem)
+                                .ToDictionary(p => p.Key, p => p.Sum(v => v.Value)));
+                    }
                     InteractionCheckerSystem.CancelCurrentInteraction(CurrentCharacter);
                 }
                 else if (openedLootContainer.ProtoWorldObject
