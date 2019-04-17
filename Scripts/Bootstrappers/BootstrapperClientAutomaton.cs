@@ -16,6 +16,10 @@
 
         private static ClientComponentAutomaton clientComponentAutomaton;
 
+        public const string Notification_ModEnabled = "Automaton is enabled.";
+
+        public const string Notification_ModDisabled = "Automaton is disabled.";
+
         public override void ClientInitialize()
         {
             ClientInputManager.RegisterButtonsEnum<AutomatonButton>();
@@ -44,7 +48,7 @@
                     AutomatonManager.IsEnabled = !clientComponentAutomaton.IsEnabled;
                     clientComponentAutomaton.IsEnabled = AutomatonManager.IsEnabled;
                     NotificationSystem.ClientShowNotification(
-                        "Automaton is " + (AutomatonManager.IsEnabled ? "enabled." : "disabled."));
+                        AutomatonManager.IsEnabled ? Notification_ModEnabled : Notification_ModDisabled);
                 });
         }
 

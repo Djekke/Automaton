@@ -9,9 +9,10 @@
 
     public class ViewModelFeature : BaseViewModel
     {
-        public ViewModelFeature(string name, string description,
+        public ViewModelFeature(string id, string name, string description,
             List<IProtoEntity> entityList, List<string> enabledList)
         {
+            Id = id;
             Name = name;
             Description = description;
             EntityCollection = new ObservableCollection<ViewModelEntity>(
@@ -46,6 +47,8 @@
                     NotifyPropertyChanged(nameof(IsEnabled));
                 });
         }
+
+        public string Id { get; }
 
         public string Name { get; }
 

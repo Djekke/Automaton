@@ -1,0 +1,6 @@
+﻿Scripts/Bootstrappers/BootstrapperClientAutomaton@Notification_ModEnabled:
+Автоматон включен.
+
+Scripts/Bootstrappers/BootstrapperClientAutomaton@Notification_ModDisabled:
+Автоматон выключен.
+

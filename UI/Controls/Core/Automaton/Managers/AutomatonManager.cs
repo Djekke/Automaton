@@ -41,11 +41,12 @@
             LoadSettings();
 
             ViewModelFeaturesCollection = new ObservableCollection<ViewModelFeature>(
-                FeaturesDictionary.Values.Select(feature => new ViewModelFeature(
-                    feature.Name,
-                    feature.Description,
-                    feature.EntityList,
-                    settingsInstance.Features[feature.Name])));
+                FeaturesDictionary.Select(entry => new ViewModelFeature(
+                    entry.Key,
+                    entry.Value.Name,
+                    entry.Value.Description,
+                    entry.Value.EntityList,
+                    settingsInstance.Features[entry.Key])));
         }
 
         /// <summary>
@@ -86,10 +87,10 @@
 
                 if(!Enumerable.SequenceEqual(
                         enabledEntityList.OrderBy(e => e.Id),
-                        FeaturesDictionary[feature.Name].EnabledEntityList.OrderBy(e => e.Id)))
+                        FeaturesDictionary[feature.Id].EnabledEntityList.OrderBy(e => e.Id)))
                 {
-                    settingsInstance.Features[feature.Name] = enabledEntityList.Select(entity => entity.Id).ToList();
-                    FeaturesDictionary[feature.Name].EnabledEntityList = enabledEntityList;
+                    settingsInstance.Features[feature.Id] = enabledEntityList.Select(entity => entity.Id).ToList();
+                    FeaturesDictionary[feature.Id].EnabledEntityList = enabledEntityList;
                     pendingChanges = true;
                 }
             }

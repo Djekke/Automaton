@@ -1,0 +1,6 @@
+﻿Scripts/ClientComponents/Input/AutomatonButton@OpenSettings:
+Открыть настройки мода
+
+Scripts/ClientComponents/Input/AutomatonButton@Toggle:
+Включить\выключить функции мода
+
