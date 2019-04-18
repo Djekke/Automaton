@@ -7,7 +7,10 @@
     using AtomicTorch.CBND.CoreMod.Systems.BottleRefillSystem;
     using AtomicTorch.CBND.CoreMod.Tiles;
     using AtomicTorch.CBND.GameApi.Data;
+    using AtomicTorch.CBND.GameApi.Data.Items;
+    using AtomicTorch.CBND.GameApi.Data.State;
     using AtomicTorch.CBND.GameApi.Scripting;
+    using AtomicTorch.CBND.GameApi.Scripting.ClientComponents;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -15,17 +18,36 @@
     {
         public override string Name => "AutoFill";
 
-        public override string Description => "AutoFill empty bottles near sea.";
+        public override string Description => "AutoFill empty bottles near water.";
 
-        private bool fillInProgress = false;
+        private Dictionary<IProtoEntity, List<IProtoEntity>> requiredTilesDictionary =
+            new Dictionary<IProtoEntity, List<IProtoEntity>>();
 
-        private ushort itemCount = 0;
+        private List<IProtoEntity> permitedTiles =>
+            requiredTilesDictionary.Where(entry => EnabledEntityList.Contains(entry.Key))
+                .SelectMany(entry => entry.Value).ToList();
 
-        private double finishingTime;
+        private IItem usedItem = null;
+
+        // Wait for server to update item count.
+        private bool waitingForServer = false;
+
+        // For hard reset failed action.
+        private double fillingActionDuration = 0.0;
+
+        private IActionState lastActionState = null;
+
+        private IClientItemsContainer ContainerHotbar =>
+            (IClientItemsContainer) CurrentCharacter.SharedGetPlayerContainerHotbar();
 
         protected override void PrepareFeature(List<IProtoEntity> entityList, List<IProtoEntity> requiredItemList)
         {
             entityList.AddRange(Api.FindProtoEntities<ItemBottleWaterSalty>());
+            requiredTilesDictionary.Add(Api.GetProtoEntity<ItemBottleWaterSalty>(),
+                new List<IProtoEntity>(Api.FindProtoEntities<TileWaterSea>()));
+            entityList.AddRange(Api.FindProtoEntities<ItemBottleWaterStale>());
+            requiredTilesDictionary.Add(Api.GetProtoEntity<ItemBottleWaterStale>(),
+                new List<IProtoEntity>(Api.FindProtoEntities<TileWaterLake>()));
 
             requiredItemList.AddRange(Api.FindProtoEntities<ItemBottleEmpty>());
         }
@@ -35,55 +57,29 @@
         /// </summary>
         public override void Update(double deltaTime)
         {
-            if (!(IsEnabled && CheckPrecondition()) ||
-                finishingTime > 0.5)
+            fillingActionDuration += deltaTime;
+            if (waitingForServer &&
+                lastActionState is BottleRefillAction bottleRefillAction &&
+                fillingActionDuration > bottleRefillAction.DurationSeconds * 2)
             {
-                Stop();
-                return;
-            }
-
-            if (SelectedItem.Count > itemCount)
-            {
-                itemCount = SelectedItem.Count;
-            }
-
-            if (fillInProgress)
-            {
-                var characterPrivateState = PlayerCharacter.GetPrivateState(CurrentCharacter);
-                if (characterPrivateState.CurrentActionState == null)
-                {
-                    finishingTime += deltaTime;
-
-                    if (SelectedItem.Count < itemCount)
-                    {
-                        fillInProgress = false;
-                        finishingTime = 0.0;
-                        Fill();
-                    }
-                }
+                // Hard reset for cases of action never started on server or canceled with exception.
+                waitingForServer = false;
             }
         }
 
         /// <summary>
         /// Called by client component on specific time interval.
         /// </summary>
-        public override void Execute( )
+        public override void Execute()
         {
-            if (!(IsEnabled && CheckPrecondition()))
-            {
-                return;
-            }
-
-            Fill();
+            TryToStartFillAction();
         }
 
-        private void Fill()
+        private void TryToStartFillAction()
         {
-            if (!fillInProgress && IsWaterNearby())
+            if (IsEnabled && CheckPrecondition() && IsWaterNearby() && !waitingForServer &&
+                PrivateState.CurrentActionState == null)
             {
-                fillInProgress = true;
-                itemCount = SelectedItem.Count;
-                finishingTime = 0.0;
                 BottleRefillSystem.Instance.ClientTryStartAction();
             }
         }
@@ -91,12 +87,12 @@
         private bool IsWaterNearby()
         {
             var tile = CurrentCharacter.Tile;
-            if (tile.ProtoTile is TileWaterSea)
+            if (permitedTiles.Contains(tile.ProtoTile))
             {
                 return true;
             }
 
-            if (tile.EightNeighborTiles.Where(t => t.ProtoTile is TileWaterSea)?.Count() > 0)
+            if (tile.EightNeighborTiles.Select(t => t.ProtoTile).Intersect(permitedTiles).Any())
             {
                 return true;
             }
@@ -109,13 +105,95 @@
         /// </summary>
         public override void Stop()
         {
-            if (fillInProgress)
+            if (lastActionState is BottleRefillAction)
             {
-                fillInProgress = false;
-                var characterPrivateState = PlayerCharacter.GetPrivateState(CurrentCharacter);
-                if (characterPrivateState.CurrentActionState is IActionState state)
+                lastActionState.Cancel();
+            }
+
+            waitingForServer = false;
+            usedItem = null;
+
+            ContainerHotbar.ItemRemoved -= ContainerHotbarOnItemRemoved;
+            ContainerHotbar.ItemCountChanged -= ContainerHotbarOnItemCountChanged;
+        }
+
+        /// <summary>
+        /// Setup any of subscriptions
+        /// </summary>
+        public override void SetupSubscriptions(ClientComponent parentComponent)
+        {
+            base.SetupSubscriptions(parentComponent);
+
+            PrivateState.ClientSubscribe(
+                s => s.CurrentActionState,
+                OnActionStateChanged,
+                parentComponent);
+        }
+
+        /// <summary>
+        /// Init on component enabled.
+        /// </summary>
+        public override void Start(ClientComponent parentComponent)
+        {
+            base.Start(parentComponent);
+
+            ContainerHotbar.ItemRemoved += ContainerHotbarOnItemRemoved;
+            ContainerHotbar.ItemCountChanged += ContainerHotbarOnItemCountChanged;
+
+            // Check if there an action in progress.
+            if (PrivateState.CurrentActionState != null)
+            {
+                lastActionState = PrivateState.CurrentActionState;
+            }
+        }
+
+        private void ContainerHotbarOnItemCountChanged(IItem item, ushort previouscount, ushort currentcount)
+        {
+            if (usedItem == item && currentcount < previouscount)
+            {
+                waitingForServer = false;
+                TryToStartFillAction();
+            }
+        }
+
+        private void ContainerHotbarOnItemRemoved(IItem item, byte slotid)
+        {
+            if (usedItem == item)
+            {
+                waitingForServer = false;
+            }
+        }
+
+        private void OnActionStateChanged()
+        {
+            if (PrivateState.CurrentActionState != null)
+            {
+                // Action was started.
+                lastActionState = PrivateState.CurrentActionState;
+                if (lastActionState is BottleRefillAction bottleRefillAction)
                 {
-                    state.Cancel();
+                    usedItem = bottleRefillAction.ItemEmptyBottle;
+                    waitingForServer = true;
+                    fillingActionDuration = 0.0;
+                }
+            }
+            else
+            {
+                if (lastActionState is BottleRefillAction bottleRefillAction)
+                {
+                    if (!IsWaterNearby() ||
+                        bottleRefillAction.IsCancelled || bottleRefillAction.IsCancelledByServer)
+                    {
+                        // Action failed: no water nearby or cancelled on server.
+                        usedItem = null;
+                        waitingForServer = false;
+                    }
+                }
+                else
+                {
+                    // Other action finished - reset waiting status just in case.
+                    usedItem = null;
+                    waitingForServer = false;
                 }
             }
         }
