@@ -38,7 +38,7 @@
 
             gameplayInputContext = ClientInputContext
                 .Start("Automaton options toggle")
-                .HandleButtonDown(AutomatonButton.OpenSettings, AutomatonOverlay.Toggle)
+                .HandleButtonDown(AutomatonButton.OpenSettings, MainWindow.Toggle)
                 .HandleButtonDown(AutomatonButton.Toggle, () =>
                 {
                     if (clientComponentAutomaton == null)

@@ -43,3 +43,14 @@ UI/Controls/Core/Automaton/Features/FeatureAutoWoodcutting@Name:
 UI/Controls/Core/Automaton/Features/FeatureAutoWoodcutting@Description:
 Автоматически рубит ближайшие деревья, если топор в руках.
 
+UI/Controls/Core/Automaton/Data/ViewModelSettings@Name:
+Настройки
+
+UI/Controls/Core/Automaton/Data/ViewModelSettings@Description:
+Глобальные настройки.
+
+UI/Controls/Core/Automaton/Data/ViewModelSettings@UpdateIntervalText:
+Интервал обновления (сек)
+
+UI/Controls/Core/Automaton/Data/ViewModelSettings@UpdateIntervalToolTip:
+Как часто мод будет пытаться что-то сделать.

@@ -11,13 +11,17 @@
 
     public static class AutomatonManager
     {
-        private static ObservableCollection<ViewModelFeature> ViewModelFeaturesCollection;
+        private static ObservableCollection<IMainWindowListEntry> ViewModelFeaturesCollection;
+
+        private static IMainWindowListEntry ViewModelSettings;
 
         private static IClientStorage settingsStorage;
 
         private static Settings settingsInstance;
 
         private static Dictionary<string, ProtoFeature> FeaturesDictionary;
+
+        public static double UpdateInterval = 0.5d;
 
         /// <summary>
         /// Init on game load.
@@ -40,13 +44,14 @@
 
             LoadSettings();
 
-            ViewModelFeaturesCollection = new ObservableCollection<ViewModelFeature>(
+            ViewModelFeaturesCollection = new ObservableCollection<IMainWindowListEntry>(
                 FeaturesDictionary.Select(entry => new ViewModelFeature(
                     entry.Key,
                     entry.Value.Name,
                     entry.Value.Description,
                     entry.Value.EntityList,
                     settingsInstance.Features[entry.Key])));
+            ViewModelSettings = new ViewModelSettings();
         }
 
         /// <summary>
@@ -54,17 +59,17 @@
         /// </summary>
         private static void LoadSettings()
         {
+            // Load settings.
             settingsStorage = Api.Client.Storage.GetStorage("Mods/Automaton.Settings");
             settingsStorage.RegisterType(typeof(Settings));
             if (!settingsStorage.TryLoad(out settingsInstance))
             {
-                // Init default settings. (All disabled by default)
-                settingsInstance.IsEnabled = false;
-                settingsInstance.Features
-                    = FeaturesDictionary.ToDictionary(p => p.Key, p => new List<string>());
-                // TODO: May be add default options in ProtoFeature
+                // Init default settings.
+                settingsInstance = new Settings();
             }
 
+            // Apply settings.
+            UpdateInterval = settingsInstance.UpdateInterval;
             foreach (KeyValuePair<string, ProtoFeature> pair in FeaturesDictionary)
             {
                 if (!settingsInstance.Features.ContainsKey(pair.Key))
@@ -81,7 +86,12 @@
         public static void SaveSettings()
         {
             bool pendingChanges = false;
-            foreach (ViewModelFeature feature in ViewModelFeaturesCollection)
+            if (UpdateInterval != settingsInstance.UpdateInterval)
+            {
+                settingsInstance.UpdateInterval = UpdateInterval;
+                pendingChanges = true;
+            }
+            foreach (ViewModelFeature feature in ViewModelFeaturesCollection.OfType<ViewModelFeature>())
             {
                 var enabledEntityList = feature.GetEnabledEntityList();
 
@@ -104,9 +114,18 @@
         /// Get ObservableCollection with view models of all features.
         /// </summary>
         /// <returns>ObservableCollection with view models of all features.</returns>
-        public static ObservableCollection<ViewModelFeature> GetFeatures()
+        public static ObservableCollection<IMainWindowListEntry> GetFeatures()
         {
             return ViewModelFeaturesCollection;
+        }
+
+        /// <summary>
+        /// Get global settings view model.
+        /// </summary>
+        /// <returns>ViewModelSettings</returns>
+        public static IMainWindowListEntry GetSettingsViewModel()
+        {
+            return ViewModelSettings;
         }
 
         /// <summary>
@@ -136,11 +155,19 @@
 
         public static event Action IsEnabledChanged;
 
-        public struct Settings
+        // Settings with default values.
+        public class Settings
         {
-            public bool IsEnabled;
+            // Settings version
+            public int Version = 1;
 
-            public Dictionary<string, List<string>> Features;
+            public bool IsEnabled = false;
+
+            public double UpdateInterval = 0.5d;
+
+            // TODO: Add default options in ProtoFeature
+            public Dictionary<string, List<string>> Features =
+                FeaturesDictionary.ToDictionary(p => p.Key, p => new List<string>());
         }
     }
 }

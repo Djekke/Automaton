@@ -4,17 +4,18 @@
     using CryoFall.Automaton.UI.Controls.Core.Managers;
     using System.Collections.ObjectModel;
 
-    public class ViewModelAutomatonSettings : BaseViewModel
+    public class ViewModelMainWindow : BaseViewModel
     {
-        public ObservableCollection<ViewModelFeature> Features { get; }
+        public ObservableCollection<IMainWindowListEntry> ListEntries { get; }
 
-        public ViewModelFeature SelectedFeature { get; set; }
+        public IMainWindowListEntry SelectedListEntry { get; set; }
 
         public bool IsEnabled => AutomatonManager.IsEnabled;
 
-        public ViewModelAutomatonSettings()
+        public ViewModelMainWindow()
         {
-            Features = AutomatonManager.GetFeatures();
+            ListEntries = AutomatonManager.GetFeatures();
+            ListEntries.Add(AutomatonManager.GetSettingsViewModel());
             AutomatonManager.IsEnabledChanged +=
                 () => NotifyPropertyChanged(nameof(IsEnabled));
         }

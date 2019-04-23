@@ -10,8 +10,7 @@
     {
         private static ClientComponentAutomaton instance;
 
-        // TODO: Add in options overlay
-        public static double UpdateInterval = 0.5d;
+        public static double UpdateInterval => AutomatonManager.UpdateInterval;
 
         private double accumulatedTime = UpdateInterval;
 

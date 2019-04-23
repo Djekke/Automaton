@@ -1,10 +1,11 @@
 ﻿<core:BaseUserControlWithWindow
-    x:Class="CryoFall.Automaton.UI.Controls.Core.AutomatonOverlay"
+    x:Class="CryoFall.Automaton.UI.Controls.Core.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:core="clr-namespace:AtomicTorch.CBND.CoreMod.UI.Controls.Core;assembly=core"
     xmlns:base="clr-namespace:AtomicTorch.GameEngine.Common.Client.MonoGame.UI;assembly=AtomicTorch.CBND.GameApi.WPF.Stubs"
     xmlns:data="clr-namespace:CryoFall.Automaton.UI.Controls.Core.Data"
+    xmlns:loc="clr-namespace:AtomicTorch.CBND.CoreMod.UI;assembly=core"
     xmlns:helpers="clr-namespace:CryoFall.Automaton.UI.Controls.Core.Helpers">
 
     <base:BaseUserControl.Resources>
@@ -104,6 +105,105 @@
                     </MultiDataTrigger>
                 </Style.Triggers>
             </Style>
+
+            <DataTemplate DataType="{x:Type data:ViewModelFeature}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0"
+                               Text="{Binding Description}"
+                               TextWrapping="Wrap"
+                               Margin="10"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center" />
+
+                    <ItemsControl Grid.Row="1"
+                                  ItemsSource="{Binding EntityCollection}"
+                                  HorizontalAlignment="Center">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Vertical" IsItemsHost="True" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.Template>
+                            <ControlTemplate TargetType="{x:Type ItemsControl}">
+                                <ScrollViewer>
+                                    <ItemsPresenter />
+                                </ScrollViewer>
+                            </ControlTemplate>
+                        </ItemsControl.Template>
+                    </ItemsControl>
+
+                    <Grid Grid.Row="2"
+                          Margin="0,5,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Button Grid.Column="0"
+                                HorizontalAlignment="Center"
+                                Content="{x:Static data:AutomatonStrings.Button_SelectAll}"
+                                Command="{Binding SelectAll}" />
+
+                        <Button Grid.Column="1"
+                                HorizontalAlignment="Center"
+                                Content="{x:Static data:AutomatonStrings.Button_DeselectAll}"
+                                Command="{Binding DeselectAll}" />
+                    </Grid>
+                </Grid>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type data:ViewModelSettings}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0"
+                               Text="{Binding Description}"
+                               TextWrapping="Wrap"
+                               Margin="10"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center" />
+
+                    <StackPanel Grid.Row="1"
+                                Orientation="Vertical"
+                                HorizontalAlignment="Center">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding UpdateIntervalText}"
+                                       Margin="0,0,10,0"
+                                       base:ToolTipServiceExtend.ToolTip="{Binding UpdateIntervalTooltip}" />
+                            <TextBox Text="{Binding UpdateInterval}"
+                                     Width="75" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <Grid Grid.Row="2"
+                          Margin="0,5,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Button Grid.Column="0"
+                                HorizontalAlignment="Center"
+                                Content="{x:Static loc:CoreStrings.Button_Apply}"
+                                Command="{Binding Apply}" />
+
+                        <Button Grid.Column="1"
+                                HorizontalAlignment="Center"
+                                Content="{x:Static loc:CoreStrings.Button_Cancel}"
+                                Command="{Binding Cancel}" />
+                    </Grid>
+                </Grid>
+            </DataTemplate>
         </ResourceDictionary>
     </base:BaseUserControl.Resources>
 
@@ -127,8 +227,8 @@
                         Grid.ColumnSpan="4"
                         Grid.Row="0"
                         Visibility="{Binding Path=IsEnabled,
-                                                Converter={StaticResource BoolToVisibilityConverter},
-                                                ConverterParameter=Reverse}"
+                                             Converter={StaticResource BoolToVisibilityConverter},
+                                             ConverterParameter=Reverse}"
                         Orientation="Horizontal"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
@@ -148,8 +248,8 @@
 
             <ListBox Grid.Column="1"
                      Grid.Row="1"
-                     ItemsSource="{Binding Features}"
-                     SelectedItem="{Binding SelectedFeature}">
+                     ItemsSource="{Binding ListEntries}"
+                     SelectedItem="{Binding SelectedListEntry}">
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Vertical" IsItemsHost="True" />
@@ -178,7 +278,7 @@
 
             <Grid Grid.Column="3"
                   Grid.Row="1"
-                  Visibility="{Binding SelectedFeature,
+                  Visibility="{Binding SelectedListEntry,
                                        Converter={StaticResource NullToVisibilityConverter},
                                        ConverterParameter=Reverse}">
                 <TextBlock Text="{x:Static data:AutomatonStrings.Text_NoFeatureSelected}"
@@ -186,63 +286,12 @@
                            VerticalAlignment="Center" />
             </Grid>
 
-            <Grid Grid.Column="3"
-                  Grid.Row="1"
-                  DataContext="{Binding SelectedFeature}"
-                  Visibility="{Binding DataContext.SelectedFeature,
-                                       RelativeSource={RelativeSource AncestorType=Grid},
-                                       Converter={StaticResource NullToVisibilityConverter}}">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-
-
-                <TextBlock Grid.Row="0"
-                           Text="{Binding Description}"
-                           TextWrapping="Wrap"
-                           Margin="10"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center" />
-
-                <ItemsControl Grid.Row="1"
-                              ItemsSource="{Binding EntityCollection}"
-                              HorizontalAlignment="Center">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Orientation="Vertical" IsItemsHost="True" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.Template>
-                        <ControlTemplate TargetType="{x:Type ItemsControl}">
-                            <ScrollViewer>
-                                <ItemsPresenter />
-                            </ScrollViewer>
-                        </ControlTemplate>
-                    </ItemsControl.Template>
-                </ItemsControl>
-
-                <Grid Grid.Row="2"
-                      Margin="0,5,0,5">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-
-                    <Button Grid.Column="0"
-                            HorizontalAlignment="Center"
-                            Content="{x:Static data:AutomatonStrings.Button_SelectAll}"
-                            Command="{Binding SelectAll}" />
-
-                    <Button Grid.Column="1"
-                            HorizontalAlignment="Center"
-                            Content="{x:Static data:AutomatonStrings.Button_DeselectAll}"
-                            Command="{Binding DeselectAll}" />
-
-                </Grid>
-            </Grid>
-
+            <ContentControl Grid.Column="3"
+                            Grid.Row="1"
+                            Content="{Binding SelectedListEntry}"
+                            Visibility="{Binding DataContext.SelectedFeature,
+                                                 RelativeSource={RelativeSource AncestorType=Grid},
+                                                 Converter={StaticResource NullToVisibilityConverter}}" />
         </Grid>
     </core:GameWindow>
 </core:BaseUserControlWithWindow>

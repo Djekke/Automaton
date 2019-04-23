@@ -5,11 +5,11 @@
     using CryoFall.Automaton.UI.Controls.Core.Data;
     using CryoFall.Automaton.UI.Controls.Core.Managers;
 
-    public partial class AutomatonOverlay : BaseUserControlWithWindow
+    public partial class MainWindow : BaseUserControlWithWindow
     {
-        public static AutomatonOverlay Instance { get; private set; }
+        public static MainWindow Instance { get; private set; }
 
-        public ViewModelAutomatonSettings ViewModel { get; set; }
+        public ViewModelMainWindow ViewModel { get; set; }
 
         public static void Toggle()
         {
@@ -21,7 +21,7 @@
             {
                 if (Instance == null)
                 {
-                    var instance = new AutomatonOverlay();
+                    var instance = new MainWindow();
                     Instance = instance;
                     Api.Client.UI.LayoutRootChildren.Add(instance);
                 }
@@ -42,7 +42,7 @@
         {
             base.OnLoaded();
             Window.IsCached = true;
-            DataContext = ViewModel = new ViewModelAutomatonSettings();
+            DataContext = ViewModel = new ViewModelMainWindow();
         }
 
         protected override void OnUnloaded()

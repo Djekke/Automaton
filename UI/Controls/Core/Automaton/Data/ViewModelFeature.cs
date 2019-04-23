@@ -7,8 +7,22 @@
     using System.Collections.ObjectModel;
     using System.Linq;
 
-    public class ViewModelFeature : BaseViewModel
+    public class ViewModelFeature : BaseViewModel, IMainWindowListEntry
     {
+        public string Id { get; }
+
+        public string Name { get; }
+
+        public string Description { get; }
+
+        public bool IsEnabled => EntityCollection.Any(viewModelEntity => viewModelEntity.IsEnabled);
+
+        public BaseCommand SelectAll { get; }
+
+        public BaseCommand DeselectAll { get; }
+
+        public ObservableCollection<ViewModelEntity> EntityCollection { get; set; }
+
         public ViewModelFeature(string id, string name, string description,
             List<IProtoEntity> entityList, List<string> enabledList)
         {
@@ -47,20 +61,6 @@
                     NotifyPropertyChanged(nameof(IsEnabled));
                 });
         }
-
-        public string Id { get; }
-
-        public string Name { get; }
-
-        public string Description { get; }
-
-        public bool IsEnabled => EntityCollection.Any(viewModelEntity => viewModelEntity.IsEnabled);
-
-        public BaseCommand SelectAll { get; }
-
-        public BaseCommand DeselectAll { get; }
-
-        public ObservableCollection<ViewModelEntity> EntityCollection { get; set; }
 
         public List<IProtoEntity> GetEnabledEntityList()
         {
