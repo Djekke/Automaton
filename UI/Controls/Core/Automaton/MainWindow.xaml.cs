@@ -32,12 +32,6 @@
             }
         }
 
-        protected override void WindowClosed()
-        {
-            AutomatonManager.SaveSettings();
-            base.WindowClosed();
-        }
-
         protected override void OnLoaded()
         {
             base.OnLoaded();

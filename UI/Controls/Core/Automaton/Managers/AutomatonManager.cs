@@ -11,17 +11,23 @@
 
     public static class AutomatonManager
     {
-        private static ObservableCollection<IMainWindowListEntry> ViewModelFeaturesCollection;
+        private static ObservableCollection<IMainWindowListEntry> ViewModelFeaturesSettings;
 
         private static IMainWindowListEntry ViewModelSettings;
 
-        private static IClientStorage settingsStorage;
+        private static IClientStorage versionStorage;
 
-        private static Settings settingsInstance;
+        private static IClientStorage isEnabledStorage;
+
+        private static bool isEnabled;
 
         private static Dictionary<string, ProtoFeature> FeaturesDictionary;
 
         public static double UpdateInterval = 0.5d;
+
+        public static Version CurrentVersion => new Version("0.2.3");
+
+        public static Version VersionFromClientStorage;
 
         /// <summary>
         /// Init on game load.
@@ -42,72 +48,50 @@
                 feature.PrepareProto();
             }
 
-            LoadSettings();
+            LoadVersionFromClientStorage();
+            LoadIsEnbledFromClientStorage();
 
-            ViewModelFeaturesCollection = new ObservableCollection<IMainWindowListEntry>(
-                FeaturesDictionary.Select(entry => new ViewModelFeature(
-                    entry.Key,
-                    entry.Value.Name,
-                    entry.Value.Description,
-                    entry.Value.EntityList,
-                    settingsInstance.Features[entry.Key])));
-            ViewModelSettings = new ViewModelSettings();
+            ViewModelFeaturesSettings = new ObservableCollection<IMainWindowListEntry>(
+                FeaturesDictionary.Select(entry => new ViewModelSettingsFeature(
+                    id: entry.Key,
+                    feature: entry.Value)));
+            ViewModelSettings = new ViewModelSettingsGlobal();
         }
 
         /// <summary>
         /// Try to load settings from client storage or init deafult one.
         /// </summary>
-        private static void LoadSettings()
+        private static void LoadVersionFromClientStorage()
         {
             // Load settings.
-            settingsStorage = Api.Client.Storage.GetStorage("Mods/Automaton.Settings");
-            settingsStorage.RegisterType(typeof(Settings));
-            if (!settingsStorage.TryLoad(out settingsInstance))
+            versionStorage = Api.Client.Storage.GetStorage("Mods/Automaton/Version");
+            versionStorage.RegisterType(typeof(Version));
+            if (!versionStorage.TryLoad(out Version VersionFromClientStorage))
             {
                 // Init default settings.
-                settingsInstance = new Settings();
+                VersionFromClientStorage = CurrentVersion;
             }
 
-            // Apply settings.
-            UpdateInterval = settingsInstance.UpdateInterval;
-            foreach (KeyValuePair<string, ProtoFeature> pair in FeaturesDictionary)
-            {
-                if (!settingsInstance.Features.ContainsKey(pair.Key))
-                {
-                    settingsInstance.Features.Add(pair.Key, new List<string>());
-                }
-                pair.Value.LoadSettings(settingsInstance.Features[pair.Key]);
-            }
+            // Version changes handeling.
+            // if (VersionFromClientStorage.CompareTo(CurrentVersion) > 0)
+
+            versionStorage.Save(CurrentVersion);
         }
 
         /// <summary>
-        /// Save settings in ClientStorage.
+        /// Try to load settings from client storage or init deafult one.
         /// </summary>
-        public static void SaveSettings()
+        private static void LoadIsEnbledFromClientStorage()
         {
-            bool pendingChanges = false;
-            if (UpdateInterval != settingsInstance.UpdateInterval)
+            // Load settings.
+            isEnabledStorage = Api.Client.Storage.GetStorage("Mods/Automaton/IsEnabled");
+            if (!isEnabledStorage.TryLoad(out bool status))
             {
-                settingsInstance.UpdateInterval = UpdateInterval;
-                pendingChanges = true;
+                // Init default settings.
+                status = false;
             }
-            foreach (ViewModelFeature feature in ViewModelFeaturesCollection.OfType<ViewModelFeature>())
-            {
-                var enabledEntityList = feature.GetEnabledEntityList();
 
-                if(!Enumerable.SequenceEqual(
-                        enabledEntityList.OrderBy(e => e.Id),
-                        FeaturesDictionary[feature.Id].EnabledEntityList.OrderBy(e => e.Id)))
-                {
-                    settingsInstance.Features[feature.Id] = enabledEntityList.Select(entity => entity.Id).ToList();
-                    FeaturesDictionary[feature.Id].EnabledEntityList = enabledEntityList;
-                    pendingChanges = true;
-                }
-            }
-            if (pendingChanges)
-            {
-                settingsStorage.Save(settingsInstance);
-            }
+            IsEnabled = status;
         }
 
         /// <summary>
@@ -116,7 +100,7 @@
         /// <returns>ObservableCollection with view models of all features.</returns>
         public static ObservableCollection<IMainWindowListEntry> GetFeatures()
         {
-            return ViewModelFeaturesCollection;
+            return ViewModelFeaturesSettings;
         }
 
         /// <summary>
@@ -137,37 +121,25 @@
             return FeaturesDictionary;
         }
 
+        /// <summary>
+        /// Is Automaton component enabled? (toggled by key press)
+        /// </summary>
         public static bool IsEnabled
         {
-            get { return settingsInstance.IsEnabled; }
+            get { return isEnabled; }
             set
             {
-                if (value == IsEnabled)
+                if (value == isEnabled)
                 {
                     return;
                 }
 
-                settingsInstance.IsEnabled = value;
+                isEnabled = value;
                 IsEnabledChanged?.Invoke();
-                settingsStorage.Save(settingsInstance);
+                isEnabledStorage.Save(isEnabled);
             }
         }
 
         public static event Action IsEnabledChanged;
-
-        // Settings with default values.
-        public class Settings
-        {
-            // Settings version
-            public int Version = 1;
-
-            public bool IsEnabled = false;
-
-            public double UpdateInterval = 0.5d;
-
-            // TODO: Add default options in ProtoFeature
-            public Dictionary<string, List<string>> Features =
-                FeaturesDictionary.ToDictionary(p => p.Key, p => new List<string>());
-        }
     }
 }

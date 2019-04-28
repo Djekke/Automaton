@@ -21,7 +21,7 @@
 
         public List<IProtoEntity> RequiredItemList;
 
-        public bool IsEnabled => EnabledEntityList?.Count > 0;
+        public bool IsEnabled { get; set; }
 
         public List<IProtoEntity> EntityList;
 
@@ -40,11 +40,6 @@
 
             this.EntityList = entityList;
             this.RequiredItemList = requiredItemList;
-        }
-
-        public void LoadSettings(List<string> newEntityIdList)
-        {
-            EnabledEntityList = EntityList.Where(e => newEntityIdList.Contains(e.Id)).ToList();
         }
 
         protected abstract void PrepareFeature(List<IProtoEntity> entityList, List<IProtoEntity> requiredItemList);

@@ -1,6 +1,5 @@
 ﻿namespace CryoFall.Automaton.ClientComponents.Actions
 {
-    using AtomicTorch.CBND.GameApi.Data.Characters;
     using AtomicTorch.CBND.GameApi.Scripting.ClientComponents;
     using CryoFall.Automaton.UI.Controls.Core.Automaton.Features;
     using CryoFall.Automaton.UI.Controls.Core.Managers;
@@ -13,8 +12,6 @@
         public static double UpdateInterval => AutomatonManager.UpdateInterval;
 
         private double accumulatedTime = UpdateInterval;
-
-        private ICharacter playerCharacter;
 
         private Dictionary<string, ProtoFeature> featuresDictionary;
 

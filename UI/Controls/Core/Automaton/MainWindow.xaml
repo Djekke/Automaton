@@ -5,6 +5,7 @@
     xmlns:core="clr-namespace:AtomicTorch.CBND.CoreMod.UI.Controls.Core;assembly=core"
     xmlns:base="clr-namespace:AtomicTorch.GameEngine.Common.Client.MonoGame.UI;assembly=AtomicTorch.CBND.GameApi.WPF.Stubs"
     xmlns:data="clr-namespace:CryoFall.Automaton.UI.Controls.Core.Data"
+    xmlns:options="clr-namespace:CryoFall.Automaton.UI.Controls.Core.Data.Options"
     xmlns:loc="clr-namespace:AtomicTorch.CBND.CoreMod.UI;assembly=core"
     xmlns:helpers="clr-namespace:CryoFall.Automaton.UI.Controls.Core.Helpers">
 
@@ -38,7 +39,7 @@
                             <TextBlock Text="{Binding Name}"
                                        HorizontalAlignment="Center"
                                        FontWeight="Bold"
-                                       FontSize="13"/>
+                                       FontSize="13" />
                             <Rectangle Fill="{Binding Icon}"
                                        Width="128"
                                        Height="128"
@@ -106,22 +107,30 @@
                 </Style.Triggers>
             </Style>
 
-            <DataTemplate DataType="{x:Type data:ViewModelFeature}">
+            <DataTemplate DataType="{x:Type options:OptionTextBoxDouble}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding Label}"
+                               Margin="0,0,10,0"
+                               base:ToolTipServiceExtend.ToolTip="{Binding Tooltip}" />
+                    <TextBox Text="{Binding CurrentValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             Width="75" />
+                </StackPanel>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type options:OptionCheckBox}">
+                <CheckBox IsChecked="{Binding CurrentValue}"
+                          Content="{Binding Label}"
+                          base:ToolTipServiceExtend.ToolTip="{Binding ToolTip}" />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type options:OptionEntityList}">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Row="0"
-                               Text="{Binding Description}"
-                               TextWrapping="Wrap"
-                               Margin="10"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center" />
-
-                    <ItemsControl Grid.Row="1"
+                    <ItemsControl Grid.Row="0"
                                   ItemsSource="{Binding EntityCollection}"
                                   HorizontalAlignment="Center">
                         <ItemsControl.ItemsPanel>
@@ -138,7 +147,7 @@
                         </ItemsControl.Template>
                     </ItemsControl>
 
-                    <Grid Grid.Row="2"
+                    <Grid Grid.Row="1"
                           Margin="0,5,0,5">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -148,21 +157,29 @@
                         <Button Grid.Column="0"
                                 HorizontalAlignment="Center"
                                 Content="{x:Static data:AutomatonStrings.Button_SelectAll}"
+                                IsEnabled="{Binding HasUnselected}"
                                 Command="{Binding SelectAll}" />
 
                         <Button Grid.Column="1"
                                 HorizontalAlignment="Center"
                                 Content="{x:Static data:AutomatonStrings.Button_DeselectAll}"
+                                IsEnabled="{Binding HasSelected}"
                                 Command="{Binding DeselectAll}" />
                     </Grid>
                 </Grid>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type options:OptionSeparator}">
+                <Control Style="{StaticResource ControlHorizontalSeparator}" />
             </DataTemplate>
 
             <DataTemplate DataType="{x:Type data:ViewModelSettings}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
@@ -173,19 +190,30 @@
                                HorizontalAlignment="Center"
                                VerticalAlignment="Center" />
 
-                    <StackPanel Grid.Row="1"
-                                Orientation="Vertical"
-                                HorizontalAlignment="Center">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding UpdateIntervalText}"
-                                       Margin="0,0,10,0"
-                                       base:ToolTipServiceExtend.ToolTip="{Binding UpdateIntervalTooltip}" />
-                            <TextBox Text="{Binding UpdateInterval}"
-                                     Width="75" />
-                        </StackPanel>
-                    </StackPanel>
+                    <Control Grid.Row="1"
+                             Style="{StaticResource ControlHorizontalSeparator}" />
 
-                    <Grid Grid.Row="2"
+                    <ItemsControl Grid.Row="2"
+                                  ItemsSource="{Binding Options}"
+                                  HorizontalAlignment="Stretch">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Vertical" IsItemsHost="True" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.Template>
+                            <ControlTemplate TargetType="{x:Type ItemsControl}">
+                                <ScrollViewer>
+                                    <ItemsPresenter />
+                                </ScrollViewer>
+                            </ControlTemplate>
+                        </ItemsControl.Template>
+                    </ItemsControl>
+
+                    <Control Grid.Row="3"
+                             Style="{StaticResource ControlHorizontalSeparator}" />
+
+                    <Grid Grid.Row="4"
                           Margin="0,5,0,5">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -195,12 +223,14 @@
                         <Button Grid.Column="0"
                                 HorizontalAlignment="Center"
                                 Content="{x:Static loc:CoreStrings.Button_Apply}"
-                                Command="{Binding Apply}" />
+                                IsEnabled="{Binding IsModified}"
+                                Command="{Binding ApplyButton}" />
 
                         <Button Grid.Column="1"
                                 HorizontalAlignment="Center"
                                 Content="{x:Static loc:CoreStrings.Button_Cancel}"
-                                Command="{Binding Cancel}" />
+                                IsEnabled="{Binding IsModified}"
+                                Command="{Binding CancelButton}" />
                     </Grid>
                 </Grid>
             </DataTemplate>
