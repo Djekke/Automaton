@@ -1,10 +1,10 @@
-﻿namespace CryoFall.Automaton.UI.Controls.Core.Data
+﻿namespace CryoFall.Automaton.UI.Data
 {
     using AtomicTorch.CBND.CoreMod.UI.Controls.Core;
     using AtomicTorch.CBND.GameApi.Scripting;
     using AtomicTorch.CBND.GameApi.ServicesClient;
     using AtomicTorch.GameEngine.Common.Client.MonoGame.UI;
-    using CryoFall.Automaton.UI.Controls.Core.Data.Options;
+    using CryoFall.Automaton.UI.Data.Options;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;

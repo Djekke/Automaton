@@ -1,4 +1,4 @@
-﻿namespace CryoFall.Automaton.UI.Controls.Core.Data.Options
+﻿namespace CryoFall.Automaton.UI.Data.Options
 {
     using AtomicTorch.CBND.CoreMod.UI.Controls.Core;
     using AtomicTorch.CBND.GameApi.Data;

@@ -1,0 +1,6 @@
+﻿UI/Controls/Core/Automaton/Managers/AutomatonManager@Notification_ModEnabled:
+Автоматон включен.
+
+UI/Controls/Core/Automaton/Managers/AutomatonManager@Notification_ModDisabled:
+Автоматон выключен.
+

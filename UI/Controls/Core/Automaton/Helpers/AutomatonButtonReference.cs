@@ -1,4 +1,4 @@
-﻿namespace CryoFall.Automaton.UI.Controls.Core.Helpers
+﻿namespace CryoFall.Automaton.UI.Helpers
 {
     using AtomicTorch.CBND.CoreMod.UI.Controls.Core;
     using CryoFall.Automaton.ClientComponents.Input;

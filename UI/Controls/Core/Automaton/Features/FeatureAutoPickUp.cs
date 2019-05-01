@@ -1,4 +1,4 @@
-﻿namespace CryoFall.Automaton.UI.Controls.Core.Automaton.Features
+﻿namespace CryoFall.Automaton.UI.Features
 {
     using AtomicTorch.CBND.CoreMod.StaticObjects;
     using AtomicTorch.CBND.CoreMod.StaticObjects.Loot;

@@ -1,7 +1,7 @@
-﻿namespace CryoFall.Automaton.UI.Controls.Core.Data
+﻿namespace CryoFall.Automaton.UI.Data
 {
-    using CryoFall.Automaton.UI.Controls.Core.Data.Options;
-    using CryoFall.Automaton.UI.Controls.Core.Managers;
+    using CryoFall.Automaton.UI.Data.Options;
+    using CryoFall.Automaton.UI.Managers;
 
     public class ViewModelSettingsGlobal : ViewModelSettings
     {

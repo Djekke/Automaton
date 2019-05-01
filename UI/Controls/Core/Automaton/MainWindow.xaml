@@ -1,13 +1,13 @@
 ﻿<core:BaseUserControlWithWindow
-    x:Class="CryoFall.Automaton.UI.Controls.Core.MainWindow"
+    x:Class="CryoFall.Automaton.UI.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:core="clr-namespace:AtomicTorch.CBND.CoreMod.UI.Controls.Core;assembly=core"
     xmlns:base="clr-namespace:AtomicTorch.GameEngine.Common.Client.MonoGame.UI;assembly=AtomicTorch.CBND.GameApi.WPF.Stubs"
-    xmlns:data="clr-namespace:CryoFall.Automaton.UI.Controls.Core.Data"
-    xmlns:options="clr-namespace:CryoFall.Automaton.UI.Controls.Core.Data.Options"
+    xmlns:data="clr-namespace:CryoFall.Automaton.UI.Data"
+    xmlns:options="clr-namespace:CryoFall.Automaton.UI.Data.Options"
     xmlns:loc="clr-namespace:AtomicTorch.CBND.CoreMod.UI;assembly=core"
-    xmlns:helpers="clr-namespace:CryoFall.Automaton.UI.Controls.Core.Helpers">
+    xmlns:helpers="clr-namespace:CryoFall.Automaton.UI.Helpers">
 
     <base:BaseUserControl.Resources>
         <ResourceDictionary>

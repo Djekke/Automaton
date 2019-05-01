@@ -1,9 +1,8 @@
-﻿namespace CryoFall.Automaton.UI.Controls.Core
+﻿namespace CryoFall.Automaton.UI
 {
     using AtomicTorch.CBND.CoreMod.UI.Controls.Core;
     using AtomicTorch.CBND.GameApi.Scripting;
-    using CryoFall.Automaton.UI.Controls.Core.Data;
-    using CryoFall.Automaton.UI.Controls.Core.Managers;
+    using CryoFall.Automaton.UI.Data;
 
     public partial class MainWindow : BaseUserControlWithWindow
     {

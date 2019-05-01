@@ -1,8 +1,8 @@
-﻿namespace CryoFall.Automaton.UI.Controls.Core.Data
+﻿namespace CryoFall.Automaton.UI.Data
 {
     using AtomicTorch.CBND.GameApi.Data;
-    using CryoFall.Automaton.UI.Controls.Core.Automaton.Features;
-    using CryoFall.Automaton.UI.Controls.Core.Data.Options;
+    using CryoFall.Automaton.UI.Data.Options;
+    using CryoFall.Automaton.UI.Features;
     using System.Collections.Generic;
     using System.Linq;
 

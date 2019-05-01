@@ -1,13 +1,14 @@
 ﻿namespace CryoFall.Automaton.ClientComponents.Actions
 {
     using AtomicTorch.CBND.GameApi.Scripting.ClientComponents;
-    using CryoFall.Automaton.UI.Controls.Core.Automaton.Features;
-    using CryoFall.Automaton.UI.Controls.Core.Managers;
+    using CryoFall.Automaton.UI.Features;
+    using CryoFall.Automaton.UI.Managers;
+    using System;
     using System.Collections.Generic;
 
     public class ClientComponentAutomaton : ClientComponent
     {
-        private static ClientComponentAutomaton instance;
+        public static ClientComponentAutomaton Instance { get; private set; }
 
         public static double UpdateInterval => AutomatonManager.UpdateInterval;
 
@@ -15,27 +16,33 @@
 
         private Dictionary<string, ProtoFeature> featuresDictionary;
 
-        public ClientComponentAutomaton()
+        public ClientComponentAutomaton() : base(isLateUpdateEnabled: false)
         {
+            if (Instance != null)
+            {
+                throw new Exception("Instance already exist");
+            }
+
             featuresDictionary = AutomatonManager.GetFeaturesDictionary();
+        }
+
+        public static void Init()
+        {
+            Instance = Client.Scene.CreateSceneObject(nameof(ClientComponentAutomaton))
+                .AddComponent<ClientComponentAutomaton>(AutomatonManager.IsEnabled);
         }
 
         protected override void OnDisable()
         {
             ReleaseSubscriptions();
-            if (ReferenceEquals(this, instance))
+            foreach (var feature in featuresDictionary.Values)
             {
-                foreach (var feature in featuresDictionary.Values)
-                {
-                    feature.Stop();
-                }
-                instance = null;
+                feature.Stop();
             }
         }
 
         protected override void OnEnable()
         {
-            instance = this;
             foreach (var feature in featuresDictionary.Values)
             {
                 feature.Start(this);
@@ -54,7 +61,7 @@
             {
                 return;
             }
-            this.accumulatedTime %= UpdateInterval;
+            accumulatedTime %= UpdateInterval;
 
 
             foreach (var feature in featuresDictionary.Values)

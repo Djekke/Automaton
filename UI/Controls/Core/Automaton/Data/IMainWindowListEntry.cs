@@ -1,4 +1,4 @@
-﻿namespace CryoFall.Automaton.UI.Controls.Core.Data
+﻿namespace CryoFall.Automaton.UI.Data
 {
     public interface IMainWindowListEntry
     {

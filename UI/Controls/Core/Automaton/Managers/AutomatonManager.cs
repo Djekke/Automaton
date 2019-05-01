@@ -1,9 +1,11 @@
-﻿namespace CryoFall.Automaton.UI.Controls.Core.Managers
+﻿namespace CryoFall.Automaton.UI.Managers
 {
+    using AtomicTorch.CBND.CoreMod.Systems.Notifications;
     using AtomicTorch.CBND.GameApi.Scripting;
     using AtomicTorch.CBND.GameApi.ServicesClient;
-    using CryoFall.Automaton.UI.Controls.Core.Automaton.Features;
-    using CryoFall.Automaton.UI.Controls.Core.Data;
+    using CryoFall.Automaton.ClientComponents.Actions;
+    using CryoFall.Automaton.UI.Features;
+    using CryoFall.Automaton.UI.Data;
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
@@ -11,6 +13,10 @@
 
     public static class AutomatonManager
     {
+        public const string Notification_ModEnabled = "Automaton is enabled.";
+
+        public const string Notification_ModDisabled = "Automaton is disabled.";
+
         private static ObservableCollection<IMainWindowListEntry> ViewModelFeaturesSettings;
 
         private static IMainWindowListEntry ViewModelSettings;
@@ -27,7 +33,7 @@
 
         public static Version CurrentVersion => new Version("0.2.3");
 
-        public static Version VersionFromClientStorage;
+        public static Version VersionFromClientStorage = null;
 
         /// <summary>
         /// Init on game load.
@@ -66,11 +72,7 @@
             // Load settings.
             versionStorage = Api.Client.Storage.GetStorage("Mods/Automaton/Version");
             versionStorage.RegisterType(typeof(Version));
-            if (!versionStorage.TryLoad(out Version VersionFromClientStorage))
-            {
-                // Init default settings.
-                VersionFromClientStorage = CurrentVersion;
-            }
+            versionStorage.TryLoad(out VersionFromClientStorage);
 
             // Version changes handeling.
             // if (VersionFromClientStorage.CompareTo(CurrentVersion) > 0)
@@ -91,7 +93,7 @@
                 status = false;
             }
 
-            IsEnabled = status;
+            isEnabled = status;
         }
 
         /// <summary>
@@ -135,6 +137,13 @@
                 }
 
                 isEnabled = value;
+                if (ClientComponentAutomaton.Instance != null)
+                {
+                    ClientComponentAutomaton.Instance.IsEnabled = value;
+                    NotificationSystem.ClientShowNotification(
+                        value ? Notification_ModEnabled : Notification_ModDisabled);
+                }
+
                 IsEnabledChanged?.Invoke();
                 isEnabledStorage.Save(isEnabled);
             }
