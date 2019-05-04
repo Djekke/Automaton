@@ -4,13 +4,10 @@
     using AtomicTorch.CBND.GameApi.Scripting;
     using AtomicTorch.CBND.GameApi.ServicesClient;
     using CryoFall.Automaton.ClientComponents.Actions;
+    using CryoFall.Automaton.UI.Data.Settings;
     using CryoFall.Automaton.UI.Features;
-    using CryoFall.Automaton.UI.Data;
     using System;
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Linq;
-    using CryoFall.Automaton.UI.Data.Settings;
 
     public static class AutomatonManager
     {

@@ -1,6 +1,5 @@
 ﻿namespace CryoFall.Automaton.UI.Data.Settings
 {
-    using AtomicTorch.CBND.GameApi.Data;
     using CryoFall.Automaton.UI.Data.Settings.Options;
     using CryoFall.Automaton.UI.Features;
     using System;
@@ -36,15 +35,11 @@
                 }));
             Options.Add(new OptionSeparator());
             Options.Add(new OptionEntityList(
+                parentSettings: this,
                 id: "EnabledEntityList",
-                entityList: feature.EntityList.OrderBy(entity => entity.Id).Select(entity => new ViewModelEntity(entity)),
+                entityList: feature.EntityList.OrderBy(entity => entity.Id),
                 defaultEnabledList: new List<string>(),
                 onEnabledListChanged: enabledList => Feature.EnabledEntityList = enabledList));
-        }
-
-        public List<IProtoEntity> GetEnabledEntityList()
-        {
-            return Options.OfType<OptionEntityList>().FirstOrDefault()?.SavedEnabledList;
         }
     }
 }

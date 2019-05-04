@@ -1,6 +1,5 @@
 ﻿namespace CryoFall.Automaton.UI.Data.Settings.Options
 {
-    using AtomicTorch.CBND.CoreMod.UI.Controls.Core;
     using AtomicTorch.CBND.GameApi.Data;
     using AtomicTorch.CBND.GameApi.Scripting;
     using AtomicTorch.CBND.GameApi.ServicesClient;
@@ -9,105 +8,82 @@
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.ComponentModel;
     using System.Linq;
     using System.Windows;
+    using System.Windows.Controls;
 
-    public class OptionEntityList : BaseViewModel, IOptionWithValue
+    public class OptionEntityList : IOptionWithValue
     {
-        private bool isModified = false;
+        protected ProtoSettings ParentSettings;
 
-        public bool IsCosmetic => false;
+        private OptionValueHolder optionValueHolder;
 
-        public bool IsModified
-        {
-            get { return isModified;}
-            private set
-            {
-                if (value == isModified)
-                {
-                    return;
-                }
+        public bool IsModified => optionValueHolder.EntityCollection.Any(viewModelEntity =>
+            EntityDictionary[viewModelEntity.Entity] != viewModelEntity.IsEnabled);
 
-                isModified = value;
-                NotifyThisPropertyChanged();
-                OnIsModifiedChanged?.Invoke();
-            }
-        }
+        private IEnumerable<IProtoEntity> entityList;
 
-        public event Action OnIsModifiedChanged;
-
-        public ObservableCollection<ViewModelEntity> EntityCollection { get; set; }
-
-        public BaseCommand SelectAll => new ActionCommand(() =>
-        {
-            EntityCollection.ForEach(v => v.IsEnabled = true);
-            IsModified = true;
-            NotifyPropertyChanged(nameof(HasUnselected));
-        });
-
-        public bool HasUnselected => EntityCollection.Any(e => !e.IsEnabled);
-
-        public BaseCommand DeselectAll => new ActionCommand(() =>
-        {
-            EntityCollection.ForEach(v => v.IsEnabled = false);
-            IsModified = true;
-            NotifyPropertyChanged(nameof(HasSelected));
-        });
-
-        public bool HasSelected => EntityCollection.Any(e => e.IsEnabled);
+        public Dictionary<IProtoEntity, bool> EntityDictionary { get; private set; }
 
         public string Id { get; }
-
-        public List<IProtoEntity> SavedEnabledList = new List<IProtoEntity>();
 
         private readonly List<string> DefaultEnabledList;
 
         private event Action<List<IProtoEntity>> OnEnabledListChanged;
 
-        public OptionEntityList(string id, IEnumerable<ViewModelEntity> entityList, List<string> defaultEnabledList,
+        public OptionEntityList(
+            ProtoSettings parentSettings,
+            string id,
+            IEnumerable<IProtoEntity> entityList,
+            List<string> defaultEnabledList,
             Action<List<IProtoEntity>> onEnabledListChanged)
         {
+            ParentSettings = parentSettings;
             Id = id;
-            EntityCollection = new ObservableCollection<ViewModelEntity>(entityList);
+            this.entityList = entityList;
             DefaultEnabledList = defaultEnabledList;
-            foreach (var viewModelEntity in EntityCollection)
-            {
-                viewModelEntity.IsEnabledChanged += () => RefreshIsModified();
-                if (defaultEnabledList?.Count > 0 && defaultEnabledList.Contains(viewModelEntity.Id))
-                {
-                    SavedEnabledList.Add(viewModelEntity.Entity);
-                }
-            }
+            EntityDictionary = entityList.ToDictionary(e => e, e => false);
+            SetEntityListFromString(defaultEnabledList);
             OnEnabledListChanged = onEnabledListChanged;
+            optionValueHolder = new OptionValueHolder(this, EntityDictionary);
+        }
+
+        private void SetEntityListFromString(List<string> enabledList)
+        {
+            foreach (var entity in entityList)
+            {
+                EntityDictionary[entity] = (enabledList?.Count > 0) && enabledList.Contains(entity.Id);
+            }
         }
 
         public void Apply()
         {
-            SavedEnabledList.Clear();
-            SavedEnabledList = GetEnabledEntityList();
-            OnEnabledListChanged?.Invoke(SavedEnabledList);
-            RefreshIsModified();
+            // Get data from UI
+            foreach (var viewModelEntity in optionValueHolder.EntityCollection)
+            {
+                EntityDictionary[viewModelEntity.Entity] = viewModelEntity.IsEnabled;
+            }
+            OnEnabledListChanged?.Invoke(GetEnabledEntityList());
+            ParentSettings.OnOptionModified(this);
         }
 
         public void Cancel()
         {
-            foreach (var viewModelEntity in EntityCollection)
+            foreach (var viewModelEntity in optionValueHolder.EntityCollection)
             {
-                if (SavedEnabledList?.Count > 0 && SavedEnabledList.Contains(viewModelEntity.Entity))
-                {
-                    viewModelEntity.IsEnabled = true;
-                }
-                else
-                {
-                    viewModelEntity.IsEnabled = false;
-                }
+                viewModelEntity.IsEnabled = EntityDictionary[viewModelEntity.Entity];
             }
-            RefreshIsModified();
         }
 
         private List<IProtoEntity> GetEnabledEntityList()
         {
-            return EntityCollection.Where(e => e.IsEnabled).Select(e => e.Entity).ToList();
+            return EntityDictionary.Where(pair => pair.Value).Select(pair => pair.Key).ToList();
+        }
+
+        private List<string> GetEnabledEntityIdList()
+        {
+            return EntityDictionary.Where(pair => pair.Value).Select(pair => pair.Key.Id).ToList();
         }
 
         public void Reset(bool apply)
@@ -119,17 +95,7 @@
         {
             if (value is List<string> enabledList)
             {
-                foreach (var viewModelEntity in EntityCollection)
-                {
-                    if (enabledList?.Count > 0 && enabledList.Contains(viewModelEntity.Id))
-                    {
-                        viewModelEntity.IsEnabled = true;
-                    }
-                    else
-                    {
-                        viewModelEntity.IsEnabled = false;
-                    }
-                }
+                SetEntityListFromString(enabledList);
                 Apply();
                 return;
             }
@@ -141,27 +107,13 @@
 
         public object GetAbstractValue()
         {
-            return SavedEnabledList.Select(e => e.Id).ToList();
+            return GetEnabledEntityIdList();
         }
 
         public void RegisterValueType(IClientStorage storage)
         {
             // List<string> should be already registred.
             // storage.RegisterType(typeof(List<string>));
-        }
-
-        private void RefreshIsModified()
-        {
-            if (SavedEnabledList.SequenceEqual(GetEnabledEntityList()))
-            {
-                IsModified = false;
-            }
-            else
-            {
-                IsModified = true;
-            }
-            NotifyPropertyChanged(nameof(HasSelected));
-            NotifyPropertyChanged(nameof(HasUnselected));
         }
 
         public void CreateControl(out FrameworkElement control)
@@ -212,7 +164,107 @@
             //    </Grid>
             //</DataTemplate>
 
-            control = null;
+            var mainGrid = new Grid();
+            mainGrid.RowDefinitions.Add(new RowDefinition() {Height = GridLength.Auto});
+            mainGrid.RowDefinitions.Add(new RowDefinition() {Height = GridLength.Auto});
+            mainGrid.DataContext = optionValueHolder;
+
+            var itemsControl = new ItemsControl()
+            {
+                HorizontalAlignment = HorizontalAlignment.Center,
+            };
+            itemsControl.SetBinding(ItemsControl.ItemsSourceProperty, nameof(optionValueHolder.EntityCollection));
+            mainGrid.Children.Add(itemsControl);
+
+            var buttonGrid = new Grid() { Margin = new Thickness(0, 5, 0, 5) };
+            buttonGrid.ColumnDefinitions.Add(new ColumnDefinition() {Width = new GridLength(50, GridUnitType.Star)});
+            buttonGrid.ColumnDefinitions.Add(new ColumnDefinition() {Width = new GridLength(50, GridUnitType.Star)});
+
+            var selectAllButton = new Button()
+            {
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Content = AutomatonStrings.Button_SelectAll,
+            };
+            selectAllButton.SetBinding(Button.IsEnabledProperty, nameof(optionValueHolder.HasUnselected));
+            selectAllButton.SetBinding(Button.CommandProperty, nameof(optionValueHolder.SelectAll));
+            buttonGrid.Children.Add(selectAllButton);
+
+            var deselectAllButton = new Button()
+            {
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Content = AutomatonStrings.Button_DeselectAll,
+            };
+            deselectAllButton.SetBinding(Button.IsEnabledProperty, nameof(optionValueHolder.HasSelected));
+            deselectAllButton.SetBinding(Button.CommandProperty, nameof(optionValueHolder.DeselectAll));
+            buttonGrid.Children.Add(deselectAllButton);
+            Grid.SetColumn(deselectAllButton, 1);
+
+            mainGrid.Children.Add(buttonGrid);
+            Grid.SetRow(buttonGrid, 1);
+
+            control = mainGrid;
+        }
+
+        /// <summary>
+        /// Option value holder is used for data binding between UI control and the option.
+        /// </summary>
+        protected class OptionValueHolder : INotifyPropertyChanged
+        {
+            private readonly OptionEntityList owner;
+
+            // Suppress all but one OnEntityIsEnabledChanged for foreach cases.
+            private bool collectionReset = false;
+
+            public OptionValueHolder(OptionEntityList owner, Dictionary<IProtoEntity, bool> initialValue)
+            {
+                this.owner = owner;
+                EntityCollection =
+                    new ObservableCollection<ViewModelEntity>(initialValue.Select(pair =>
+                        new ViewModelEntity(pair.Key, pair.Value)));
+                foreach (var viewModelEntity in EntityCollection)
+                {
+                    viewModelEntity.IsEnabledChanged += OnEntityIsEnabledChanged;
+                }
+            }
+
+            public event PropertyChangedEventHandler PropertyChanged;
+
+            public ObservableCollection<ViewModelEntity> EntityCollection { get; }
+
+            public BaseCommand SelectAll => new ActionCommand(() =>
+            {
+                collectionReset = true;
+                EntityCollection.ForEach(v => v.IsEnabled = true);
+                collectionReset = false;
+                OnEntityIsEnabledChanged();
+            });
+
+            public bool HasUnselected => EntityCollection.Any(e => !e.IsEnabled);
+
+            public BaseCommand DeselectAll => new ActionCommand(() =>
+            {
+                collectionReset = true;
+                EntityCollection.ForEach(v => v.IsEnabled = false);
+                collectionReset = false;
+                OnEntityIsEnabledChanged();
+            });
+
+            public bool HasSelected => EntityCollection.Any(e => e.IsEnabled);
+
+            private void OnEntityIsEnabledChanged()
+            {
+                if (!collectionReset)
+                {
+                    owner.ParentSettings.OnOptionModified(owner);
+                    NotifyPropertyChanged(nameof(HasSelected));
+                    NotifyPropertyChanged(nameof(HasUnselected));
+                }
+            }
+
+            private void NotifyPropertyChanged(string propertyName)
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
     }
 }

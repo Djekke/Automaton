@@ -2,10 +2,10 @@
 {
     using AtomicTorch.CBND.CoreMod.UI.Controls.Core;
     using AtomicTorch.CBND.GameApi.ServicesClient;
+    using AtomicTorch.GameEngine.Common.Client.MonoGame.UI;
     using System;
     using System.Windows;
     using System.Windows.Controls;
-    using AtomicTorch.GameEngine.Common.Client.MonoGame.UI;
 
     public class OptionTextBox<TValue> : Option<TValue>, IOptionWithValue
     {
@@ -13,14 +13,17 @@
 
         public string ToolTip { get; }
 
-        public OptionTextBox(ProtoSettings parentSettings, string id, string label, TValue defaultValue, Action<TValue> valueChangedCallback,
-            string toolTip = "") : base(parentSettings)
+        public OptionTextBox(
+            ProtoSettings parentSettings,
+            string id,
+            string label,
+            TValue defaultValue,
+            Action<TValue> valueChangedCallback,
+            string toolTip = "")
+            : base(parentSettings, id, defaultValue, valueChangedCallback)
         {
-            Id = id;
             Label = label;
             ToolTip = toolTip;
-            DefaultValue = defaultValue;
-            OnValueChanged = valueChangedCallback;
         }
 
         public override void RegisterValueType(IClientStorage storage)

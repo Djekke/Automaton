@@ -1,7 +1,6 @@
 ﻿namespace CryoFall.Automaton.UI.Data.Settings.Options
 {
     using AtomicTorch.CBND.GameApi.ServicesClient;
-    using System;
     using System.Windows;
 
     public interface IOption
@@ -12,8 +11,6 @@
     public interface IOptionWithValue : IOption
     {
         bool IsModified { get; }
-
-        event Action OnIsModifiedChanged;
 
         string Id { get; }
 

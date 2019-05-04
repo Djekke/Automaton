@@ -47,7 +47,6 @@
         private void OnIsEnabledChanged(bool value)
         {
             IsEnabled = value;
-            //Api.Logger.Dev("IsEnabled = " + value + " settings = " + owner.Name);
             NotifyPropertyChanged(nameof(IsEnabled));
         }
 

@@ -5,7 +5,6 @@
     xmlns:core="clr-namespace:AtomicTorch.CBND.CoreMod.UI.Controls.Core;assembly=core"
     xmlns:base="clr-namespace:AtomicTorch.GameEngine.Common.Client.MonoGame.UI;assembly=AtomicTorch.CBND.GameApi.WPF.Stubs"
     xmlns:data="clr-namespace:CryoFall.Automaton.UI.Data"
-    xmlns:options="clr-namespace:CryoFall.Automaton.UI.Data.Settings.Options"
     xmlns:loc="clr-namespace:AtomicTorch.CBND.CoreMod.UI;assembly=core"
     xmlns:helpers="clr-namespace:CryoFall.Automaton.UI.Helpers">
 
@@ -107,54 +106,6 @@
                 </Style.Triggers>
             </Style>
 
-            <!--
-
-            <DataTemplate DataType="{x:Type options:OptionEntityList}">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-
-                    <ItemsControl Grid.Row="0"
-                                  ItemsSource="{Binding EntityCollection}"
-                                  HorizontalAlignment="Center">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Orientation="Vertical" IsItemsHost="True" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.Template>
-                            <ControlTemplate TargetType="{x:Type ItemsControl}">
-                                <ScrollViewer>
-                                    <ItemsPresenter />
-                                </ScrollViewer>
-                            </ControlTemplate>
-                        </ItemsControl.Template>
-                    </ItemsControl>
-
-                    <Grid Grid.Row="1"
-                          Margin="0,5,0,5">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-
-                        <Button Grid.Column="0"
-                                HorizontalAlignment="Center"
-                                Content="{x:Static data:AutomatonStrings.Button_SelectAll}"
-                                IsEnabled="{Binding HasUnselected}"
-                                Command="{Binding SelectAll}" />
-
-                        <Button Grid.Column="1"
-                                HorizontalAlignment="Center"
-                                Content="{x:Static data:AutomatonStrings.Button_DeselectAll}"
-                                IsEnabled="{Binding HasSelected}"
-                                Command="{Binding DeselectAll}" />
-                    </Grid>
-                </Grid>
-            </DataTemplate>-->
-
             <DataTemplate DataType="{x:Type data:ViewModelSettings}">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -231,8 +182,8 @@
             </Grid.ColumnDefinitions>
 
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
             <StackPanel Grid.Column="0"
@@ -247,7 +198,7 @@
                         Margin="0,5,0,5">
                 <TextBlock Foreground="Red"
                            FontWeight="Bold"
-                           Text="{x:Static data:AutomatonStrings.Text_ModDisabledPart1}"/>
+                           Text="{x:Static data:AutomatonStrings.Text_ModDisabledPart1}" />
                 <core:LabelWithButton Margin="5,0,2,0">
                     <core:LabelWithButton.Button>
                         <helpers:AutomatonButtonReference Button="Toggle" />
@@ -255,7 +206,7 @@
                 </core:LabelWithButton>
                 <TextBlock Foreground="Red"
                            FontWeight="Bold"
-                           Text="{x:Static data:AutomatonStrings.Text_ModDisabledPart2}"/>
+                           Text="{x:Static data:AutomatonStrings.Text_ModDisabledPart2}" />
             </StackPanel>
 
             <ListBox Grid.Column="1"

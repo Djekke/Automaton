@@ -28,12 +28,12 @@
 
         public readonly IProtoEntity Entity;
 
-        public ViewModelEntity(IProtoEntity entity)
+        public ViewModelEntity(IProtoEntity entity, bool defaultIsEnabled = false)
         {
             Entity = entity;
             Name = entity.Name;
             Id = entity.Id;
-            isEnabled = false;
+            isEnabled = defaultIsEnabled;
         }
 
         public string Name { get; }

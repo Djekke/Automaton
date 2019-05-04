@@ -14,27 +14,23 @@
 
         protected TValue SavedValue { get; private set; }
 
-        // Shouild be init in constructor
         protected TValue DefaultValue;
+
+        // If value is equal DefaultValue we should still process OnValueChanged.
+        private bool isCurrentValueInitialized = false;
 
         protected Action<TValue> OnValueChanged;
 
         protected ProtoSettings ParentSettings;
 
-        private bool isCurrentValueInitialized = false;
-
-        public bool IsModified => !CurrentValue.Equals(SavedValue);
-
-        public event Action OnIsModifiedChanged;
-
-        public virtual bool IsCosmetic => false;
+        public bool IsModified => !optionValueHolder.Value.Equals(CurrentValue);
 
         public string Id { get; protected set; }
 
         public TValue CurrentValue
         {
-            get { return optionValueHolder.Value; }
-            set
+            get { return SavedValue; }
+            protected set
             {
                 if (value.Equals(CurrentValue) && isCurrentValueInitialized)
                 {
@@ -42,37 +38,39 @@
                 }
 
                 isCurrentValueInitialized = true;
-                optionValueHolder.Value = value;
-                //OnIsModifiedChanged?.Invoke();
+
+                SavedValue = value;
             }
         }
 
-        protected virtual void OnCurrentValueChanged(bool fromUi)
-        {
-        }
-
-        public Option(ProtoSettings parentSettings)
+        public Option(
+            ProtoSettings parentSettings,
+            string id,
+            TValue defaultValue,
+            Action<TValue> valueChangedCallback)
         {
             ParentSettings = parentSettings;
-            optionValueHolder = new OptionValueHolder(this, DefaultValue);
+            Id = id;
+            SavedValue = DefaultValue = defaultValue;
+            OnValueChanged = valueChangedCallback;
+            optionValueHolder = new OptionValueHolder(this, SavedValue);
         }
 
         public virtual void Apply()
         {
-            SavedValue = CurrentValue;
+            CurrentValue = optionValueHolder.Value;
             OnValueChanged?.Invoke(CurrentValue);
-            OnIsModifiedChanged?.Invoke();
+            ParentSettings.OnOptionModified(this);
         }
 
         public virtual void Cancel()
         {
-            CurrentValue = SavedValue;
+            optionValueHolder.Value = CurrentValue;
         }
 
         public virtual void Reset(bool apply)
         {
-            CurrentValue = DefaultValue;
-            OnIsModifiedChanged?.Invoke();
+            optionValueHolder.Value = DefaultValue;
             if (apply)
             {
                 Apply();
@@ -83,10 +81,9 @@
 
         public virtual void ApplyAbstractValue(object value)
         {
-            //Api.Logger.Dev("Set value = " + value + " for option = " + Id + " for settings = " + ParentSettings.Name);
             if (value is TValue casted)
             {
-                CurrentValue = casted;
+                optionValueHolder.Value = casted;
                 Apply();
                 return;
             }
@@ -98,7 +95,7 @@
 
         public virtual object GetAbstractValue()
         {
-            return SavedValue;
+            return CurrentValue;
         }
 
         public void CreateControl(out FrameworkElement control)
@@ -110,10 +107,9 @@
 
         protected void SetupOptionToControlValueBinding(FrameworkElement control, DependencyProperty valueProperty)
         {
-            //control.SetBinding(valueProperty, "Value");
             control.SetBinding(valueProperty, new Binding()
             {
-                Path = new PropertyPath("Value"),
+                Path = new PropertyPath(nameof(optionValueHolder.Value)),
                 Mode = BindingMode.TwoWay,
                 UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
             });
