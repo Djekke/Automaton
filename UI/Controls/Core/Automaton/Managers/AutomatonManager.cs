@@ -10,6 +10,7 @@
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
+    using CryoFall.Automaton.UI.Data.Settings;
 
     public static class AutomatonManager
     {
@@ -17,9 +18,7 @@
 
         public const string Notification_ModDisabled = "Automaton is disabled.";
 
-        private static ObservableCollection<IMainWindowListEntry> ViewModelFeaturesSettings;
-
-        private static IMainWindowListEntry ViewModelSettings;
+        private static List<ProtoSettings> SettingsList;
 
         private static IClientStorage versionStorage;
 
@@ -57,11 +56,18 @@
             LoadVersionFromClientStorage();
             LoadIsEnbledFromClientStorage();
 
-            ViewModelFeaturesSettings = new ObservableCollection<IMainWindowListEntry>(
-                FeaturesDictionary.Select(entry => new ViewModelSettingsFeature(
-                    id: entry.Key,
-                    feature: entry.Value)));
-            ViewModelSettings = new ViewModelSettingsGlobal();
+            SettingsList = new List<ProtoSettings>();
+            foreach (var pair in FeaturesDictionary)
+            {
+                SettingsList.Add(new SettingsFeature(pair.Key, pair.Value));
+            }
+            SettingsList.Add(new SettingsGlobal());
+
+            foreach (var settings in SettingsList)
+            {
+                // load settings.
+                settings.InitSettings();
+            }
         }
 
         /// <summary>
@@ -100,18 +106,9 @@
         /// Get ObservableCollection with view models of all features.
         /// </summary>
         /// <returns>ObservableCollection with view models of all features.</returns>
-        public static ObservableCollection<IMainWindowListEntry> GetFeatures()
+        public static List<ProtoSettings> GetAllSettings()
         {
-            return ViewModelFeaturesSettings;
-        }
-
-        /// <summary>
-        /// Get global settings view model.
-        /// </summary>
-        /// <returns>ViewModelSettings</returns>
-        public static IMainWindowListEntry GetSettingsViewModel()
-        {
-            return ViewModelSettings;
+            return SettingsList;
         }
 
         /// <summary>

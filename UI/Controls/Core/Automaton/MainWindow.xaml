@@ -5,7 +5,7 @@
     xmlns:core="clr-namespace:AtomicTorch.CBND.CoreMod.UI.Controls.Core;assembly=core"
     xmlns:base="clr-namespace:AtomicTorch.GameEngine.Common.Client.MonoGame.UI;assembly=AtomicTorch.CBND.GameApi.WPF.Stubs"
     xmlns:data="clr-namespace:CryoFall.Automaton.UI.Data"
-    xmlns:options="clr-namespace:CryoFall.Automaton.UI.Data.Options"
+    xmlns:options="clr-namespace:CryoFall.Automaton.UI.Data.Settings.Options"
     xmlns:loc="clr-namespace:AtomicTorch.CBND.CoreMod.UI;assembly=core"
     xmlns:helpers="clr-namespace:CryoFall.Automaton.UI.Helpers">
 
@@ -107,21 +107,7 @@
                 </Style.Triggers>
             </Style>
 
-            <DataTemplate DataType="{x:Type options:OptionTextBoxDouble}">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{Binding Label}"
-                               Margin="0,0,10,0"
-                               base:ToolTipServiceExtend.ToolTip="{Binding Tooltip}" />
-                    <TextBox Text="{Binding CurrentValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                             Width="75" />
-                </StackPanel>
-            </DataTemplate>
-
-            <DataTemplate DataType="{x:Type options:OptionCheckBox}">
-                <CheckBox IsChecked="{Binding CurrentValue}"
-                          Content="{Binding Label}"
-                          base:ToolTipServiceExtend.ToolTip="{Binding ToolTip}" />
-            </DataTemplate>
+            <!--
 
             <DataTemplate DataType="{x:Type options:OptionEntityList}">
                 <Grid>
@@ -167,11 +153,7 @@
                                 Command="{Binding DeselectAll}" />
                     </Grid>
                 </Grid>
-            </DataTemplate>
-
-            <DataTemplate DataType="{x:Type options:OptionSeparator}">
-                <Control Style="{StaticResource ControlHorizontalSeparator}" />
-            </DataTemplate>
+            </DataTemplate>-->
 
             <DataTemplate DataType="{x:Type data:ViewModelSettings}">
                 <Grid>
@@ -194,7 +176,7 @@
                              Style="{StaticResource ControlHorizontalSeparator}" />
 
                     <ItemsControl Grid.Row="2"
-                                  ItemsSource="{Binding Options}"
+                                  ItemsSource="{Binding OptionsControls}"
                                   HorizontalAlignment="Stretch">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
@@ -278,8 +260,8 @@
 
             <ListBox Grid.Column="1"
                      Grid.Row="1"
-                     ItemsSource="{Binding ListEntries}"
-                     SelectedItem="{Binding SelectedListEntry}">
+                     ItemsSource="{Binding AllSettings}"
+                     SelectedItem="{Binding SelectedSettings}">
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Vertical" IsItemsHost="True" />
@@ -308,7 +290,7 @@
 
             <Grid Grid.Column="3"
                   Grid.Row="1"
-                  Visibility="{Binding SelectedListEntry,
+                  Visibility="{Binding SelectedSettings,
                                        Converter={StaticResource NullToVisibilityConverter},
                                        ConverterParameter=Reverse}">
                 <TextBlock Text="{x:Static data:AutomatonStrings.Text_NoFeatureSelected}"
@@ -318,8 +300,8 @@
 
             <ContentControl Grid.Column="3"
                             Grid.Row="1"
-                            Content="{Binding SelectedListEntry}"
-                            Visibility="{Binding DataContext.SelectedFeature,
+                            Content="{Binding SelectedSettings}"
+                            Visibility="{Binding DataContext.SelectedSettings,
                                                  RelativeSource={RelativeSource AncestorType=Grid},
                                                  Converter={StaticResource NullToVisibilityConverter}}" />
         </Grid>

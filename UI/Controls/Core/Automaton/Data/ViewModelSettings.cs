@@ -1,138 +1,70 @@
 ﻿namespace CryoFall.Automaton.UI.Data
 {
     using AtomicTorch.CBND.CoreMod.UI.Controls.Core;
-    using AtomicTorch.CBND.GameApi.Scripting;
-    using AtomicTorch.CBND.GameApi.ServicesClient;
     using AtomicTorch.GameEngine.Common.Client.MonoGame.UI;
-    using CryoFall.Automaton.UI.Data.Options;
-    using System.Collections.Generic;
+    using CryoFall.Automaton.UI.Data.Settings;
     using System.Collections.ObjectModel;
-    using System.Linq;
+    using System.Windows;
 
-    public abstract class ViewModelSettings : BaseViewModel, IMainWindowListEntry
+    public class ViewModelSettings : BaseViewModel
     {
-        public ObservableCollection<IOption> Options { get; set; } = new ObservableCollection<IOption>();
+        private readonly ProtoSettings owner;
 
-        protected List<IOption> OptionsWithValue;
+        public ObservableCollection<FrameworkElement> OptionsControls { get; }
 
-        public virtual string Id { get; protected set; }
+        public bool? IsEnabled { get; private set; }
 
-        public virtual string Name { get; protected set; }
+        public string Name { get; }
 
-        public virtual string Description { get; protected set; }
+        public string Description { get; }
 
-        public bool IsModified => Options.Any(o => o.IsModified);
+        public bool IsModified => owner.IsModified;
 
-        protected IClientStorage clientStorage;
+        public BaseCommand ApplyButton => new ActionCommand(owner.ApplyAndSave);
 
-        protected string OptionsStorageLocalFilePath;
+        public BaseCommand CancelButton => new ActionCommand(owner.Cancel);
 
-        public BaseCommand ApplyButton => new ActionCommand(ApplyAndSave);
-
-        public BaseCommand CancelButton => new ActionCommand(Cancel);
-
-        public ViewModelSettings()
+        public ViewModelSettings(ProtoSettings owner)
         {
-            var name = this.GetType().Name;
-            Id = name.Replace("ViewModel", string.Empty);
-        }
-
-        protected void InitSettings()
-        {
-            OptionsWithValue = Options.Where(o => !o.IsCosmetic).ToList();
-            OptionsWithValue.ForEach(o => o.OnIsModifiedChanged += () => NotifyPropertyChanged(nameof(IsModified)));
-
-            OptionsStorageLocalFilePath = "Mods/Automaton/" + Id;
-            RegisterStorage();
-            LoadOptionsFromStorage();
-        }
-
-        public void Apply()
-        {
-            OptionsWithValue.ForEach(o => o.Apply());
-        }
-
-        public void Cancel()
-        {
-            OptionsWithValue.ForEach(o => o.Cancel());
-        }
-
-        public void ApplyAndSave()
-        {
-            Apply();
-
-            SaveOptionsToStorage();
-        }
-
-        public void Reset()
-        {
-            OptionsWithValue.ForEach(o => o.Reset(apply: false));
-            ApplyAndSave();
-        }
-
-        public void RegisterStorage()
-        {
-            clientStorage = Api.Client.Storage.GetStorage(OptionsStorageLocalFilePath);
-            foreach (var option in OptionsWithValue)
+            this.owner = owner;
+            Name = owner.Name;
+            Description = owner.Description;
+            owner.OnIsModifiedChanged += OnIsModifiedChanged;
+            if (owner is SettingsFeature settingsFeature)
             {
-                option.RegisterValueType(clientStorage);
+                IsEnabled = settingsFeature.IsEnabled;
+                settingsFeature.IsEnabledChanged += OnIsEnabledChanged;
+            }
+
+            OptionsControls = new ObservableCollection<FrameworkElement>();
+            foreach (var option in owner.Options)
+            {
+                option.CreateControl(out var optionControl);
+                OptionsControls.Add(optionControl);
             }
         }
 
-        public void LoadOptionsFromStorage()
+        private void OnIsEnabledChanged(bool value)
         {
-            if (OptionsWithValue.Count == 0)
-            {
-                return;
-            }
-
-            if (!clientStorage.TryLoad<Dictionary<string, object>>(out var snapshot))
-            {
-                Api.Logger.Important(
-                    $"There are no options snapshot for {Id} or it cannot be deserialized - applying default values");
-                Reset();
-                return;
-            }
-
-            var optionsToProcess = OptionsWithValue.ToList();
-            foreach (var pair in snapshot)
-            {
-                for (var index = 0; index < optionsToProcess.Count; index++)
-                {
-                    var option = optionsToProcess[index];
-                    if (option.Id != pair.Key)
-                    {
-                        continue;
-                    }
-
-                    // found a value of option
-                    option.ApplyAbstractValue(pair.Value);
-                    optionsToProcess.RemoveAt(index);
-                    index--;
-                }
-            }
-
-            // reset all the remaining options (don't found values from them in snapshot)
-            foreach (var option in optionsToProcess)
-            {
-                option.Reset(apply: true);
-            }
+            IsEnabled = value;
+            //Api.Logger.Dev("IsEnabled = " + value + " settings = " + owner.Name);
+            NotifyPropertyChanged(nameof(IsEnabled));
         }
 
-        private void SaveOptionsToStorage()
+        private void OnIsModifiedChanged()
         {
-            if (OptionsWithValue.Count == 0)
-            {
-                return;
-            }
+            NotifyPropertyChanged(nameof(IsModified));
+        }
 
-            var snapshot = new Dictionary<string, object>();
-            foreach (var option in OptionsWithValue)
-            {
-                snapshot[option.Id] = option.GetAbstractValue();
-            }
+        protected override void DisposeViewModel()
+        {
+            base.DisposeViewModel();
 
-            clientStorage.Save(snapshot);
+            owner.OnIsModifiedChanged -= OnIsModifiedChanged;
+            if (owner is SettingsFeature settingsFeature)
+            {
+                settingsFeature.IsEnabledChanged -= OnIsEnabledChanged;
+            }
         }
     }
 }

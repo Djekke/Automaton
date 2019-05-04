@@ -1,4 +1,4 @@
-﻿namespace CryoFall.Automaton.UI.Data.Options
+﻿namespace CryoFall.Automaton.UI.Data.Settings.Options
 {
     using AtomicTorch.CBND.CoreMod.UI.Controls.Core;
     using AtomicTorch.CBND.GameApi.Data;
@@ -10,8 +10,9 @@
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
+    using System.Windows;
 
-    public class OptionEntityList : BaseViewModel, IOption
+    public class OptionEntityList : BaseViewModel, IOptionWithValue
     {
         private bool isModified = false;
 
@@ -161,6 +162,57 @@
             }
             NotifyPropertyChanged(nameof(HasSelected));
             NotifyPropertyChanged(nameof(HasUnselected));
+        }
+
+        public void CreateControl(out FrameworkElement control)
+        {
+            //<DataTemplate DataType="{x:Type options:OptionEntityList}">
+            //    <Grid>
+            //        <Grid.RowDefinitions>
+            //            <RowDefinition Height="*" />
+            //            <RowDefinition Height="Auto" />
+            //        </Grid.RowDefinitions>
+            //
+            //        <ItemsControl Grid.Row="0"
+            //                      ItemsSource="{Binding EntityCollection}"
+            //                      HorizontalAlignment="Center">
+            //            <ItemsControl.ItemsPanel>
+            //                <ItemsPanelTemplate>
+            //                    <StackPanel Orientation="Vertical" IsItemsHost="True" />
+            //                </ItemsPanelTemplate>
+            //            </ItemsControl.ItemsPanel>
+            //            <ItemsControl.Template>
+            //                <ControlTemplate TargetType="{x:Type ItemsControl}">
+            //                    <ScrollViewer>
+            //                        <ItemsPresenter />
+            //                    </ScrollViewer>
+            //                </ControlTemplate>
+            //            </ItemsControl.Template>
+            //        </ItemsControl>
+            //
+            //        <Grid Grid.Row="1"
+            //              Margin="0,5,0,5">
+            //            <Grid.ColumnDefinitions>
+            //                <ColumnDefinition Width="*" />
+            //                <ColumnDefinition Width="*" />
+            //            </Grid.ColumnDefinitions>
+            //
+            //            <Button Grid.Column="0"
+            //                    HorizontalAlignment="Center"
+            //                    Content="{x:Static data:AutomatonStrings.Button_SelectAll}"
+            //                    IsEnabled="{Binding HasUnselected}"
+            //                    Command="{Binding SelectAll}" />
+            //
+            //            <Button Grid.Column="1"
+            //                    HorizontalAlignment="Center"
+            //                    Content="{x:Static data:AutomatonStrings.Button_DeselectAll}"
+            //                    IsEnabled="{Binding HasSelected}"
+            //                    Command="{Binding DeselectAll}" />
+            //        </Grid>
+            //    </Grid>
+            //</DataTemplate>
+
+            control = null;
         }
     }
 }

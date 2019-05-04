@@ -1,20 +1,23 @@
-﻿namespace CryoFall.Automaton.UI.Data
+﻿namespace CryoFall.Automaton.UI.Data.Settings
 {
     using AtomicTorch.CBND.GameApi.Data;
-    using CryoFall.Automaton.UI.Data.Options;
+    using CryoFall.Automaton.UI.Data.Settings.Options;
     using CryoFall.Automaton.UI.Features;
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
-    public class ViewModelSettingsFeature : ViewModelSettings
+    public class SettingsFeature : ProtoSettings
     {
         public bool IsEnabled { get; private set; }
+
+        public event Action<bool> IsEnabledChanged; 
 
         public string IsEnabledText => "Enable this feature";
 
         private ProtoFeature Feature;
 
-        public ViewModelSettingsFeature(string id, ProtoFeature feature)
+        public SettingsFeature(string id, ProtoFeature feature)
         {
             Id = id;
             Feature = feature;
@@ -22,14 +25,14 @@
             Description = feature.Description;
 
             Options.Add(new OptionCheckBox(
+                parentSettings: this,
                 id: "IsEnabled",
                 label: IsEnabledText,
                 defaultValue: false,
                 valueChangedCallback: value =>
                 {
-                    IsEnabled = value;
-                    Feature.IsEnabled = value;
-                    NotifyPropertyChanged(nameof(IsEnabled));
+                    Feature.IsEnabled = IsEnabled = value;
+                    IsEnabledChanged?.Invoke(IsEnabled);
                 }));
             Options.Add(new OptionSeparator());
             Options.Add(new OptionEntityList(
@@ -37,8 +40,6 @@
                 entityList: feature.EntityList.OrderBy(entity => entity.Id).Select(entity => new ViewModelEntity(entity)),
                 defaultEnabledList: new List<string>(),
                 onEnabledListChanged: enabledList => Feature.EnabledEntityList = enabledList));
-
-            InitSettings();
         }
 
         public List<IProtoEntity> GetEnabledEntityList()

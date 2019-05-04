@@ -1,12 +1,16 @@
-﻿namespace CryoFall.Automaton.UI.Data.Options
+﻿namespace CryoFall.Automaton.UI.Data.Settings.Options
 {
     using AtomicTorch.CBND.GameApi.ServicesClient;
     using System;
+    using System.Windows;
 
     public interface IOption
     {
-        bool IsCosmetic { get; }
+        void CreateControl(out FrameworkElement control);
+    }
 
+    public interface IOptionWithValue : IOption
+    {
         bool IsModified { get; }
 
         event Action OnIsModifiedChanged;
