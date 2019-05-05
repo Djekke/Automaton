@@ -15,7 +15,7 @@
 
         public const string Notification_ModDisabled = "Automaton is disabled.";
 
-        private static List<ProtoSettings> SettingsList;
+        private static List<ProtoSettings> SettingsList = new List<ProtoSettings>();
 
         private static IClientStorage versionStorage;
 
@@ -23,7 +23,7 @@
 
         private static bool isEnabled;
 
-        private static Dictionary<string, ProtoFeature> FeaturesDictionary;
+        private static List<ProtoFeature> FeaturesList;
 
         public static double UpdateInterval = 0.5d;
 
@@ -36,27 +36,22 @@
         /// </summary>
         public static void Init()
         {
-            FeaturesDictionary = new Dictionary<string, ProtoFeature>()
-            {
-                {"AutoPickUp", new FeatureAutoPickUp()},
-                {"AutoGather", new FeatureAutoGather()},
-                {"AutoMining", new FeatureAutoMining()},
-                {"AutoWoodcutting", new FeatureAutoWoodcutting()},
-                {"AutoFill", new FeatureAutoFill()},
-            };
-
-            foreach (ProtoFeature feature in FeaturesDictionary.Values)
-            {
-                feature.PrepareProto();
-            }
-
             LoadVersionFromClientStorage();
             LoadIsEnbledFromClientStorage();
 
-            SettingsList = new List<ProtoSettings>();
-            foreach (var pair in FeaturesDictionary)
+            FeaturesList = new List<ProtoFeature>()
             {
-                SettingsList.Add(new SettingsFeature(pair.Key, pair.Value));
+                new FeatureAutoPickUp(),
+                new FeatureAutoGather(),
+                new FeatureAutoMining(),
+                new FeatureAutoWoodcutting(),
+                new FeatureAutoFill(),
+            };
+
+            foreach (var feature in FeaturesList)
+            {
+                feature.PrepareProto();
+                SettingsList.Add(new SettingsFeature(feature));
             }
             SettingsList.Add(new SettingsGlobal());
 
@@ -68,7 +63,7 @@
         }
 
         /// <summary>
-        /// Try to load settings from client storage or init deafult one.
+        /// Try to load mod version from client storage.
         /// </summary>
         private static void LoadVersionFromClientStorage()
         {
@@ -84,7 +79,7 @@
         }
 
         /// <summary>
-        /// Try to load settings from client storage or init deafult one.
+        /// Try to load IsEnbled from client storage.
         /// </summary>
         private static void LoadIsEnbledFromClientStorage()
         {
@@ -99,22 +94,14 @@
             isEnabled = status;
         }
 
-        /// <summary>
-        /// Get ObservableCollection with view models of all features.
-        /// </summary>
-        /// <returns>ObservableCollection with view models of all features.</returns>
         public static List<ProtoSettings> GetAllSettings()
         {
             return SettingsList;
         }
 
-        /// <summary>
-        /// Get Dictionary of all features by their name.
-        /// </summary>
-        /// <returns>Dictionary with all features using their names as key.</returns>
-        public static Dictionary<string, ProtoFeature> GetFeaturesDictionary()
+        public static List<ProtoFeature> GetFeatures()
         {
-            return FeaturesDictionary;
+            return FeaturesList;
         }
 
         /// <summary>

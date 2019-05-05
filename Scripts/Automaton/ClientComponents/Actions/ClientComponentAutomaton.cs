@@ -14,7 +14,7 @@
 
         private double accumulatedTime = UpdateInterval;
 
-        private Dictionary<string, ProtoFeature> featuresDictionary;
+        private List<ProtoFeature> featuresList;
 
         public ClientComponentAutomaton() : base(isLateUpdateEnabled: false)
         {
@@ -23,7 +23,7 @@
                 throw new Exception("Instance already exist");
             }
 
-            featuresDictionary = AutomatonManager.GetFeaturesDictionary();
+            featuresList = AutomatonManager.GetFeatures();
         }
 
         public static void Init()
@@ -35,26 +35,17 @@
         protected override void OnDisable()
         {
             ReleaseSubscriptions();
-            foreach (var feature in featuresDictionary.Values)
-            {
-                feature.Stop();
-            }
+            featuresList.ForEach(feature => feature.Stop());
         }
 
         protected override void OnEnable()
         {
-            foreach (var feature in featuresDictionary.Values)
-            {
-                feature.Start(this);
-            }
+            featuresList.ForEach(feature => feature.Start(this));
         }
 
         public override void Update(double deltaTime)
         {
-            foreach (var feature in featuresDictionary.Values)
-            {
-                feature.Update(deltaTime);
-            }
+            featuresList.ForEach(feature => feature.Update(deltaTime));
 
             accumulatedTime += deltaTime;
             if (accumulatedTime < UpdateInterval)
@@ -64,10 +55,7 @@
             accumulatedTime %= UpdateInterval;
 
 
-            foreach (var feature in featuresDictionary.Values)
-            {
-                feature.Execute();
-            }
+            featuresList.ForEach(feature => feature.Execute());
         }
     }
 }

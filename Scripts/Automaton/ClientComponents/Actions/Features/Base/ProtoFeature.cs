@@ -8,20 +8,37 @@
     using AtomicTorch.CBND.GameApi.Data.Items;
     using AtomicTorch.CBND.GameApi.Scripting;
     using AtomicTorch.CBND.GameApi.Scripting.ClientComponents;
+    using CryoFall.Automaton.ClientSettings;
+    using CryoFall.Automaton.ClientSettings.Options;
     using System.Collections.Generic;
+    using System.Linq;
 
     public abstract class ProtoFeature
     {
+        // All enabled Entity from EntityList that enabled in settings.
         public List<IProtoEntity> EnabledEntityList { get; set; }
+
+        public List<string> DefaultEnabledList { get; protected set; } = new List<string>();
+
+        // All options for this feature.
+        public List<IOption> Options { get; protected set; } = new List<IOption>();
+
+        // Unique identifier representing this feature.
+        public string Id { get; private set; }
 
         public abstract string Name { get; }
 
         public abstract string Description { get; }
 
+        // List of items which activate feature.
         public List<IProtoEntity> RequiredItemList;
 
+        // Is this feature enabled.
         public bool IsEnabled { get; set; }
 
+        public string IsEnabledText => "Enable this feature";
+
+        // List of all entity of interest for this feature.
         public List<IProtoEntity> EntityList;
 
         protected IItem SelectedItem => ClientHotbarSelectedItemManager.SelectedItem;
@@ -32,16 +49,50 @@
 
         public void PrepareProto()
         {
+            var name = this.GetType().Name;
+            Id = name.Replace("Feature", "");
+
             var entityList = new List<IProtoEntity>();
             var requiredItemList = new List<IProtoEntity>();
 
-            this.PrepareFeature(entityList, requiredItemList);
+            PrepareFeature(entityList, requiredItemList);
 
-            this.EntityList = entityList;
-            this.RequiredItemList = requiredItemList;
+            EntityList = entityList;
+            RequiredItemList = requiredItemList;
         }
 
         protected abstract void PrepareFeature(List<IProtoEntity> entityList, List<IProtoEntity> requiredItemList);
+
+        public virtual void PrepareOptions(SettingsFeature settingsFeature)
+        {
+            AddOptionIsEnabled(settingsFeature);
+            Options.Add(new OptionSeparator());
+            AddOptionEntityList(settingsFeature);
+        }
+
+        protected void AddOptionIsEnabled(SettingsFeature settingsFeature)
+        {
+            Options.Add(new OptionCheckBox(
+                parentSettings: settingsFeature,
+                id: "IsEnabled",
+                label: IsEnabledText,
+                defaultValue: false,
+                valueChangedCallback: value =>
+                {
+                    settingsFeature.IsEnabled = IsEnabled = value;
+                    settingsFeature.OnIsEnabledChanged(value);
+                }));
+        }
+
+        protected void AddOptionEntityList(SettingsFeature settingsFeature)
+        {
+            Options.Add(new OptionEntityList(
+                parentSettings: settingsFeature,
+                id: "EnabledEntityList",
+                entityList: EntityList.OrderBy(entity => entity.Id),
+                defaultEnabledList: DefaultEnabledList,
+                onEnabledListChanged: enabledList => EnabledEntityList = enabledList));
+        }
 
         /// <summary>
         /// Called by client component every tick.

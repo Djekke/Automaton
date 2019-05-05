@@ -4,6 +4,9 @@
 Scripts/ClientComponents/Input/AutomatonButton@Toggle:
 Включить\выключить функции мода
 
+Scripts/Automaton/ClientComponents/Actions/Features/Base/ProtoFeature@IsEnabledText:
+Включить эту функцию
+
 Scripts/Automaton/ClientComponents/Actions/Features/FeatureAutoFill@Name:
 АвтоНаполнение
 

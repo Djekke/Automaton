@@ -9,6 +9,3 @@ Scripts/Automaton/ClientSettings/SettingsGlobal@UpdateIntervalText:
 
 Scripts/Automaton/ClientSettings/SettingsGlobal@UpdateIntervalToolTip:
 Как часто мод будет пытаться что-то сделать.
-
-Scripts/Automaton/ClientSettings/SettingsFeature@IsEnabledText:
-Включить эту функцию
