@@ -4,3 +4,32 @@
 Scripts/ClientComponents/Input/AutomatonButton@Toggle:
 Включить\выключить функции мода
 
+Scripts/Automaton/ClientComponents/Actions/Features/FeatureAutoFill@Name:
+АвтоНаполнение
+
+Scripts/Automaton/ClientComponents/Actions/Features/FeatureAutoFill@Description:
+Автоматически наполняет пустые бутылки рядом с водой.
+
+Scripts/Automaton/ClientComponents/Actions/Features/FeatureAutoGather@Name:
+АвтоСбор
+
+Scripts/Automaton/ClientComponents/Actions/Features/FeatureAutoGather@Description:
+Собирает ягоды, травы, другие растения, трупы и лут в радиактивных развалинах.
+
+Scripts/Automaton/ClientComponents/Actions/Features/FeatureAutoMining@Name:
+АвтоШахтер
+
+Scripts/Automaton/ClientComponents/Actions/Features/FeatureAutoMining@Description:
+Автоматически копает ближайшие минералы, если кирка в руках.
+
+Scripts/Automaton/ClientComponents/Actions/Features/FeatureAutoPickUp@Name:
+АвтоПоднятие
+
+Scripts/Automaton/ClientComponents/Actions/Features/FeatureAutoPickUp@Description:
+Поднимает предметы с земли (включая палки, камни и траву).
+
+Scripts/Automaton/ClientComponents/Actions/Features/FeatureAutoWoodcutting@Name:
+АвтоЛесоруб
+
+Scripts/Automaton/ClientComponents/Actions/Features/FeatureAutoWoodcutting@Description:
+Автоматически рубит ближайшие деревья, если топор в руках.

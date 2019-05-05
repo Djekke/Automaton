@@ -1,0 +1,14 @@
+﻿Scripts/Automaton/ClientSettings/SettingsGlobal@Name:
+Настройки
+
+Scripts/Automaton/ClientSettings/SettingsGlobal@Description:
+Глобальные настройки.
+
+Scripts/Automaton/ClientSettings/SettingsGlobal@UpdateIntervalText:
+Интервал обновления (сек)
+
+Scripts/Automaton/ClientSettings/SettingsGlobal@UpdateIntervalToolTip:
+Как часто мод будет пытаться что-то сделать.
+
+Scripts/Automaton/ClientSettings/SettingsFeature@IsEnabledText:
+Включить эту функцию

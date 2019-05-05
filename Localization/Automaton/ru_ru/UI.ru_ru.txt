@@ -1,56 +1,14 @@
-﻿UI/Controls/Core/Automaton/Data/AutomatonStrings@Button_SelectAll:
-Включить все
+﻿UI/Automaton/AutomatonStrings@Button_SelectAll:
+Выбрать все
 
-UI/Controls/Core/Automaton/Data/AutomatonStrings@Button_DeselectAll:
-Отключить все
+UI/Automaton/AutomatonStrings@Button_DeselectAll:
+Отменить все
 
-UI/Controls/Core/Automaton/Data/AutomatonStrings@Text_NoFeatureSelected:
-Выберите пункт для его настройки.
+UI/Automaton/AutomatonStrings@Text_NoFeatureSelected:
+Выберите пункт для детальной настройки.
 
-UI/Controls/Core/Automaton/Data/AutomatonStrings@Text_ModDisabledPart1:
+UI/Automaton/AutomatonStrings@Text_ModDisabledPart1:
 Функции Автоматона отключены, нажмите
 
-UI/Controls/Core/Automaton/Data/AutomatonStrings@Text_ModDisabledPart2:
+UI/Automaton/AutomatonStrings@Text_ModDisabledPart2:
 чтобы включить их.
-
-UI/Controls/Core/Automaton/Features/FeatureAutoFill@Name:
-АвтоНаполнение
-
-UI/Controls/Core/Automaton/Features/FeatureAutoFill@Description:
-Автоматически наполняет пустые бутылки рядом с водой.
-
-UI/Controls/Core/Automaton/Features/FeatureAutoGather@Name:
-АвтоСбор
-
-UI/Controls/Core/Automaton/Features/FeatureAutoGather@Description:
-Собирает ягоды, травы, другие растения, трупы и лут в радиактивных развалинах.
-
-UI/Controls/Core/Automaton/Features/FeatureAutoMining@Name:
-АвтоШахтер
-
-UI/Controls/Core/Automaton/Features/FeatureAutoMining@Description:
-Автоматически копает ближайшие минералы, если кирка в руках.
-
-UI/Controls/Core/Automaton/Features/FeatureAutoPickUp@Name:
-АвтоПоднятие
-
-UI/Controls/Core/Automaton/Features/FeatureAutoPickUp@Description:
-Поднимает предметы с земли (включая палки, камни и траву).
-
-UI/Controls/Core/Automaton/Features/FeatureAutoWoodcutting@Name:
-АвтоЛесоруб
-
-UI/Controls/Core/Automaton/Features/FeatureAutoWoodcutting@Description:
-Автоматически рубит ближайшие деревья, если топор в руках.
-
-UI/Controls/Core/Automaton/Data/ViewModelSettings@Name:
-Настройки
-
-UI/Controls/Core/Automaton/Data/ViewModelSettings@Description:
-Глобальные настройки.
-
-UI/Controls/Core/Automaton/Data/ViewModelSettings@UpdateIntervalText:
-Интервал обновления (сек)
-
-UI/Controls/Core/Automaton/Data/ViewModelSettings@UpdateIntervalToolTip:
-Как часто мод будет пытаться что-то сделать.
