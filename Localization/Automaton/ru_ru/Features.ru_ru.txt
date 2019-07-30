@@ -1,0 +1,32 @@
+﻿Scripts/Automaton/Features/Base/ProtoFeature@IsEnabledText:
+Включить эту функцию
+
+Scripts/Automaton/Features/FeatureAutoFill@Name:
+АвтоНаполнение
+
+Scripts/Automaton/Features/FeatureAutoFill@Description:
+Автоматически наполняет пустые бутылки рядом с водой.
+
+Scripts/Automaton/Features/FeatureAutoGather@Name:
+АвтоСбор
+
+Scripts/Automaton/Features/FeatureAutoGather@Description:
+Собирает ягоды, травы, другие растения, трупы и лут в радиактивных развалинах.
+
+Scripts/Automaton/Features/FeatureAutoMining@Name:
+АвтоШахтер
+
+Scripts/Automaton/Features/FeatureAutoMining@Description:
+Автоматически копает ближайшие минералы, если кирка в руках.
+
+Scripts/Automaton/Features/FeatureAutoPickUp@Name:
+АвтоПоднятие
+
+Scripts/Automaton/Features/FeatureAutoPickUp@Description:
+Поднимает предметы с земли (включая палки, камни и траву).
+
+Scripts/Automaton/Features/FeatureAutoWoodcutting@Name:
+АвтоЛесоруб
+
+Scripts/Automaton/Features/FeatureAutoWoodcutting@Description:
+Автоматически рубит ближайшие деревья, если топор в руках.

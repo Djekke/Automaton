@@ -1,0 +1,5 @@
+﻿Scripts/Automaton/AutomatonButton@OpenSettings:
+Открыть настройки мода
+
+Scripts/Automaton/AutomatonButton@Toggle:
+Включить\выключить функции мода

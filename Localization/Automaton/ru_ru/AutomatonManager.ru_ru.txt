@@ -1,5 +1,5 @@
-﻿Scripts/Automaton/Managers/AutomatonManager@Notification_ModEnabled:
+﻿Scripts/Automaton/AutomatonManager@Notification_ModEnabled:
 Автоматон включен.
 
-Scripts/Automaton/Managers/AutomatonManager@Notification_ModDisabled:
+Scripts/Automaton/AutomatonManager@Notification_ModDisabled:
 Автоматон выключен.
