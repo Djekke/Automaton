@@ -1,4 +1,4 @@
-﻿namespace CryoFall.Automaton.ClientComponents.Actions.Features
+﻿namespace CryoFall.Automaton.Features
 {
     using AtomicTorch.CBND.CoreMod.Characters.Input;
     using AtomicTorch.CBND.CoreMod.Characters.Player;

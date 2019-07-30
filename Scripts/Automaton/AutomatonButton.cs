@@ -1,4 +1,4 @@
-﻿namespace CryoFall.Automaton.ClientComponents.Input
+﻿namespace CryoFall.Automaton
 {
     using AtomicTorch.CBND.CoreMod.ClientComponents.Input;
     using AtomicTorch.CBND.GameApi;

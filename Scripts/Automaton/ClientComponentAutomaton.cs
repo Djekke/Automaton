@@ -1,8 +1,7 @@
-﻿namespace CryoFall.Automaton.ClientComponents.Actions
+﻿namespace CryoFall.Automaton
 {
     using AtomicTorch.CBND.GameApi.Scripting.ClientComponents;
-    using CryoFall.Automaton.ClientComponents.Actions.Features;
-    using CryoFall.Automaton.Managers;
+    using CryoFall.Automaton.Features;
     using System;
     using System.Collections.Generic;
 

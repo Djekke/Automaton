@@ -1,11 +1,10 @@
-﻿namespace CryoFall.Automaton.Managers
+﻿namespace CryoFall.Automaton
 {
     using AtomicTorch.CBND.CoreMod.Systems.Notifications;
     using AtomicTorch.CBND.GameApi.Scripting;
     using AtomicTorch.CBND.GameApi.ServicesClient;
-    using CryoFall.Automaton.ClientComponents.Actions;
-    using CryoFall.Automaton.ClientComponents.Actions.Features;
     using CryoFall.Automaton.ClientSettings;
+    using CryoFall.Automaton.Features;
     using System;
     using System.Collections.Generic;
 

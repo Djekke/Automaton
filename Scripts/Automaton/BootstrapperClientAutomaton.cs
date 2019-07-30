@@ -1,12 +1,9 @@
-﻿namespace CryoFall.Automaton.Bootstrappers
+﻿namespace CryoFall.Automaton
 {
     using AtomicTorch.CBND.CoreMod.Bootstrappers;
     using AtomicTorch.CBND.CoreMod.ClientComponents.Input;
     using AtomicTorch.CBND.GameApi.Data.Characters;
     using AtomicTorch.CBND.GameApi.Scripting;
-    using CryoFall.Automaton.ClientComponents.Actions;
-    using CryoFall.Automaton.ClientComponents.Input;
-    using CryoFall.Automaton.Managers;
     using CryoFall.Automaton.UI;
 
     public class BootstrapperClientAutomaton : BaseBootstrapper

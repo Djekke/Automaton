@@ -1,4 +1,4 @@
-﻿namespace CryoFall.Automaton.ClientComponents.Actions.Features
+﻿namespace CryoFall.Automaton.Features
 {
     using AtomicTorch.CBND.CoreMod.Items.Tools;
     using AtomicTorch.CBND.CoreMod.Items.Tools.Axes;

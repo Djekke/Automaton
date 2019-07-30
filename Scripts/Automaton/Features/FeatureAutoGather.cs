@@ -1,4 +1,4 @@
-﻿namespace CryoFall.Automaton.ClientComponents.Actions.Features
+﻿namespace CryoFall.Automaton.Features
 {
     using AtomicTorch.CBND.CoreMod.StaticObjects.Loot;
     using AtomicTorch.CBND.CoreMod.Systems;

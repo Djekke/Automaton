@@ -1,7 +1,7 @@
 ﻿namespace CryoFall.Automaton.UI
 {
     using AtomicTorch.CBND.CoreMod.UI.Controls.Core;
-    using CryoFall.Automaton.Managers;
+    using CryoFall.Automaton;
     using System.Collections.ObjectModel;
     using System.Linq;
 

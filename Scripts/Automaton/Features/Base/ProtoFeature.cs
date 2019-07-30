@@ -1,4 +1,4 @@
-﻿namespace CryoFall.Automaton.ClientComponents.Actions.Features
+﻿namespace CryoFall.Automaton.Features
 {
     using AtomicTorch.CBND.CoreMod.Characters;
     using AtomicTorch.CBND.CoreMod.Characters.Player;
@@ -34,7 +34,7 @@
         public List<IProtoEntity> RequiredItemList;
 
         // Is this feature enabled.
-        public bool IsEnabled { get; set; }
+        public virtual bool IsEnabled { get; set; }
 
         public string IsEnabledText => "Enable this feature";
 
@@ -123,7 +123,7 @@
         /// Check initial condition (right tool equiped or other checkd).
         /// </summary>
         /// <returns></returns>
-        public virtual bool CheckPrecondition()
+        protected virtual bool CheckPrecondition()
         {
             if (RequiredItemList?.Count == 0)
             {

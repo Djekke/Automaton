@@ -1,7 +1,7 @@
 ﻿namespace CryoFall.Automaton.ClientSettings
 {
+    using CryoFall.Automaton;
     using CryoFall.Automaton.ClientSettings.Options;
-    using CryoFall.Automaton.Managers;
 
     public class SettingsGlobal : ProtoSettings
     {

@@ -1,6 +1,6 @@
 ﻿namespace CryoFall.Automaton.ClientSettings
 {
-    using CryoFall.Automaton.ClientComponents.Actions.Features;
+    using CryoFall.Automaton.Features;
     using System;
 
     public class SettingsFeature : ProtoSettings
