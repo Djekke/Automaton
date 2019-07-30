@@ -34,7 +34,7 @@
         {
             if (openedLootContainer != null)
             {
-                if (InteractionCheckerSystem.HasInteraction(CurrentCharacter, openedLootContainer, true))
+                if (InteractionCheckerSystem.SharedHasInteraction(CurrentCharacter, openedLootContainer, true))
                 {
                     // We get container private state, now take all items from container.
                     var q = openedLootContainer.GetPrivateState<LootContainerPrivateState>();
@@ -142,7 +142,7 @@
             }
 
             // Check if we openned loot container before enabling component.
-            var currentInteractionObject = InteractionCheckerSystem.GetCurrentInteraction(CurrentCharacter);
+            var currentInteractionObject = InteractionCheckerSystem.SharedGetCurrentInteraction(CurrentCharacter);
             if (currentInteractionObject != null &&
                 currentInteractionObject.ProtoWorldObject is ProtoObjectLootContainer)
             {
