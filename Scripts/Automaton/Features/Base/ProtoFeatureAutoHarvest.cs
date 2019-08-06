@@ -126,7 +126,7 @@
 
         protected Vector2D GetWeaponOffset()
         {
-            return new Vector2D(0, CurrentCharacter.ProtoCharacter.CharacterWorldWeaponOffset);
+            return new Vector2D(0, CurrentCharacter.ProtoCharacter.CharacterWorldWeaponOffsetMelee);
         }
 
         private bool CheckForObstacles(IWorldObject targetObject, Vector2D intersectionPoint)
