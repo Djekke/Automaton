@@ -1,5 +1,7 @@
 ﻿namespace CryoFall.Automaton.Features
 {
+    using System.Collections.Generic;
+    using System.Linq;
     using AtomicTorch.CBND.CoreMod.StaticObjects.Loot;
     using AtomicTorch.CBND.CoreMod.Systems;
     using AtomicTorch.CBND.CoreMod.Systems.InteractionChecker;
@@ -10,8 +12,6 @@
     using AtomicTorch.CBND.GameApi.Data.World;
     using AtomicTorch.CBND.GameApi.Scripting;
     using AtomicTorch.CBND.GameApi.Scripting.ClientComponents;
-    using System.Collections.Generic;
-    using System.Linq;
 
     public class FeatureAutoGather: ProtoFeatureWithInteractionQueue
     {
@@ -72,7 +72,8 @@
             //  - if we can not gather anything from object
             while (interactionQueue.Count != 0 && EnabledEntityList.Contains(interactionQueue[0].ProtoGameObject) &&
                    (interactionQueue[0].IsDestroyed ||
-                    (lastActionState?.TargetWorldObject == interactionQueue[0] &&
+                    (lastActionState != null &&
+                     lastActionState.TargetWorldObject == interactionQueue[0] &&
                      lastActionState.IsCompleted &&
                      !lastActionState.IsCancelled &&
                      !lastActionState.IsCancelledByServer) ||
@@ -143,8 +144,7 @@
 
             // Check if we openned loot container before enabling component.
             var currentInteractionObject = InteractionCheckerSystem.SharedGetCurrentInteraction(CurrentCharacter);
-            if (currentInteractionObject != null &&
-                currentInteractionObject.ProtoWorldObject is ProtoObjectLootContainer)
+            if (currentInteractionObject?.ProtoWorldObject is ProtoObjectLootContainer)
             {
                 readyForInteraction = false;
                 openedLootContainer = currentInteractionObject;

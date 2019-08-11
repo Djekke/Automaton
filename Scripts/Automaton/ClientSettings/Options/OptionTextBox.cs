@@ -1,13 +1,13 @@
 ﻿namespace CryoFall.Automaton.ClientSettings.Options
 {
-    using AtomicTorch.CBND.CoreMod.UI.Controls.Core;
-    using AtomicTorch.CBND.GameApi.ServicesClient;
-    using AtomicTorch.GameEngine.Common.Client.MonoGame.UI;
     using System;
     using System.Windows;
     using System.Windows.Controls;
+    using AtomicTorch.CBND.CoreMod.UI.Controls.Core;
+    using AtomicTorch.CBND.GameApi.ServicesClient;
+    using AtomicTorch.GameEngine.Common.Client.MonoGame.UI;
 
-    public class OptionTextBox<TValue> : Option<TValue>, IOptionWithValue
+    public class OptionTextBox<TValue> : Option<TValue>
     {
         public string Label { get; }
 

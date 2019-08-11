@@ -1,10 +1,10 @@
-﻿namespace CryoFall.Automaton.UI
+﻿namespace CryoFall.Automaton.UI.Data
 {
+    using System.Collections.ObjectModel;
+    using System.Windows;
     using AtomicTorch.CBND.CoreMod.UI.Controls.Core;
     using AtomicTorch.GameEngine.Common.Client.MonoGame.UI;
     using CryoFall.Automaton.ClientSettings;
-    using System.Collections.ObjectModel;
-    using System.Windows;
 
     public class ViewModelSettings : BaseViewModel
     {

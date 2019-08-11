@@ -1,5 +1,8 @@
-﻿namespace CryoFall.Automaton.UI
+﻿namespace CryoFall.Automaton.UI.Data
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using AtomicTorch.CBND.CoreMod.StaticObjects;
     using AtomicTorch.CBND.CoreMod.StaticObjects.Loot;
     using AtomicTorch.CBND.CoreMod.UI.Controls.Core;
@@ -9,13 +12,10 @@
     using AtomicTorch.CBND.GameApi.Resources;
     using AtomicTorch.CBND.GameApi.Scripting;
     using AtomicTorch.GameEngine.Common.Client.MonoGame.UI;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
 
     public class ViewModelEntity : BaseViewModel
     {
-        private static readonly IReadOnlyCollection<Type> IconBlackList = new List<Type>() { 
+        private static readonly IReadOnlyCollection<Type> IconBlackList = new List<Type>() {
             typeof(ObjectGroundItemsContainer),
             typeof(ObjectCorpse),
         }.AsReadOnly();
@@ -42,7 +42,7 @@
 
         public bool IsEnabled
         {
-            get { return isEnabled; }
+            get => isEnabled;
             set
             {
                 if (value == IsEnabled)

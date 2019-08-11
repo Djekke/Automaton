@@ -1,68 +1,75 @@
 ﻿namespace CryoFall.Automaton.ClientSettings
 {
-    using AtomicTorch.CBND.GameApi.Scripting;
-    using AtomicTorch.CBND.GameApi.ServicesClient;
-    using CryoFall.Automaton.ClientSettings.Options;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using AtomicTorch.CBND.GameApi.Scripting;
+    using AtomicTorch.CBND.GameApi.ServicesClient;
+    using CryoFall.Automaton.ClientSettings.Options;
 
     public abstract class ProtoSettings
     {
         public List<IOption> Options { get; set; } = new List<IOption>();
 
-        protected List<IOptionWithValue> OptionsWithValue;
+        protected List<IOptionWithValue> optionsWithValue;
 
-        public virtual string Id { get; protected set; }
+        public virtual string Id => id;
 
-        public virtual string Name { get; protected set; }
+        public virtual string Name => name;
 
-        public virtual string Description { get; protected set; }
+        public virtual string Description => description;
 
-        public bool IsModified => OptionsWithValue.Any(o => o.IsModified);
+        protected string id;
+
+        protected string name;
+
+        protected string description;
+
+        public bool IsModified => optionsWithValue.Any(o => o.IsModified);
 
         public event Action OnIsModifiedChanged;
 
+
         protected IClientStorage clientStorage;
 
-        protected string OptionsStorageLocalFilePath;
+        protected string optionsStorageLocalFilePath;
 
-        public ProtoSettings()
+        protected ProtoSettings()
         {
-            Id = this.GetType().Name;
+            id = this.GetType().Name;
         }
 
         public void InitSettings()
         {
-            OptionsWithValue = Options.OfType<IOptionWithValue>().ToList();
+            optionsWithValue = Options.OfType<IOptionWithValue>().ToList();
 
-            OptionsStorageLocalFilePath = "Mods/Automaton/" + Id;
+            optionsStorageLocalFilePath = "Mods/Automaton/" + Id;
             RegisterStorage();
             LoadOptionsFromStorage();
         }
 
         public void ApplyAndSave()
         {
-            OptionsWithValue.ForEach(o => o.Apply());
+            optionsWithValue.ForEach(o => o.Apply());
 
             SaveOptionsToStorage();
         }
 
         public void Cancel()
         {
-            OptionsWithValue.ForEach(o => o.Cancel());
+            optionsWithValue.ForEach(o => o.Cancel());
         }
 
         public void Reset()
         {
-            OptionsWithValue.ForEach(o => o.Reset(apply: false));
+            optionsWithValue.ForEach(o => o.Reset(apply: false));
             ApplyAndSave();
         }
 
         public void RegisterStorage()
         {
-            clientStorage = Api.Client.Storage.GetStorage(OptionsStorageLocalFilePath);
-            foreach (var option in OptionsWithValue)
+            clientStorage = Api.Client.Storage.GetStorage(optionsStorageLocalFilePath);
+            foreach (var option in optionsWithValue)
             {
                 option.RegisterValueType(clientStorage);
             }
@@ -70,7 +77,7 @@
 
         public void LoadOptionsFromStorage()
         {
-            if (OptionsWithValue.Count == 0)
+            if (optionsWithValue.Count == 0)
             {
                 return;
             }
@@ -83,7 +90,7 @@
                 return;
             }
 
-            var optionsToProcess = OptionsWithValue.ToList();
+            var optionsToProcess = optionsWithValue.ToList();
             foreach (var pair in snapshot)
             {
                 for (var index = 0; index < optionsToProcess.Count; index++)
@@ -110,13 +117,13 @@
 
         private void SaveOptionsToStorage()
         {
-            if (OptionsWithValue.Count == 0)
+            if (optionsWithValue.Count == 0)
             {
                 return;
             }
 
             var snapshot = new Dictionary<string, object>();
-            foreach (var option in OptionsWithValue)
+            foreach (var option in optionsWithValue)
             {
                 snapshot[option.Id] = option.GetAbstractValue();
             }

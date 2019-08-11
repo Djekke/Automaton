@@ -1,5 +1,7 @@
 ﻿namespace CryoFall.Automaton.Features
 {
+    using System;
+    using System.Linq;
     using AtomicTorch.CBND.CoreMod.Characters.Input;
     using AtomicTorch.CBND.CoreMod.Characters.Player;
     using AtomicTorch.CBND.CoreMod.Items.Weapons;
@@ -8,8 +10,6 @@
     using AtomicTorch.CBND.GameApi.Data.World;
     using AtomicTorch.CBND.GameApi.Scripting;
     using AtomicTorch.GameEngine.Common.Primitives;
-    using System;
-    using System.Linq;
 
     public abstract class ProtoFeatureAutoHarvest: ProtoFeature
     {
@@ -68,7 +68,7 @@
                 var objectOfInterest = objectsNearby
                     .Where(t => EnabledEntityList.Contains(t.PhysicsBody?.AssociatedWorldObject?.ProtoGameObject))
                     .ToList();
-                if (!(objectOfInterest?.Count > 0))
+                if (!(objectOfInterest.Count > 0))
                 {
                     targetFound = false;
                     return;

@@ -1,5 +1,7 @@
 ﻿namespace CryoFall.Automaton.Features
 {
+    using System.Collections.Generic;
+    using System.Linq;
     using AtomicTorch.CBND.CoreMod.Characters.Player;
     using AtomicTorch.CBND.CoreMod.Items.Food;
     using AtomicTorch.CBND.CoreMod.Items.Generic;
@@ -11,8 +13,6 @@
     using AtomicTorch.CBND.GameApi.Data.State;
     using AtomicTorch.CBND.GameApi.Scripting;
     using AtomicTorch.CBND.GameApi.Scripting.ClientComponents;
-    using System.Collections.Generic;
-    using System.Linq;
 
     public class FeatureAutoFill: ProtoFeature
     {
@@ -20,10 +20,10 @@
 
         public override string Description => "AutoFill empty bottles near water.";
 
-        private Dictionary<IProtoEntity, List<IProtoEntity>> requiredTilesDictionary =
+        private readonly Dictionary<IProtoEntity, List<IProtoEntity>> requiredTilesDictionary =
             new Dictionary<IProtoEntity, List<IProtoEntity>>();
 
-        private List<IProtoEntity> permitedTiles =>
+        private List<IProtoEntity> PermitedTiles =>
             requiredTilesDictionary.Where(entry => EnabledEntityList.Contains(entry.Key))
                 .SelectMany(entry => entry.Value).ToList();
 
@@ -87,12 +87,12 @@
         private bool IsWaterNearby()
         {
             var tile = CurrentCharacter.Tile;
-            if (permitedTiles.Contains(tile.ProtoTile))
+            if (PermitedTiles.Contains(tile.ProtoTile))
             {
                 return true;
             }
 
-            if (tile.EightNeighborTiles.Select(t => t.ProtoTile).Intersect(permitedTiles).Any())
+            if (tile.EightNeighborTiles.Select(t => t.ProtoTile).Intersect(PermitedTiles).Any())
             {
                 return true;
             }

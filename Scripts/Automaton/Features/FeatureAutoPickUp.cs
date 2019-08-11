@@ -1,12 +1,12 @@
 ﻿namespace CryoFall.Automaton.Features
 {
+    using System.Collections.Generic;
+    using System.Linq;
     using AtomicTorch.CBND.CoreMod.StaticObjects;
     using AtomicTorch.CBND.CoreMod.StaticObjects.Loot;
     using AtomicTorch.CBND.CoreMod.Systems.Notifications;
     using AtomicTorch.CBND.GameApi.Data;
     using AtomicTorch.CBND.GameApi.Scripting;
-    using System.Collections.Generic;
-    using System.Linq;
 
     public class FeatureAutoPickUp: ProtoFeatureWithInteractionQueue
     {

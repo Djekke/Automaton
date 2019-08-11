@@ -2,11 +2,12 @@
     x:Class="CryoFall.Automaton.UI.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:core="clr-namespace:AtomicTorch.CBND.CoreMod.UI.Controls.Core;assembly=core"
-    xmlns:loc="clr-namespace:AtomicTorch.CBND.CoreMod.UI;assembly=core"
+    xmlns:core="clr-namespace:AtomicTorch.CBND.CoreMod.UI.Controls.Core;assembly=Core"
+    xmlns:loc="clr-namespace:AtomicTorch.CBND.CoreMod.UI;assembly=Core"
     xmlns:base="clr-namespace:AtomicTorch.GameEngine.Common.Client.MonoGame.UI;assembly=AtomicTorch.CBND.GameApi.WPF.Stubs"
     xmlns:data="clr-namespace:CryoFall.Automaton.UI"
-    xmlns:helpers="clr-namespace:CryoFall.Automaton.UI.Helpers">
+    xmlns:helpers="clr-namespace:CryoFall.Automaton.UI.Helpers"
+    xmlns:data1="clr-namespace:CryoFall.Automaton.UI.Data">
 
     <base:BaseUserControl.Resources>
         <ResourceDictionary>
@@ -21,7 +22,7 @@
                 <Setter Property="FontFamily" Value="{StaticResource CondensedFontFamily}" />
             </Style>
 
-            <DataTemplate DataType="{x:Type data:ViewModelEntity}">
+            <DataTemplate DataType="{x:Type data1:ViewModelEntity}">
                 <CheckBox IsChecked="{Binding IsEnabled}"
                           Margin="0,2,0,2">
                     <CheckBox.Content>
@@ -106,7 +107,7 @@
                 </Style.Triggers>
             </Style>
 
-            <DataTemplate DataType="{x:Type data:ViewModelSettings}">
+            <DataTemplate DataType="{x:Type data1:ViewModelSettings}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />

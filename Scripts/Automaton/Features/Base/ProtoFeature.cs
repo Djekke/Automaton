@@ -1,5 +1,7 @@
 ﻿namespace CryoFall.Automaton.Features
 {
+    using System.Collections.Generic;
+    using System.Linq;
     using AtomicTorch.CBND.CoreMod.Characters;
     using AtomicTorch.CBND.CoreMod.Characters.Player;
     using AtomicTorch.CBND.CoreMod.UI.Controls.Game.Items.Controls;
@@ -10,8 +12,6 @@
     using AtomicTorch.CBND.GameApi.Scripting.ClientComponents;
     using CryoFall.Automaton.ClientSettings;
     using CryoFall.Automaton.ClientSettings.Options;
-    using System.Collections.Generic;
-    using System.Linq;
 
     public abstract class ProtoFeature
     {

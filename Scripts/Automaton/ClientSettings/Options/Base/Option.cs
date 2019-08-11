@@ -1,27 +1,27 @@
 ﻿namespace CryoFall.Automaton.ClientSettings.Options
 {
-    using AtomicTorch.CBND.GameApi.Scripting;
-    using AtomicTorch.CBND.GameApi.ServicesClient;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Windows;
     using System.Windows.Data;
+    using AtomicTorch.CBND.GameApi.Scripting;
+    using AtomicTorch.CBND.GameApi.ServicesClient;
 
     public abstract class Option<TValue> : IOptionWithValue
     {
-        private OptionValueHolder optionValueHolder;
+        private readonly OptionValueHolder optionValueHolder;
 
         protected TValue SavedValue { get; private set; }
 
-        protected TValue DefaultValue;
+        protected TValue defaultValue;
 
         // If value is equal DefaultValue we should still process OnValueChanged.
         private bool isCurrentValueInitialized = false;
 
-        protected Action<TValue> OnValueChanged;
+        protected Action<TValue> onValueChanged;
 
-        protected ProtoSettings ParentSettings;
+        protected ProtoSettings parentSettings;
 
         public bool IsModified => !optionValueHolder.Value.Equals(CurrentValue);
 
@@ -29,7 +29,7 @@
 
         public TValue CurrentValue
         {
-            get { return SavedValue; }
+            get => SavedValue;
             protected set
             {
                 if (value.Equals(CurrentValue) && isCurrentValueInitialized)
@@ -43,24 +43,24 @@
             }
         }
 
-        public Option(
+        protected Option(
             ProtoSettings parentSettings,
             string id,
             TValue defaultValue,
             Action<TValue> valueChangedCallback)
         {
-            ParentSettings = parentSettings;
+            this.parentSettings = parentSettings;
             Id = id;
-            SavedValue = DefaultValue = defaultValue;
-            OnValueChanged = valueChangedCallback;
+            SavedValue = this.defaultValue = defaultValue;
+            onValueChanged = valueChangedCallback;
             optionValueHolder = new OptionValueHolder(this, SavedValue);
         }
 
         public virtual void Apply()
         {
             CurrentValue = optionValueHolder.Value;
-            OnValueChanged?.Invoke(CurrentValue);
-            ParentSettings.OnOptionModified(this);
+            onValueChanged?.Invoke(CurrentValue);
+            parentSettings.OnOptionModified(this);
         }
 
         public virtual void Cancel()
@@ -70,7 +70,7 @@
 
         public virtual void Reset(bool apply)
         {
-            optionValueHolder.Value = DefaultValue;
+            optionValueHolder.Value = defaultValue;
             if (apply)
             {
                 Apply();
@@ -148,7 +148,7 @@
                     // call property changed notification to notify UI about the change
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
 
-                    owner.ParentSettings.OnOptionModified(owner);
+                    owner.parentSettings.OnOptionModified(owner);
                 }
             }
         }

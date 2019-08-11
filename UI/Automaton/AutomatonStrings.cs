@@ -1,4 +1,5 @@
-﻿namespace CryoFall.Automaton.UI
+﻿// ReSharper disable InconsistentNaming
+namespace CryoFall.Automaton.UI
 {
     public static class AutomatonStrings
     {

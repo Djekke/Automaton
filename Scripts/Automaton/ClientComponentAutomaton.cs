@@ -1,9 +1,9 @@
 ﻿namespace CryoFall.Automaton
 {
-    using AtomicTorch.CBND.GameApi.Scripting.ClientComponents;
-    using CryoFall.Automaton.Features;
     using System;
     using System.Collections.Generic;
+    using AtomicTorch.CBND.GameApi.Scripting.ClientComponents;
+    using CryoFall.Automaton.Features;
 
     public class ClientComponentAutomaton : ClientComponent
     {
@@ -13,7 +13,7 @@
 
         private double accumulatedTime = UpdateInterval;
 
-        private List<ProtoFeature> featuresList;
+        private readonly List<ProtoFeature> featuresList;
 
         public ClientComponentAutomaton() : base(isLateUpdateEnabled: false)
         {

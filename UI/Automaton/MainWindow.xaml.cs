@@ -2,7 +2,9 @@
 {
     using AtomicTorch.CBND.CoreMod.UI.Controls.Core;
     using AtomicTorch.CBND.GameApi.Scripting;
+    using CryoFall.Automaton.UI.Data;
 
+    // ReSharper disable once RedundantExtendsListEntry
     public partial class MainWindow : BaseUserControlWithWindow
     {
         public static MainWindow Instance { get; private set; }

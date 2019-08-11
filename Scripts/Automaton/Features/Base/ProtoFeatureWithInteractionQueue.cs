@@ -1,9 +1,9 @@
 ﻿namespace CryoFall.Automaton.Features
 {
-    using AtomicTorch.CBND.CoreMod.Systems.InteractionChecker;
-    using AtomicTorch.CBND.GameApi.Data.World;
     using System.Collections.Generic;
     using System.Linq;
+    using AtomicTorch.CBND.CoreMod.Systems.InteractionChecker;
+    using AtomicTorch.CBND.GameApi.Data.World;
 
     public abstract class ProtoFeatureWithInteractionQueue: ProtoFeature
     {
@@ -47,7 +47,7 @@
                 var objectOfInterest = objectsInCharacterInteractionArea
                     .Where(t => EnabledEntityList.Contains(t.PhysicsBody?.AssociatedWorldObject?.ProtoGameObject))
                     .ToList();
-                if (!(objectOfInterest?.Count > 0))
+                if (!(objectOfInterest.Count > 0))
                 {
                     return;
                 }

@@ -1,20 +1,22 @@
 ﻿namespace CryoFall.Automaton
 {
+    using System;
+    using System.Collections.Generic;
     using AtomicTorch.CBND.CoreMod.Systems.Notifications;
     using AtomicTorch.CBND.GameApi.Scripting;
     using AtomicTorch.CBND.GameApi.ServicesClient;
     using CryoFall.Automaton.ClientSettings;
     using CryoFall.Automaton.Features;
-    using System;
-    using System.Collections.Generic;
 
     public static class AutomatonManager
     {
+        // ReSharper disable once InconsistentNaming
         public const string Notification_ModEnabled = "Automaton is enabled.";
 
+        // ReSharper disable once InconsistentNaming
         public const string Notification_ModDisabled = "Automaton is disabled.";
 
-        private static List<ProtoSettings> SettingsList = new List<ProtoSettings>();
+        private static readonly List<ProtoSettings> SettingsList = new List<ProtoSettings>();
 
         private static IClientStorage versionStorage;
 
@@ -22,7 +24,7 @@
 
         private static bool isEnabled;
 
-        private static List<ProtoFeature> FeaturesList;
+        private static List<ProtoFeature> featuresList;
 
         public static double UpdateInterval = 0.5d;
 
@@ -38,7 +40,7 @@
             LoadVersionFromClientStorage();
             LoadIsEnbledFromClientStorage();
 
-            FeaturesList = new List<ProtoFeature>()
+            featuresList = new List<ProtoFeature>()
             {
                 new FeatureAutoPickUp(),
                 new FeatureAutoGather(),
@@ -47,7 +49,7 @@
                 new FeatureAutoFill(),
             };
 
-            foreach (var feature in FeaturesList)
+            foreach (var feature in featuresList)
             {
                 feature.PrepareProto();
                 SettingsList.Add(new SettingsFeature(feature));
@@ -100,7 +102,7 @@
 
         public static List<ProtoFeature> GetFeatures()
         {
-            return FeaturesList;
+            return featuresList;
         }
 
         /// <summary>
@@ -108,7 +110,7 @@
         /// </summary>
         public static bool IsEnabled
         {
-            get { return isEnabled; }
+            get => isEnabled;
             set
             {
                 if (value == isEnabled)

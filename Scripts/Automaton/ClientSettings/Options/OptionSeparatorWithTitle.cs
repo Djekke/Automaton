@@ -1,8 +1,8 @@
 ﻿namespace CryoFall.Automaton.ClientSettings.Options
 {
-    using AtomicTorch.CBND.GameApi.Scripting;
     using System.Windows;
     using System.Windows.Controls;
+    using AtomicTorch.CBND.GameApi.Scripting;
 
     public class OptionSeparatorWithTitle : IOption
     {

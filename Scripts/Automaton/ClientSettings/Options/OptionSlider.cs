@@ -1,12 +1,12 @@
 ﻿namespace CryoFall.Automaton.ClientSettings.Options
 {
-    using AtomicTorch.CBND.GameApi.ServicesClient;
-    using AtomicTorch.GameEngine.Common.Client.MonoGame.UI;
     using System;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Controls.Primitives;
     using System.Windows.Data;
+    using AtomicTorch.CBND.GameApi.ServicesClient;
+    using AtomicTorch.GameEngine.Common.Client.MonoGame.UI;
 
     public class OptionSlider : Option<double>
     {

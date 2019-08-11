@@ -1,11 +1,11 @@
 ﻿namespace CryoFall.Automaton.Features
 {
+    using System.Collections.Generic;
     using AtomicTorch.CBND.CoreMod.Items.Tools;
     using AtomicTorch.CBND.CoreMod.Items.Tools.Pickaxes;
     using AtomicTorch.CBND.CoreMod.StaticObjects.Minerals;
     using AtomicTorch.CBND.GameApi.Data;
     using AtomicTorch.CBND.GameApi.Scripting;
-    using System.Collections.Generic;
 
     public class FeatureAutoMining: ProtoFeatureAutoHarvest
     {

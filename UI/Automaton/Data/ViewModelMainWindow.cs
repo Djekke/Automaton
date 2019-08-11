@@ -1,9 +1,9 @@
-﻿namespace CryoFall.Automaton.UI
+﻿namespace CryoFall.Automaton.UI.Data
 {
-    using AtomicTorch.CBND.CoreMod.UI.Controls.Core;
-    using CryoFall.Automaton;
     using System.Collections.ObjectModel;
     using System.Linq;
+    using AtomicTorch.CBND.CoreMod.UI.Controls.Core;
+    using CryoFall.Automaton;
 
     public class ViewModelMainWindow : BaseViewModel
     {

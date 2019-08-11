@@ -1,11 +1,5 @@
 ﻿namespace CryoFall.Automaton.ClientSettings.Options
 {
-    using AtomicTorch.CBND.GameApi.Data;
-    using AtomicTorch.CBND.GameApi.Scripting;
-    using AtomicTorch.CBND.GameApi.ServicesClient;
-    using AtomicTorch.GameEngine.Common.Client.MonoGame.UI;
-    using AtomicTorch.GameEngine.Common.Extensions;
-    using CryoFall.Automaton.UI;
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
@@ -13,23 +7,29 @@
     using System.Linq;
     using System.Windows;
     using System.Windows.Controls;
+    using System.Windows.Controls.Primitives;
+    using AtomicTorch.CBND.GameApi.Data;
+    using AtomicTorch.CBND.GameApi.Scripting;
+    using AtomicTorch.CBND.GameApi.ServicesClient;
+    using AtomicTorch.GameEngine.Common.Client.MonoGame.UI;
+    using AtomicTorch.GameEngine.Common.Extensions;
+    using CryoFall.Automaton.UI;
+    using CryoFall.Automaton.UI.Data;
 
     public class OptionEntityList : IOptionWithValue
     {
-        protected ProtoSettings ParentSettings;
+        protected ProtoSettings parentSettings;
 
-        private OptionValueHolder optionValueHolder;
+        private readonly OptionValueHolder optionValueHolder;
 
         public bool IsModified => optionValueHolder.EntityCollection.Any(viewModelEntity =>
             EntityDictionary[viewModelEntity.Entity] != viewModelEntity.IsEnabled);
 
-        private IEnumerable<IProtoEntity> entityList;
-
-        public Dictionary<IProtoEntity, bool> EntityDictionary { get; private set; }
+        public Dictionary<IProtoEntity, bool> EntityDictionary { get; }
 
         public string Id { get; }
 
-        private readonly List<string> DefaultEnabledList;
+        private readonly List<string> defaultEnabledList;
 
         private event Action<List<IProtoEntity>> OnEnabledListChanged;
 
@@ -40,10 +40,9 @@
             List<string> defaultEnabledList,
             Action<List<IProtoEntity>> onEnabledListChanged)
         {
-            ParentSettings = parentSettings;
+            this.parentSettings = parentSettings;
             Id = id;
-            this.entityList = entityList;
-            DefaultEnabledList = defaultEnabledList;
+            this.defaultEnabledList = defaultEnabledList;
             EntityDictionary = new Dictionary<IProtoEntity, bool>();
             foreach (var entity in entityList)
             {
@@ -61,7 +60,7 @@
                 EntityDictionary[viewModelEntity.Entity] = viewModelEntity.IsEnabled;
             }
             OnEnabledListChanged?.Invoke(GetEnabledEntityList());
-            ParentSettings.OnOptionModified(this);
+            parentSettings.OnOptionModified(this);
         }
 
         public void Cancel()
@@ -84,7 +83,7 @@
 
         public void Reset(bool apply)
         {
-            ApplyAbstractValue(DefaultEnabledList);
+            ApplyAbstractValue(defaultEnabledList);
         }
 
         public void ApplyAbstractValue(object value)
@@ -93,7 +92,7 @@
             {
                 foreach (var viewModelEntity in optionValueHolder.EntityCollection)
                 {
-                    viewModelEntity.IsEnabled = (enabledList?.Count > 0) && enabledList.Contains(viewModelEntity.Id);
+                    viewModelEntity.IsEnabled = (enabledList.Count > 0) && enabledList.Contains(viewModelEntity.Id);
                 }
                 Apply();
                 return;
@@ -184,8 +183,8 @@
                 HorizontalAlignment = HorizontalAlignment.Center,
                 Content = AutomatonStrings.Button_SelectAll,
             };
-            selectAllButton.SetBinding(Button.IsEnabledProperty, nameof(optionValueHolder.HasUnselected));
-            selectAllButton.SetBinding(Button.CommandProperty, nameof(optionValueHolder.SelectAll));
+            selectAllButton.SetBinding(UIElement.IsEnabledProperty, nameof(optionValueHolder.HasUnselected));
+            selectAllButton.SetBinding(ButtonBase.CommandProperty, nameof(optionValueHolder.SelectAll));
             buttonGrid.Children.Add(selectAllButton);
 
             var deselectAllButton = new Button()
@@ -193,8 +192,8 @@
                 HorizontalAlignment = HorizontalAlignment.Center,
                 Content = AutomatonStrings.Button_DeselectAll,
             };
-            deselectAllButton.SetBinding(Button.IsEnabledProperty, nameof(optionValueHolder.HasSelected));
-            deselectAllButton.SetBinding(Button.CommandProperty, nameof(optionValueHolder.DeselectAll));
+            deselectAllButton.SetBinding(UIElement.IsEnabledProperty, nameof(optionValueHolder.HasSelected));
+            deselectAllButton.SetBinding(ButtonBase.CommandProperty, nameof(optionValueHolder.DeselectAll));
             buttonGrid.Children.Add(deselectAllButton);
             Grid.SetColumn(deselectAllButton, 1);
 
@@ -254,7 +253,7 @@
             {
                 if (!collectionReset)
                 {
-                    owner.ParentSettings.OnOptionModified(owner);
+                    owner.parentSettings.OnOptionModified(owner);
                     NotifyPropertyChanged(nameof(HasSelected));
                     NotifyPropertyChanged(nameof(HasUnselected));
                 }

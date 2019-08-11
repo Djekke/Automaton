@@ -1,22 +1,19 @@
 ﻿namespace CryoFall.Automaton.ClientSettings
 {
-    using CryoFall.Automaton.Features;
     using System;
+    using CryoFall.Automaton.Features;
 
     public class SettingsFeature : ProtoSettings
     {
         public bool IsEnabled { get; set; }
 
-        public event Action<bool> IsEnabledChanged; 
-
-        private readonly ProtoFeature Feature;
+        public event Action<bool> IsEnabledChanged;
 
         public SettingsFeature(ProtoFeature feature)
         {
-            Id = feature.Id;
-            Feature = feature;
-            Name = feature.Name;
-            Description = feature.Description;
+            id = feature.Id;
+            name = feature.Name;
+            description = feature.Description;
 
             feature.PrepareOptions(this);
             Options = feature.Options;
