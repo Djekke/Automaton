@@ -2,6 +2,7 @@
 {
     using System.Windows;
     using System.Windows.Controls;
+    using AtomicTorch.CBND.CoreMod.UI.Controls.Core;
     using AtomicTorch.CBND.GameApi.Scripting;
 
     public class OptionSeparatorWithTitle : IOption
@@ -20,9 +21,9 @@
                 Style = Api.Client.UI.GetApplicationResource<Style>("ControlHorizontalSeparator")
             };
 
-            var titleControl = new TextBlock()
+            var titleControl = new FormattedTextBlock()
             {
-                Text = Title,
+                Content = Title,
                 HorizontalAlignment = HorizontalAlignment.Center,
             };
 

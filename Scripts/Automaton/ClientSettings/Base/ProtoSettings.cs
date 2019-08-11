@@ -13,6 +13,8 @@
 
         protected List<IOptionWithValue> optionsWithValue;
 
+        public bool HasOptionsWithValue => optionsWithValue.Any();
+
         public virtual string Id => id;
 
         public virtual string Name => name;

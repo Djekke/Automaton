@@ -145,10 +145,14 @@
                     </ItemsControl>
 
                     <Control Grid.Row="3"
-                             Style="{StaticResource ControlHorizontalSeparator}" />
+                             Style="{StaticResource ControlHorizontalSeparator}"
+                             Visibility="{Binding Path=ShowButtons,
+                                               Converter={StaticResource BoolToVisibilityConverter}}" />
 
                     <Grid Grid.Row="4"
-                          Margin="0,5,0,5">
+                          Margin="0,5,0,5"
+                          Visibility="{Binding Path=ShowButtons,
+                                               Converter={StaticResource BoolToVisibilityConverter}}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />

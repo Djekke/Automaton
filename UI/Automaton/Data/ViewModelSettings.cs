@@ -20,6 +20,8 @@
 
         public bool IsModified => owner.IsModified;
 
+        public bool ShowButtons => owner.HasOptionsWithValue;
+
         public BaseCommand ApplyButton => new ActionCommand(owner.ApplyAndSave);
 
         public BaseCommand CancelButton => new ActionCommand(owner.Cancel);

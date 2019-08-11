@@ -55,6 +55,7 @@
                 SettingsList.Add(new SettingsFeature(feature));
             }
             SettingsList.Add(new SettingsGlobal());
+            SettingsList.Add(new SettingsInformation());
 
             foreach (var settings in SettingsList)
             {

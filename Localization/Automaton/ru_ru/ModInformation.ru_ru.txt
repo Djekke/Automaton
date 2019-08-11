@@ -1,0 +1,20 @@
+﻿Scripts/Automaton/ClientSettings/SettingsInformation@Name:
+Информация
+
+Scripts/Automaton/ClientSettings/SettingsInformation@Description:
+Информация о моде
+
+Scripts/Automaton/ClientSettings/SettingsInformation@AvaiableKeybindings:
+Доступные горячие клавиши
+
+Scripts/Automaton/ClientSettings/SettingsInformation@AllKeybindingsConfigurable:
+Все горячие клавиши можно изменить в настройках игры.
+
+Scripts/Automaton/ClientSettings/SettingsInformation@Links:
+Ссылки
+
+Scripts/Automaton/ClientSettings/SettingsInformation@ForumThread:
+Тема на форуме
+
+Scripts/Automaton/ClientSettings/SettingsInformation@GithubLink:
+Ссылка на гитхаб
