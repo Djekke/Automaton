@@ -1,13 +1,13 @@
 ﻿namespace CryoFall.Automaton
 {
-    using System;
     using System.Collections.Generic;
+    using AtomicTorch.CBND.GameApi.Scripting;
     using AtomicTorch.CBND.GameApi.Scripting.ClientComponents;
     using CryoFall.Automaton.Features;
 
     public class ClientComponentAutomaton : ClientComponent
     {
-        public static ClientComponentAutomaton Instance { get; private set; }
+        public static ClientComponentAutomaton Instance { get; set; }
 
         public static double UpdateInterval => AutomatonManager.UpdateInterval;
 
@@ -17,16 +17,16 @@
 
         public ClientComponentAutomaton() : base(isLateUpdateEnabled: false)
         {
-            if (Instance != null)
-            {
-                throw new Exception("Instance already exist");
-            }
-
             featuresList = AutomatonManager.GetFeatures();
         }
 
         public static void Init()
         {
+            if (Instance != null)
+            {
+                Api.Logger.Error("Automaton: Instance already exist.");
+            }
+
             Instance = Client.Scene.CreateSceneObject(nameof(ClientComponentAutomaton))
                 .AddComponent<ClientComponentAutomaton>(AutomatonManager.IsEnabled);
         }

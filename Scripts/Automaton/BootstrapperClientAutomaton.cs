@@ -35,6 +35,7 @@
         private static void ResetHandler()
         {
             ClientComponentAutomaton.Instance?.Destroy();
+            ClientComponentAutomaton.Instance = null;
 
             gameplayInputContext?.Stop();
             gameplayInputContext = null;
