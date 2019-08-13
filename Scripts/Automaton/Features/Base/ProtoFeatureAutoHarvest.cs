@@ -2,6 +2,7 @@
 {
     using System;
     using System.Linq;
+    using AtomicTorch.CBND.CoreMod;
     using AtomicTorch.CBND.CoreMod.Characters.Input;
     using AtomicTorch.CBND.CoreMod.Characters.Player;
     using AtomicTorch.CBND.CoreMod.Items.Weapons;
@@ -13,8 +14,6 @@
 
     public abstract class ProtoFeatureAutoHarvest: ProtoFeature
     {
-        private bool targetFound = false;
-
         private bool attackInProgress = false;
 
         /// <summary>
@@ -27,16 +26,6 @@
                 Stop();
                 return;
             }
-
-            if (targetFound)
-            {
-                FindAndAttackTarget();
-            }
-            else
-            {
-                Stop();
-            }
-
         }
 
         /// <summary>
@@ -49,7 +38,10 @@
                 return;
             }
 
-            FindAndAttackTarget();
+            if (!attackInProgress)
+            {
+                FindAndAttackTarget();
+            }
         }
 
         private void FindAndAttackTarget( )
@@ -60,27 +52,29 @@
                                                                    radius: GetCurrentWeaponRange(),
                                                                    collisionGroup: CollisionGroups.HitboxMelee))
             {
-                if (objectsNearby == null)
-                {
-                    targetFound = false;
-                    return; // do we need this?
-                }
                 var objectOfInterest = objectsNearby
-                    .Where(t => EnabledEntityList.Contains(t.PhysicsBody?.AssociatedWorldObject?.ProtoGameObject))
+                    ?.Where(t => EnabledEntityList.Contains(t.PhysicsBody?.AssociatedWorldObject?.ProtoGameObject))
                     .ToList();
-                if (!(objectOfInterest.Count > 0))
+                if (objectOfInterest == null || objectOfInterest.Count == 0)
                 {
-                    targetFound = false;
                     return;
                 }
                 foreach (var obj in objectOfInterest)
                 {
                     var testWorldObject = obj.PhysicsBody.AssociatedWorldObject as IStaticWorldObject;
-                    if (CheckForObstacles(testWorldObject, fromPos + obj.Penetration))
+                    if (CheckForObstacles(testWorldObject, obj.PhysicsBody.Position + obj.Penetration))
                     {
-                        targetFound = true;
-                        AttackTarget(testWorldObject, fromPos + obj.Penetration);
+                        AttackTarget(testWorldObject, obj.PhysicsBody.Position + obj.Penetration);
                         attackInProgress = true;
+                        ClientTimersSystem.AddAction(GetCurrentWeaponAttackDelay(), () =>
+                        {
+                            if (attackInProgress)
+                            {
+                                attackInProgress = false;
+                                StopItemUse();
+                                FindAndAttackTarget();
+                            }
+                        });
                         return;
                     }
                 }
@@ -107,26 +101,26 @@
             SelectedItem.ProtoItem.ClientItemUseStart(SelectedItem);
         }
 
-        private void StopItemUse()
-        {
-            SelectedItem?.ProtoItem.ClientItemUseFinish(SelectedItem);
-        }
-
-
         protected virtual double GetCurrentWeaponRange()
         {
-            var toolItem = SelectedItem.ProtoItem as IProtoItemWeaponMelee;
-            if (toolItem?.OverrideDamageDescription != null)
+            if(SelectedItem.ProtoItem is IProtoItemWeaponMelee toolItem &&
+               toolItem.OverrideDamageDescription != null)
             {
                 return toolItem.OverrideDamageDescription.RangeMax;
             }
-            Api.Logger.Error("Automaton: OverrideDamageDescription is null for " + toolItem);
+            Api.Logger.Error("Automaton: OverrideDamageDescription is null for " + SelectedItem);
             return 0d;
         }
 
         protected Vector2D GetWeaponOffset()
         {
             return new Vector2D(0, CurrentCharacter.ProtoCharacter.CharacterWorldWeaponOffsetMelee);
+        }
+
+        protected double GetCurrentWeaponAttackDelay()
+        {
+            var toolItem = SelectedItem.ProtoItem as IProtoItemWeaponMelee;
+            return toolItem?.FireInterval ?? 0d;
         }
 
         private bool CheckForObstacles(IWorldObject targetObject, Vector2D intersectionPoint)
@@ -175,6 +169,12 @@
                         canReachObject = true;
                         continue;
                     }
+
+                    if (EnabledEntityList.Contains(testWorldObject.ProtoWorldObject))
+                    {
+                        // Another object to havest in line - fire it anyway
+                        continue;
+                    }
                     // another object on the way
                     return false;
                 }
@@ -182,15 +182,16 @@
             return canReachObject;
         }
 
+        private void StopItemUse()
+        {
+            SelectedItem?.ProtoItem.ClientItemUseFinish(SelectedItem);
+        }
+
         /// <summary>
         /// Stop everything.
         /// </summary>
         public override void Stop()
         {
-            if (targetFound)
-            {
-                targetFound = false;
-            }
             if (attackInProgress)
             {
                 attackInProgress = false;
