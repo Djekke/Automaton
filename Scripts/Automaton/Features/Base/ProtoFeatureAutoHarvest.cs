@@ -8,6 +8,7 @@
     using AtomicTorch.CBND.CoreMod.Items.Weapons;
     using AtomicTorch.CBND.CoreMod.Systems.Physics;
     using AtomicTorch.CBND.CoreMod.Systems.Weapons;
+    using AtomicTorch.CBND.GameApi.Data.Physics;
     using AtomicTorch.CBND.GameApi.Data.World;
     using AtomicTorch.CBND.GameApi.Scripting;
     using AtomicTorch.GameEngine.Common.Primitives;
@@ -62,9 +63,17 @@
                 foreach (var obj in objectOfInterest)
                 {
                     var testWorldObject = obj.PhysicsBody.AssociatedWorldObject as IStaticWorldObject;
-                    if (CheckForObstacles(testWorldObject, obj.PhysicsBody.Position + obj.Penetration))
+                    var shape = obj.PhysicsBody.Shapes.FirstOrDefault(s =>
+                        s.CollisionGroup == CollisionGroups.HitboxMelee);
+                    if (shape == null)
                     {
-                        AttackTarget(testWorldObject, obj.PhysicsBody.Position + obj.Penetration);
+                        Api.Logger.Error("Automaton: target object has no HitBoxMelee shape " + testWorldObject);
+                        continue;
+                    }
+                    var targetPoint = ShapeCenter(shape) + obj.PhysicsBody.Position;
+                    if (CheckForObstacles(testWorldObject, targetPoint))
+                    {
+                        AttackTarget(testWorldObject, targetPoint);
                         attackInProgress = true;
                         ClientTimersSystem.AddAction(GetCurrentWeaponAttackDelay(), () =>
                         {
@@ -139,10 +148,9 @@
                 foreach (var testResult in obstaclesOnTheWay)
                 {
                     var testResultPhysicsBody = testResult.PhysicsBody;
-                    var attackedProtoTile = testResultPhysicsBody.AssociatedProtoTile;
-                    if (attackedProtoTile != null)
+                    if (testResultPhysicsBody.AssociatedProtoTile != null)
                     {
-                        if (attackedProtoTile.Kind != TileKind.Solid)
+                        if (testResultPhysicsBody.AssociatedProtoTile.Kind != TileKind.Solid)
                         {
                             // non-solid obstacle - skip
                             continue;
@@ -180,6 +188,34 @@
                 }
             }
             return canReachObject;
+        }
+
+        private Vector2D ShapeCenter(IPhysicsShape shape)
+        {
+            if (shape != null)
+            {
+                switch (shape.ShapeType)
+                {
+                    case ShapeType.Rectangle:
+                        var shapeRectangle = (RectangleShape)shape;
+                        return shapeRectangle.Position + shapeRectangle.Size / 2d;
+                    case ShapeType.Point:
+                        var shapePoint = (PointShape)shape;
+                        return shapePoint.Point;
+                    case ShapeType.Circle:
+                        var shapeCircle = (CircleShape)shape;
+                        return shapeCircle.Center;
+                    case ShapeType.Line:
+                        break;
+                    case ShapeType.LineSegment:
+                        var lineSegmentShape = (LineSegmentShape)shape;
+                        return new Vector2D((lineSegmentShape.Point1.X + lineSegmentShape.Point2.X) / 2d,
+                                     (lineSegmentShape.Point1.Y + lineSegmentShape.Point2.Y) / 2d);
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+            return new Vector2D(0, 0);
         }
 
         private void StopItemUse()
