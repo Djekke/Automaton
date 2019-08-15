@@ -28,7 +28,7 @@
 
         public static double UpdateInterval = 0.5d;
 
-        public static Version CurrentVersion => new Version("0.3.1");
+        public static Version CurrentVersion => new Version("0.3.2");
 
         public static Version VersionFromClientStorage = null;
 
