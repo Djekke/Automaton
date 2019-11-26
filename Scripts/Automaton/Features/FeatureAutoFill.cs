@@ -23,7 +23,7 @@
         private readonly Dictionary<IProtoEntity, List<IProtoEntity>> requiredTilesDictionary =
             new Dictionary<IProtoEntity, List<IProtoEntity>>();
 
-        private List<IProtoEntity> PermitedTiles =>
+        private List<IProtoEntity> PermittedTiles =>
             requiredTilesDictionary.Where(entry => EnabledEntityList.Contains(entry.Key))
                 .SelectMany(entry => entry.Value).ToList();
 
@@ -87,12 +87,12 @@
         private bool IsWaterNearby()
         {
             var tile = CurrentCharacter.Tile;
-            if (PermitedTiles.Contains(tile.ProtoTile))
+            if (PermittedTiles.Contains(tile.ProtoTile))
             {
                 return true;
             }
 
-            if (tile.EightNeighborTiles.Select(t => t.ProtoTile).Intersect(PermitedTiles).Any())
+            if (tile.EightNeighborTiles.Select(t => t.ProtoTile).Intersect(PermittedTiles).Any())
             {
                 return true;
             }
@@ -147,16 +147,16 @@
             }
         }
 
-        private void ContainerHotbarOnItemCountChanged(IItem item, ushort previouscount, ushort currentcount)
+        private void ContainerHotbarOnItemCountChanged(IItem item, ushort previousCount, ushort currentCount)
         {
-            if (usedItem == item && currentcount < previouscount)
+            if (usedItem == item && currentCount < previousCount)
             {
                 waitingForServer = false;
                 TryToStartFillAction();
             }
         }
 
-        private void ContainerHotbarOnItemRemoved(IItem item, byte slotid)
+        private void ContainerHotbarOnItemRemoved(IItem item, byte slotId)
         {
             if (usedItem == item)
             {

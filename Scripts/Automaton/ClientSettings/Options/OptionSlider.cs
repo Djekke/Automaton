@@ -41,7 +41,7 @@
 
         public override void RegisterValueType(IClientStorage storage)
         {
-            // double already registed.
+            // double already registered.
         }
 
         protected override void CreateControlInternal(out FrameworkElement control)

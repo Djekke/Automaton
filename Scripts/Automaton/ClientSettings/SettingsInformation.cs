@@ -11,7 +11,7 @@
 
         public override string Description => "Automaton Information";
 
-        public string AvaiableKeybindings => "Avaiable keybindings";
+        public string AvailableKeybindings => "Available keybindings";
 
         public string AllKeybindingsConfigurable => "All keybindings is configurable in game settings.";
 
@@ -27,7 +27,7 @@
 
         public SettingsInformation()
         {
-            Options.Add(new OptionInformationText("[b]" + AvaiableKeybindings + ":[/b]"));
+            Options.Add(new OptionInformationText("[b]" + AvailableKeybindings + ":[/b]"));
             Options.Add(new OptionSeparator());
             Options.Add(new OptionButtonInformation(AutomatonButton.OpenSettings,
                 AutomatonButton.OpenSettings.GetDescription()));

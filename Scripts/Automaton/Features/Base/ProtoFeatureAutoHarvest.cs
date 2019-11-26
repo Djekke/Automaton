@@ -111,7 +111,7 @@
             var rotationAngleRad =
                 Math.Abs(Math.PI + Math.Atan2(deltaPositionToMouseCursor.Y, deltaPositionToMouseCursor.X));
             var moveModes = PlayerCharacter.GetPrivateState(CurrentCharacter).Input.MoveModes;
-            // TODO: dont prevent mooving
+            // TODO: don't prevent moving
             var command = new CharacterInputUpdate(moveModes, (float)rotationAngleRad);
             ((PlayerCharacter)CurrentCharacter.ProtoCharacter).ClientSetInput(command);
             // TODO: prevent user mousemove to interrupt it
@@ -187,7 +187,7 @@
 
                 if (this.EnabledEntityList.Contains(testWorldObject.ProtoWorldObject))
                 {
-                    // Another object to havest in line - fire it anyway
+                    // Another object to harvest in line - fire it anyway
                     continue;
                 }
                 // another object on the way

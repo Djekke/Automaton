@@ -110,7 +110,7 @@
 
         public void RegisterValueType(IClientStorage storage)
         {
-            // List<string> should be already registred.
+            // List<string> should be already registered.
             // storage.RegisterType(typeof(List<string>));
         }
 

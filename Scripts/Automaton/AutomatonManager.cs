@@ -38,7 +38,7 @@
         public static void Init()
         {
             LoadVersionFromClientStorage();
-            LoadIsEnbledFromClientStorage();
+            LoadIsEnabledFromClientStorage();
 
             featuresList = new List<ProtoFeature>()
             {
@@ -74,16 +74,16 @@
             versionStorage.RegisterType(typeof(Version));
             versionStorage.TryLoad(out VersionFromClientStorage);
 
-            // Version changes handeling.
+            // Version changes handling.
             // if (VersionFromClientStorage.CompareTo(CurrentVersion) > 0)
 
             versionStorage.Save(CurrentVersion);
         }
 
         /// <summary>
-        /// Try to load IsEnbled from client storage.
+        /// Try to load IsEnabled from client storage.
         /// </summary>
-        private static void LoadIsEnbledFromClientStorage()
+        private static void LoadIsEnabledFromClientStorage()
         {
             // Load settings.
             isEnabledStorage = Api.Client.Storage.GetStorage("Mods/Automaton/IsEnabled");

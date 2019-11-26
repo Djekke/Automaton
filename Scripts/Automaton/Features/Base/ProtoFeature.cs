@@ -120,7 +120,7 @@
         }
 
         /// <summary>
-        /// Check initial condition (right tool equiped or other checkd).
+        /// Check initial condition (right tool equipped or other checks).
         /// </summary>
         /// <returns></returns>
         protected virtual bool CheckPrecondition()

@@ -142,7 +142,7 @@
                 lastActionState = PrivateState.CurrentActionState;
             }
 
-            // Check if we openned loot container before enabling component.
+            // Check if we opened loot container before enabling component.
             var currentInteractionObject = InteractionCheckerSystem.SharedGetCurrentInteraction(CurrentCharacter);
             if (currentInteractionObject?.ProtoWorldObject is ProtoObjectLootContainer)
             {
@@ -163,7 +163,7 @@
             else
             {
                 // Action is finished.
-                // Check if we openned a loot container.
+                // Check if we opened a loot container.
                 if (lastActionState != null &&
                     lastActionState.IsCompleted &&
                     !lastActionState.IsCancelled && !lastActionState.IsCancelledByServer &&

@@ -28,7 +28,7 @@
 
         public override void RegisterValueType(IClientStorage storage)
         {
-            // bool already registred
+            // bool already registered
         }
 
         protected override void CreateControlInternal(out FrameworkElement control)
@@ -37,7 +37,7 @@
             //    <CheckBox IsChecked="{Binding CurrentValue}"
             //              Content="{Binding Label}"
             //              base:ToolTipServiceExtend.ToolTip="{Binding ToolTip}" />
-            //</DataTemplat>
+            //</DataTemplate>
 
             var checkbox = new CheckBox()
             {
