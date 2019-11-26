@@ -30,3 +30,6 @@ Scripts/Automaton/Features/FeatureAutoWoodcutting@Name:
 
 Scripts/Automaton/Features/FeatureAutoWoodcutting@Description:
 Автоматически рубит ближайшие деревья, если топор в руках.
+
+Scripts/Automaton/Features/FeatureAutoWoodcutting@ChopOnlyFullyGrownText:
+Рубить только полностью выросшие деревья

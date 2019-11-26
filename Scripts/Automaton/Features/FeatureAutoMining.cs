@@ -26,10 +26,7 @@
             {
                 return toolPickaxe.RangeMax;
             }
-            else
-            {
-                return base.GetCurrentWeaponRange();
-            }
+            return base.GetCurrentWeaponRange();
         }
     }
 }

@@ -45,6 +45,11 @@
             }
         }
 
+        protected virtual bool AdditionalValidation(IStaticWorldObject testWorldObject)
+        {
+            return true;
+        }
+
         private void FindAndAttackTarget( )
         {
             var fromPos = CurrentCharacter.Position + GetWeaponOffset();
@@ -68,6 +73,10 @@
                     if (shape == null)
                     {
                         Api.Logger.Error("Automaton: target object has no HitBoxMelee shape " + testWorldObject);
+                        continue;
+                    }
+                    if(!AdditionalValidation(testWorldObject))
+                    {
                         continue;
                     }
                     var targetPoint = ShapeCenter(shape) + obj.PhysicsBody.Position;
