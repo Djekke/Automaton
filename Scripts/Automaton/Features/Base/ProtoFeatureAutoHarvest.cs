@@ -48,44 +48,43 @@
         private void FindAndAttackTarget( )
         {
             var fromPos = CurrentCharacter.Position + GetWeaponOffset();
-            using (var objectsNearby = CurrentCharacter.PhysicsBody.PhysicsSpace
-                                                       .TestCircle(position: fromPos,
-                                                                   radius: GetCurrentWeaponRange(),
-                                                                   collisionGroup: CollisionGroups.HitboxMelee))
+            using var objectsNearby = this.CurrentCharacter.PhysicsBody.PhysicsSpace
+                                          .TestCircle(position: fromPos,
+                                                      radius: this.GetCurrentWeaponRange(),
+                                                      collisionGroup: CollisionGroups.HitboxMelee);
+            var objectOfInterest = objectsNearby
+                                   .AsList()
+                                   .Where(t => this.EnabledEntityList.Contains(t.PhysicsBody?.AssociatedWorldObject?.ProtoGameObject))
+                                   .ToList();
+            if (objectOfInterest.Count == 0)
             {
-                var objectOfInterest = objectsNearby
-                    ?.Where(t => EnabledEntityList.Contains(t.PhysicsBody?.AssociatedWorldObject?.ProtoGameObject))
-                    .ToList();
-                if (objectOfInterest == null || objectOfInterest.Count == 0)
+                return;
+            }
+            foreach (var obj in objectOfInterest)
+            {
+                var testWorldObject = obj.PhysicsBody.AssociatedWorldObject as IStaticWorldObject;
+                var shape = obj.PhysicsBody.Shapes.FirstOrDefault(s =>
+                                                                      s.CollisionGroup == CollisionGroups.HitboxMelee);
+                if (shape == null)
                 {
-                    return;
+                    Api.Logger.Error("Automaton: target object has no HitBoxMelee shape " + testWorldObject);
+                    continue;
                 }
-                foreach (var obj in objectOfInterest)
+                var targetPoint = this.ShapeCenter(shape) + obj.PhysicsBody.Position;
+                if (this.CheckForObstacles(testWorldObject, targetPoint))
                 {
-                    var testWorldObject = obj.PhysicsBody.AssociatedWorldObject as IStaticWorldObject;
-                    var shape = obj.PhysicsBody.Shapes.FirstOrDefault(s =>
-                        s.CollisionGroup == CollisionGroups.HitboxMelee);
-                    if (shape == null)
-                    {
-                        Api.Logger.Error("Automaton: target object has no HitBoxMelee shape " + testWorldObject);
-                        continue;
-                    }
-                    var targetPoint = ShapeCenter(shape) + obj.PhysicsBody.Position;
-                    if (CheckForObstacles(testWorldObject, targetPoint))
-                    {
-                        AttackTarget(testWorldObject, targetPoint);
-                        attackInProgress = true;
-                        ClientTimersSystem.AddAction(GetCurrentWeaponAttackDelay(), () =>
-                        {
-                            if (attackInProgress)
-                            {
-                                attackInProgress = false;
-                                StopItemUse();
-                                FindAndAttackTarget();
-                            }
-                        });
-                        return;
-                    }
+                    this.AttackTarget(testWorldObject, targetPoint);
+                    this.attackInProgress = true;
+                    ClientTimersSystem.AddAction(this.GetCurrentWeaponAttackDelay(), () =>
+                                                                                     {
+                                                                                         if (this.attackInProgress)
+                                                                                         {
+                                                                                             this.attackInProgress = false;
+                                                                                             this.StopItemUse();
+                                                                                             this.FindAndAttackTarget();
+                                                                                         }
+                                                                                     });
+                    return;
                 }
             }
         }
@@ -140,53 +139,52 @@
             var toPos = (fromPos - intersectionPoint).Normalized * GetCurrentWeaponRange();
             // Check if in range
             bool canReachObject = false;
-            using (var obstaclesOnTheWay = CurrentCharacter.PhysicsBody.PhysicsSpace
-                                                           .TestLine(fromPosition: fromPos,
-                                                                     toPosition: fromPos - toPos,
-                                                                     collisionGroup: CollisionGroups.HitboxMelee))
+            using var obstaclesOnTheWay = this.CurrentCharacter.PhysicsBody.PhysicsSpace
+                                              .TestLine(fromPosition: fromPos,
+                                                        toPosition: fromPos - toPos,
+                                                        collisionGroup: CollisionGroups.HitboxMelee);
+            foreach (var testResult in obstaclesOnTheWay.AsList())
             {
-                foreach (var testResult in obstaclesOnTheWay)
+                var testResultPhysicsBody = testResult.PhysicsBody;
+                if (testResultPhysicsBody.AssociatedProtoTile != null)
                 {
-                    var testResultPhysicsBody = testResult.PhysicsBody;
-                    if (testResultPhysicsBody.AssociatedProtoTile != null)
+                    if (testResultPhysicsBody.AssociatedProtoTile.Kind != TileKind.Solid)
                     {
-                        if (testResultPhysicsBody.AssociatedProtoTile.Kind != TileKind.Solid)
-                        {
-                            // non-solid obstacle - skip
-                            continue;
-                        }
-                        // tile on the way - blocking damage ray
-                        break;
-                    }
-
-                    var testWorldObject = testResultPhysicsBody.AssociatedWorldObject;
-                    if (testWorldObject == CurrentCharacter)
-                    {
-                        // ignore collision with self
+                        // non-solid obstacle - skip
                         continue;
                     }
-
-                    if (!(testWorldObject.ProtoGameObject is IDamageableProtoWorldObject))
-                    {
-                        // shoot through this object
-                        continue;
-                    }
-
-                    if (testWorldObject == targetObject)
-                    {
-                        canReachObject = true;
-                        continue;
-                    }
-
-                    if (EnabledEntityList.Contains(testWorldObject.ProtoWorldObject))
-                    {
-                        // Another object to havest in line - fire it anyway
-                        continue;
-                    }
-                    // another object on the way
-                    return false;
+                    // tile on the way - blocking damage ray
+                    break;
                 }
+
+                var testWorldObject = testResultPhysicsBody.AssociatedWorldObject;
+                if (testWorldObject == this.CurrentCharacter)
+                {
+                    // ignore collision with self
+                    continue;
+                }
+
+                if (!(testWorldObject.ProtoGameObject is IDamageableProtoWorldObject))
+                {
+                    // shoot through this object
+                    continue;
+                }
+
+                if (testWorldObject == targetObject)
+                {
+                    canReachObject = true;
+                    continue;
+                }
+
+                if (this.EnabledEntityList.Contains(testWorldObject.ProtoWorldObject))
+                {
+                    // Another object to havest in line - fire it anyway
+                    continue;
+                }
+                // another object on the way
+                return false;
             }
+
             return canReachObject;
         }
 
