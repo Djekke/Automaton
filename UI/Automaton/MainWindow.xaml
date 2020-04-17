@@ -49,7 +49,7 @@
                 </CheckBox>
             </DataTemplate>
 
-            <Style TargetType="{x:Type ListBoxItem}">
+            <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
                 <Setter Property="core:SoundUI.ClickSound" Value="{StaticResource SoundListElementClick}" />
                 <Setter Property="core:SoundUI.EnterSound" Value="{StaticResource SoundListElementEnter}" />
                 <Setter Property="Background" Value="{StaticResource BrushColorAlt1}" />
