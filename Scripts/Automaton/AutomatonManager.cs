@@ -42,28 +42,14 @@
             LoadVersionFromClientStorage();
             LoadIsEnabledFromClientStorage();
 
-            featuresList = new List<IProtoFeature>()
-            {
-                FeatureAutoPickUp.Instance,
-                FeatureAutoGather.Instance,
-                FeatureAutoMining.Instance,
-                FeatureAutoWoodcutting.Instance,
-                FeatureAutoFill.Instance,
-            };
+            AddFeature(FeatureAutoPickUp.Instance);
+            AddFeature(FeatureAutoGather.Instance);
+            AddFeature(FeatureAutoMining.Instance);
+            AddFeature(FeatureAutoWoodcutting.Instance);
+            AddFeature(FeatureAutoFill.Instance);
 
-            foreach (var feature in featuresList)
-            {
-                feature.PrepareProto();
-                SettingsList.Add(new SettingsFeature(feature));
-            }
-            SettingsList.Add(SettingsGlobal.Instance);
-            SettingsList.Add(SettingsInformation.Instance);
-
-            foreach (var settings in SettingsList)
-            {
-                // load settings.
-                settings.InitSettings();
-            }
+            AddAndInitCustomSettingsTab(SettingsGlobal.Instance);
+            AddAndInitCustomSettingsTab(SettingsInformation.Instance);
         }
 
         /// <summary>
@@ -96,6 +82,36 @@
             }
 
             isEnabled = status;
+        }
+
+        /// <summary>
+        /// Add custom settings passed as parameter to SettingsList and init this settings.
+        /// </summary>
+        /// <param name="customSettings"></param>
+        public static void AddAndInitCustomSettingsTab(ProtoSettings customSettings)
+        {
+            SettingsList.Add(customSettings);
+            customSettings.InitSettings();
+        }
+
+        /// <summary>
+        /// Add feature to feature list.
+        /// </summary>
+        /// <param name="feature"></param>
+        /// <returns></returns>
+        public static bool AddFeature(IProtoFeature feature)
+        {
+            if (featuresList.Contains(feature))
+            {
+                Api.Logger.Error("Automaton: This feature already added: '" + feature + "'");
+                return false;
+            }
+
+            featuresList.Add(feature);
+
+            feature.PrepareProto();
+            AddAndInitCustomSettingsTab(new SettingsFeature(feature));
+            return true;
         }
 
         /// <summary>
