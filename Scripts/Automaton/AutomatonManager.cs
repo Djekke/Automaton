@@ -24,7 +24,7 @@
 
         private static bool isEnabled;
 
-        private static List<ProtoFeature> featuresList;
+        private static List<IProtoFeature> featuresList = new List<IProtoFeature>();
 
         public static double UpdateInterval = 0.5d;
 
@@ -40,13 +40,13 @@
             LoadVersionFromClientStorage();
             LoadIsEnabledFromClientStorage();
 
-            featuresList = new List<ProtoFeature>()
+            featuresList = new List<IProtoFeature>()
             {
-                new FeatureAutoPickUp(),
-                new FeatureAutoGather(),
-                new FeatureAutoMining(),
-                new FeatureAutoWoodcutting(),
-                new FeatureAutoFill(),
+                FeatureAutoPickUp.Instance,
+                FeatureAutoGather.Instance,
+                FeatureAutoMining.Instance,
+                FeatureAutoWoodcutting.Instance,
+                FeatureAutoFill.Instance,
             };
 
             foreach (var feature in featuresList)
@@ -96,12 +96,20 @@
             isEnabled = status;
         }
 
+        /// <summary>
+        /// Get list of all settings tabs.
+        /// </summary>
+        /// <returns></returns>
         public static List<ProtoSettings> GetAllSettings()
         {
             return SettingsList;
         }
 
-        public static List<ProtoFeature> GetFeatures()
+        /// <summary>
+        /// Get list of all features.
+        /// </summary>
+        /// <returns></returns>
+        public static List<IProtoFeature> GetFeatures()
         {
             return featuresList;
         }

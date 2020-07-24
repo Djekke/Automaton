@@ -1,5 +1,6 @@
 ﻿namespace CryoFall.Automaton.Features
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using AtomicTorch.CBND.CoreMod.Characters;
@@ -13,32 +14,71 @@
     using CryoFall.Automaton.ClientSettings;
     using CryoFall.Automaton.ClientSettings.Options;
 
-    public abstract class ProtoFeature
+    public abstract class ProtoFeature<T> : IProtoFeature
+        where T : class
     {
-        // All enabled Entity from EntityList that enabled in settings.
+        /// <summary>
+        /// Static instance. Needs to use lambda expression
+        /// to construct an instance (since constructor is private).
+        /// </summary>
+        private static readonly Lazy<T> sInstance = new Lazy<T>(() => CreateInstanceOfT());
+
+        /// <summary>
+        /// Gets the instance of this singleton.
+        /// </summary>
+        public static T Instance { get { return sInstance.Value; } }
+
+        /// <summary>
+        /// Creates an instance of T via reflection since T's constructor is expected to be private.
+        /// </summary>
+        /// <returns></returns>
+        private static T CreateInstanceOfT()
+        {
+            return Activator.CreateInstance(typeof(T), true) as T;
+        }
+
+        /// <summary>
+        /// List of all enabled Entity as <see cref="IProtoEntity"/> from EntityList that enabled in settings. 
+        /// </summary>
         public List<IProtoEntity> EnabledEntityList { get; set; }
 
         public List<string> DefaultEnabledList { get; protected set; } = new List<string>();
 
-        // All options for this feature.
+        /// <summary>
+        /// List of all options as <see cref="IOption"/> for this feature.
+        /// </summary>
         public List<IOption> Options { get; protected set; } = new List<IOption>();
 
-        // Unique identifier representing this feature.
+        /// <summary>
+        /// Unique identifier representing this feature.
+        /// </summary>
         public string Id { get; private set; }
 
+        /// <summary>
+        /// Feature name.
+        /// </summary>
         public abstract string Name { get; }
 
+        /// <summary>
+        /// Feature description.
+        /// </summary>
         public abstract string Description { get; }
 
-        // List of items which activate feature.
+        /// <summary>
+        /// List of items as <see cref="IProtoEntity"/> which activate feature.
+        /// </summary>
         public List<IProtoEntity> RequiredItemList;
 
-        // Is this feature enabled.
+        /// <summary>
+        /// Is this feature enabled.
+        /// </summary>
         public virtual bool IsEnabled { get; set; }
 
         public string IsEnabledText => "Enable this feature";
 
-        // List of all entity of interest for this feature.
+        /// <summary>
+        /// List of all entity as <see cref="IProtoEntity"/> of interest for this feature.
+        /// </summary>
         public List<IProtoEntity> EntityList;
 
         protected IItem SelectedItem => ClientHotbarSelectedItemManager.SelectedItem;
@@ -157,6 +197,11 @@
         /// </summary>
         public virtual void SetupSubscriptions(ClientComponent parentComponent)
         {
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 }

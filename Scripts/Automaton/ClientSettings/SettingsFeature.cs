@@ -9,7 +9,7 @@
 
         public event Action<bool> IsEnabledChanged;
 
-        public SettingsFeature(ProtoFeature feature)
+        public SettingsFeature(IProtoFeature feature)
         {
             id = feature.Id;
             name = feature.Name;

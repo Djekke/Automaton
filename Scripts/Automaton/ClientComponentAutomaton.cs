@@ -13,7 +13,7 @@
 
         private double accumulatedTime = UpdateInterval;
 
-        private readonly List<ProtoFeature> featuresList;
+        private readonly List<IProtoFeature> featuresList;
 
         public ClientComponentAutomaton() : base(isLateUpdateEnabled: false)
         {

@@ -11,8 +11,10 @@
     using CryoFall.Automaton.ClientSettings;
     using CryoFall.Automaton.ClientSettings.Options;
 
-    public class FeatureAutoWoodcutting: ProtoFeatureAutoHarvest
+    public class FeatureAutoWoodcutting: ProtoFeatureAutoHarvest<FeatureAutoWoodcutting>
     {
+        private FeatureAutoWoodcutting() { }
+
         public override string Name => "AutoWoodcutting";
 
         public override string Description => "Auto-attack near trees if axe in hands.";

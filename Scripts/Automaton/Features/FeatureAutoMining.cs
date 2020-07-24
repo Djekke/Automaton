@@ -7,8 +7,10 @@
     using AtomicTorch.CBND.GameApi.Data;
     using AtomicTorch.CBND.GameApi.Scripting;
 
-    public class FeatureAutoMining: ProtoFeatureAutoHarvest
+    public class FeatureAutoMining: ProtoFeatureAutoHarvest<FeatureAutoMining>
     {
+        private FeatureAutoMining() { }
+
         public override string Name => "AutoMining";
 
         public override string Description => "Auto-attack near minerals if pickaxe in hands.";

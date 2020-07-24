@@ -14,8 +14,10 @@
     using AtomicTorch.CBND.GameApi.Scripting;
     using AtomicTorch.CBND.GameApi.Scripting.ClientComponents;
 
-    public class FeatureAutoFill: ProtoFeature
+    public class FeatureAutoFill: ProtoFeature<FeatureAutoFill>
     {
+        private FeatureAutoFill() { }
+
         public override string Name => "AutoFill";
 
         public override string Description => "AutoFill empty bottles near water.";

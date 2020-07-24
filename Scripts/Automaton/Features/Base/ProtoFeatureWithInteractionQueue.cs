@@ -5,7 +5,8 @@
     using AtomicTorch.CBND.CoreMod.Systems.InteractionChecker;
     using AtomicTorch.CBND.GameApi.Data.World;
 
-    public abstract class ProtoFeatureWithInteractionQueue: ProtoFeature
+    public abstract class ProtoFeatureWithInteractionQueue<T> : ProtoFeature<T>
+        where T : class
     {
         protected List<IStaticWorldObject> interactionQueue = new List<IStaticWorldObject>();
 

@@ -13,8 +13,10 @@
     using AtomicTorch.CBND.GameApi.Scripting;
     using AtomicTorch.CBND.GameApi.Scripting.ClientComponents;
 
-    public class FeatureAutoGather: ProtoFeatureWithInteractionQueue
+    public class FeatureAutoGather: ProtoFeatureWithInteractionQueue<FeatureAutoGather>
     {
+        private FeatureAutoGather() { }
+
         public override string Name => "AutoGather";
 
         public override string Description => "Gather berry, herbs and other vegetation, harvest corpses, loot radtowns.";

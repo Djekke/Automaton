@@ -13,7 +13,8 @@
     using AtomicTorch.CBND.GameApi.Scripting;
     using AtomicTorch.GameEngine.Common.Primitives;
 
-    public abstract class ProtoFeatureAutoHarvest: ProtoFeature
+    public abstract class ProtoFeatureAutoHarvest<T> : ProtoFeature<T>
+        where T : class
     {
         private bool attackInProgress = false;
 

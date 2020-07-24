@@ -8,8 +8,10 @@
     using AtomicTorch.CBND.GameApi.Data;
     using AtomicTorch.CBND.GameApi.Scripting;
 
-    public class FeatureAutoPickUp: ProtoFeatureWithInteractionQueue
+    public class FeatureAutoPickUp: ProtoFeatureWithInteractionQueue<FeatureAutoPickUp>
     {
+        private FeatureAutoPickUp() { }
+
         public override string Name => "AutoPickUp";
 
         public override string Description => "PickUp items from ground (including twigs, stones, grass).";
