@@ -45,7 +45,7 @@
         {
             optionsWithValue = Options.OfType<IOptionWithValue>().ToList();
 
-            optionsStorageLocalFilePath = "Mods/Automaton/" + Id;
+            optionsStorageLocalFilePath = "Mods/" + AutomatonManager.ModName + "/" + Id;
             RegisterStorage();
             LoadOptionsFromStorage();
         }

@@ -28,6 +28,8 @@
 
         public static double UpdateInterval = 0.5d;
 
+        public static string ModName => "Automaton";
+
         public static Version CurrentVersion => new Version("0.3.4");
 
         public static Version VersionFromClientStorage = null;
@@ -70,7 +72,7 @@
         private static void LoadVersionFromClientStorage()
         {
             // Load settings.
-            versionStorage = Api.Client.Storage.GetStorage("Mods/Automaton/Version");
+            versionStorage = Api.Client.Storage.GetStorage("Mods/" + ModName + "/ Version");
             versionStorage.RegisterType(typeof(Version));
             versionStorage.TryLoad(out VersionFromClientStorage);
 
@@ -86,7 +88,7 @@
         private static void LoadIsEnabledFromClientStorage()
         {
             // Load settings.
-            isEnabledStorage = Api.Client.Storage.GetStorage("Mods/Automaton/IsEnabled");
+            isEnabledStorage = Api.Client.Storage.GetStorage("Mods/" + ModName + "/IsEnabled");
             if (!isEnabledStorage.TryLoad(out bool status))
             {
                 // Init default settings.
