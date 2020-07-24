@@ -21,6 +21,8 @@
 
         public virtual string Description => description;
 
+        public virtual int Order => 0;
+
         protected string id;
 
         protected string name;

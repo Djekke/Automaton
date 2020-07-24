@@ -91,6 +91,10 @@
         public static void AddAndInitCustomSettingsTab(ProtoSettings customSettings)
         {
             SettingsList.Add(customSettings);
+            SettingsList.Sort((s1, s2) =>
+                s1.Order == s2.Order
+                ? s1.Name.CompareTo(s2.Name)
+                : s1.Order.CompareTo(s2.Order));
             customSettings.InitSettings();
         }
 

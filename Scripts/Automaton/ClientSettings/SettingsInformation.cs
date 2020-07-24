@@ -11,6 +11,8 @@
 
         public override string Description => "Automaton Information";
 
+        public override int Order => 20;
+
         public string AvailableKeybindings => "Available keybindings";
 
         public string AllKeybindingsConfigurable => "All keybindings is configurable in game settings.";

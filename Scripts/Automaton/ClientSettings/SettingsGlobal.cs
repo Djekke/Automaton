@@ -15,6 +15,8 @@
 
         public override string Description => "Global mod settings.";
 
+        public override int Order => 10;
+
         private SettingsGlobal()
         {
             Options.Add(new OptionTextBox<double>(
