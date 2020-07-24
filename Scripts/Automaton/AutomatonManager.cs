@@ -56,8 +56,8 @@
                 feature.PrepareProto();
                 SettingsList.Add(new SettingsFeature(feature));
             }
-            SettingsList.Add(new SettingsGlobal());
-            SettingsList.Add(new SettingsInformation());
+            SettingsList.Add(SettingsGlobal.Instance);
+            SettingsList.Add(SettingsInformation.Instance);
 
             foreach (var settings in SettingsList)
             {

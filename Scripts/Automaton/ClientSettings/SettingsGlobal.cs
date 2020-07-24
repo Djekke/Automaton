@@ -3,7 +3,7 @@
     using CryoFall.Automaton;
     using CryoFall.Automaton.ClientSettings.Options;
 
-    public class SettingsGlobal : ProtoSettings
+    public class SettingsGlobal : ProtoSettingsSingleton<SettingsGlobal>
     {
         public string UpdateIntervalText => "Update interval (s)";
 
@@ -15,7 +15,7 @@
 
         public override string Description => "Global mod settings.";
 
-        public SettingsGlobal()
+        private SettingsGlobal()
         {
             Options.Add(new OptionTextBox<double>(
                 parentSettings: this,

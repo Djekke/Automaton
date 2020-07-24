@@ -3,7 +3,7 @@
     using AtomicTorch.GameEngine.Common.Extensions;
     using CryoFall.Automaton.ClientSettings.Options;
 
-    public class SettingsInformation : ProtoSettings
+    public class SettingsInformation : ProtoSettingsSingleton<SettingsInformation>
     {
         public override string Id => "ModInformation";
 
@@ -25,7 +25,7 @@
 
         private string githubLink = "https://github.com/Djekke/Automaton";
 
-        public SettingsInformation()
+        private SettingsInformation()
         {
             Options.Add(new OptionInformationText("[b]" + AvailableKeybindings + ":[/b]"));
             Options.Add(new OptionSeparator());
