@@ -5,6 +5,7 @@
     using AtomicTorch.CBND.GameApi.Data.Characters;
     using AtomicTorch.CBND.GameApi.Scripting;
     using CryoFall.Automaton.UI;
+    using CryoFall.UpdateChecker;
 
     public class BootstrapperClientAutomaton : BaseBootstrapper
     {
@@ -13,6 +14,11 @@
         public override void ClientInitialize()
         {
             ClientInputManager.RegisterButtonsEnum<AutomatonButton>();
+
+            UpdateChecker.CheckNewReleases(
+                AutomatonManager.ModId,
+                AutomatonManager.CurrentVersion,
+                AutomatonManager.RssFeed);
 
             AutomatonManager.Init();
 

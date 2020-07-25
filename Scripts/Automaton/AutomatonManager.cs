@@ -28,9 +28,12 @@
 
         public static double UpdateInterval = 0.5d;
 
-        public static string ModName => "Automaton";
+        public const string ModId = "Automaton";
 
         public static Version CurrentVersion => new Version("0.3.4");
+
+        public const string RssFeed = //"http://github.com/Djekke/Automaton/releases.atom";
+            "https://feedmix.novaclic.com/atom2rss.php?source=https%3A%2F%2Fgithub.com%2FDjekke%2FAutomaton%2Freleases.atom";
 
         public static Version VersionFromClientStorage = null;
 
@@ -58,7 +61,7 @@
         private static void LoadVersionFromClientStorage()
         {
             // Load settings.
-            versionStorage = Api.Client.Storage.GetStorage("Mods/" + ModName + "/ Version");
+            versionStorage = Api.Client.Storage.GetStorage("Mods/" + ModId + "/ Version");
             versionStorage.RegisterType(typeof(Version));
             versionStorage.TryLoad(out VersionFromClientStorage);
 
@@ -74,7 +77,7 @@
         private static void LoadIsEnabledFromClientStorage()
         {
             // Load settings.
-            isEnabledStorage = Api.Client.Storage.GetStorage("Mods/" + ModName + "/IsEnabled");
+            isEnabledStorage = Api.Client.Storage.GetStorage("Mods/" + ModId + "/IsEnabled");
             if (!isEnabledStorage.TryLoad(out bool status))
             {
                 // Init default settings.
