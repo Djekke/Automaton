@@ -51,6 +51,7 @@
             AddFeature(FeatureAutoWoodcutting.Instance);
             AddFeature(FeatureAutoFill.Instance);
             AddFeature(FeatureAutoFishing.Instance);
+            AddFeature(FeatureAutoFishCleaner.Instance);
 
             AddAndInitCustomSettingsTab(SettingsGlobal.Instance);
             AddAndInitCustomSettingsTab(SettingsInformation.Instance);
