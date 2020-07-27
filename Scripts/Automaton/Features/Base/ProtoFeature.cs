@@ -163,19 +163,8 @@
         /// Check initial condition (right tool equipped or other checks).
         /// </summary>
         /// <returns></returns>
-        protected virtual bool CheckPrecondition()
-        {
-            if (RequiredItemList?.Count == 0)
-            {
-                return true;
-            }
-            var selectedProtoItem = SelectedItem?.ProtoItem;
-            if (selectedProtoItem != null && RequiredItemList.Contains(selectedProtoItem))
-            {
-                return true;
-            }
-            return false;
-        }
+        protected virtual bool CheckPrecondition() =>
+            !RequiredItemList.Any() || RequiredItemList.Contains(SelectedItem?.ProtoItem);
 
         /// <summary>
         /// Stop everything.
