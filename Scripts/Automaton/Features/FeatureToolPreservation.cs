@@ -29,11 +29,11 @@
 
         public double AlertThreshold { get; set; }
 
-        public string AlertThresholdText => "Alert below this durability level";
+        public string AlertThresholdText => "Alert below this point";
 
         public double AlertStep { get; set; }
 
-        public string AlertStepText => "Alert every X durability loss";
+        public string AlertStepText => "Alert every additional loss";
 
         public double AlertTimeout { get; set; }
 
@@ -45,7 +45,7 @@
 
         public double UnequipThreshold { get; set; }
 
-        public string UnequipThresholdText => "Unequip on this durability level";
+        public string UnequipThresholdText => "Unequip below this level";
 
         private IItem lastSelectedItem;
 
@@ -69,20 +69,20 @@
                 {
                     IsAlertNotificationEnabled = value;
                 }));
-            Options.Add(new OptionTextBox<double>(
+            Options.Add(new OptionSlider(
                 parentSettings: settingsFeature,
                 id: "AlertThreshold",
                 label: AlertThresholdText,
-                defaultValue: 0.5,
+                defaultValue: 0.3,
                 valueChangedCallback: value =>
                 {
                     AlertThreshold = value;
                 }));
-            Options.Add(new OptionTextBox<double>(
+            Options.Add(new OptionSlider(
                 parentSettings: settingsFeature,
                 id: "AlertStep",
                 label: AlertStepText,
-                defaultValue: 0.1,
+                defaultValue: 0.05,
                 valueChangedCallback: value =>
                 {
                     AlertStep = value;
@@ -91,7 +91,7 @@
                 parentSettings: settingsFeature,
                 id: "AlertTimeout",
                 label: AlertTimeoutText,
-                defaultValue: 5d,
+                defaultValue: 15d,
                 valueChangedCallback: value =>
                 {
                     AlertTimeout = value;
@@ -106,11 +106,11 @@
                 {
                     IsUnequipEnabled = value;
                 }));
-            Options.Add(new OptionTextBox<double>(
+            Options.Add(new OptionSlider(
                 parentSettings: settingsFeature,
                 id: "UnequipThreshold",
                 label: UnequipThresholdText,
-                defaultValue: 0.05,
+                defaultValue: 0.1,
                 valueChangedCallback: value =>
                 {
                     UnequipThreshold = value;

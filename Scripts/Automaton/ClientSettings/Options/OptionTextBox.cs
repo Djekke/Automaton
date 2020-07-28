@@ -57,19 +57,24 @@
             var textbox = new TextBox()
             {
                 VerticalAlignment = VerticalAlignment.Center,
-                Width = 75
+                HorizontalAlignment = HorizontalAlignment.Right,
+                Width = 100
             };
             SetupOptionToControlValueBinding(textbox, TextBox.TextProperty);
 
-            var stackPanel = new StackPanel()
-            {
-                Orientation = Orientation.Horizontal,
-                Margin = new Thickness(0, 5, 0, 5)
-            };
-            stackPanel.Children.Add(label);
-            stackPanel.Children.Add(textbox);
 
-            control = stackPanel;
+            var mainGrid = new Grid()
+            {
+                Margin = new Thickness(0, 3, 0, 3)
+            };
+            mainGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto });
+            mainGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(100, GridUnitType.Star) });
+            mainGrid.Children.Add(label);
+            Grid.SetColumn(label, 0);
+            mainGrid.Children.Add(textbox);
+            Grid.SetColumn(textbox, 1);
+
+            control = mainGrid;
         }
     }
 }
