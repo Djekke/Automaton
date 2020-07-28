@@ -52,6 +52,7 @@
             AddFeature(FeatureAutoFill.Instance);
             AddFeature(FeatureAutoFishing.Instance);
             AddFeature(FeatureAutoFishCleaner.Instance);
+            AddFeature(FeatureToolPreservation.Instance);
 
             AddAndInitCustomSettingsTab(SettingsGlobal.Instance);
             AddAndInitCustomSettingsTab(SettingsInformation.Instance);
