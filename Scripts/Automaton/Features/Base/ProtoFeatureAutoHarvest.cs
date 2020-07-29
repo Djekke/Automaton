@@ -2,21 +2,23 @@
 {
     using System;
     using System.Linq;
-    using AtomicTorch.CBND.CoreMod;
-    using AtomicTorch.CBND.CoreMod.Characters.Input;
-    using AtomicTorch.CBND.CoreMod.Characters.Player;
     using AtomicTorch.CBND.CoreMod.Items.Weapons;
     using AtomicTorch.CBND.CoreMod.Systems.Physics;
     using AtomicTorch.CBND.CoreMod.Systems.Weapons;
+    using AtomicTorch.CBND.CoreMod.UI.Controls.Game.Items.Controls;
+    using AtomicTorch.CBND.GameApi.Data.Items;
     using AtomicTorch.CBND.GameApi.Data.Physics;
     using AtomicTorch.CBND.GameApi.Data.World;
     using AtomicTorch.CBND.GameApi.Scripting;
+    using AtomicTorch.CBND.GameApi.Scripting.ClientComponents;
     using AtomicTorch.GameEngine.Common.Primitives;
 
     public abstract class ProtoFeatureAutoHarvest<T> : ProtoFeature<T>
         where T : class
     {
         private bool attackInProgress = false;
+
+        private IStaticWorldObject currentTargetObject;
 
         /// <summary>
         /// Called by client component every tick.
@@ -27,6 +29,20 @@
             {
                 Stop();
                 return;
+            }
+
+            if (attackInProgress)
+            {
+                if (currentTargetObject?.PhysicsBody != null
+                    && ValidateTarget(currentTargetObject, out Vector2D targetPoint))
+                {
+                    MovementManager.RotationTargetPos = targetPoint;
+                }
+                else
+                {
+                    StopAttack();
+                    FindAndAttackTarget();
+                }
             }
         }
 
@@ -54,12 +70,12 @@
         private void FindAndAttackTarget( )
         {
             var fromPos = CurrentCharacter.Position + GetWeaponOffset();
-            using var objectsNearby = this.CurrentCharacter.PhysicsBody.PhysicsSpace
+            using var objectsNearby = CurrentCharacter.PhysicsBody.PhysicsSpace
                                           .TestCircle(position: fromPos,
-                                                      radius: this.GetCurrentWeaponRange(),
+                                                      radius: GetCurrentWeaponRange(),
                                                       collisionGroup: CollisionGroups.HitboxMelee);
             var objectOfInterest = objectsNearby.AsList()
-                                   ?.Where(t => this.EnabledEntityList.Contains(t.PhysicsBody?.AssociatedWorldObject?.ProtoGameObject))
+                                   ?.Where(t => EnabledEntityList.Contains(t.PhysicsBody?.AssociatedWorldObject?.ProtoGameObject))
                                    .ToList();
             if (objectOfInterest == null || objectOfInterest.Count == 0)
             {
@@ -69,54 +85,47 @@
             foreach (var obj in objectOfInterest)
             {
                 var testWorldObject = obj.PhysicsBody.AssociatedWorldObject as IStaticWorldObject;
-                var shape = obj.PhysicsBody.Shapes.FirstOrDefault(s =>
-                                                                      s.CollisionGroup == CollisionGroups.HitboxMelee);
-                if (shape == null)
+                if (ValidateTarget(testWorldObject, out Vector2D targetPoint))
                 {
-                    Api.Logger.Error("Automaton: target object has no HitBoxMelee shape " + testWorldObject);
-                    continue;
-                }
-                if(!this.AdditionalValidation(testWorldObject))
-                {
-                    continue;
-                }
-                var targetPoint = this.ShapeCenter(shape) + obj.PhysicsBody.Position;
-                if (this.CheckForObstacles(testWorldObject, targetPoint))
-                {
-                    this.AttackTarget(testWorldObject, targetPoint);
-                    this.attackInProgress = true;
-                    ClientTimersSystem.AddAction(this.GetCurrentWeaponAttackDelay(), () =>
-                                                                                     {
-                                                                                         if (this.attackInProgress)
-                                                                                         {
-                                                                                             this.attackInProgress = false;
-                                                                                             this.StopItemUse();
-                                                                                             this.FindAndAttackTarget();
-                                                                                         }
-                                                                                     });
+                    AttackTarget(testWorldObject, targetPoint);
                     return;
                 }
             }
         }
 
-        public void AttackTarget(IWorldObject targetObject, Vector2D intersectionPoint)
+        private bool ValidateTarget(IStaticWorldObject targetObject, out Vector2D targetPoint)
+        {
+            targetPoint = Vector2D.Zero;
+            var shape = targetObject.PhysicsBody.Shapes.FirstOrDefault(s => s.CollisionGroup == CollisionGroups.HitboxMelee);
+            if (shape == null)
+            {
+                Api.Logger.Error("Automaton: target object has no HitBoxMelee shape " + targetObject);
+                return false;
+            }
+            targetPoint = ShapeCenter(shape) + targetObject.PhysicsBody.Position;
+            return AdditionalValidation(targetObject) && CheckForObstacles(targetObject, targetPoint);
+        }
+
+        private void AttackTarget(IStaticWorldObject targetObject, Vector2D intersectionPoint)
         {
             if (targetObject == null)
             {
                 return;
             }
+            currentTargetObject = targetObject;
+            MovementManager.RelativeRotate(intersectionPoint, GetWeaponOffset());
+            WeaponSystem.ClientChangeWeaponFiringMode(true);
+            attackInProgress = true;
+        }
 
-            var deltaPositionToMouseCursor = CurrentCharacter.Position +
-                                             GetWeaponOffset() -
-                                             intersectionPoint;
-            var rotationAngleRad =
-                Math.Abs(Math.PI + Math.Atan2(deltaPositionToMouseCursor.Y, deltaPositionToMouseCursor.X));
-            var moveModes = PlayerCharacter.GetPrivateState(CurrentCharacter).Input.MoveModes;
-            // TODO: don't prevent moving
-            var command = new CharacterInputUpdate(moveModes, (float)rotationAngleRad);
-            ((PlayerCharacter)CurrentCharacter.ProtoCharacter).ClientSetInput(command);
-            // TODO: prevent user mousemove to interrupt it
-            SelectedItem.ProtoItem.ClientItemUseStart(SelectedItem);
+        private void StopAttack()
+        {
+            if (attackInProgress)
+            {
+                MovementManager.OverrideRotate = false;
+                attackInProgress = false;
+                WeaponSystem.ClientChangeWeaponFiringMode(false);
+            }
         }
 
         protected virtual double GetCurrentWeaponRange()
@@ -149,7 +158,7 @@
             var toPos = (fromPos - intersectionPoint).Normalized * GetCurrentWeaponRange();
             // Check if in range
             bool canReachObject = false;
-            using var obstaclesOnTheWay = this.CurrentCharacter.PhysicsBody.PhysicsSpace
+            using var obstaclesOnTheWay = CurrentCharacter.PhysicsBody.PhysicsSpace
                                               .TestLine(fromPosition: fromPos,
                                                         toPosition: fromPos - toPos,
                                                         collisionGroup: CollisionGroups.HitboxMelee);
@@ -168,7 +177,7 @@
                 }
 
                 var testWorldObject = testResultPhysicsBody.AssociatedWorldObject;
-                if (testWorldObject == this.CurrentCharacter)
+                if (testWorldObject == CurrentCharacter)
                 {
                     // ignore collision with self
                     continue;
@@ -186,7 +195,7 @@
                     continue;
                 }
 
-                if (this.EnabledEntityList.Contains(testWorldObject.ProtoWorldObject))
+                if (EnabledEntityList.Contains(testWorldObject.ProtoWorldObject))
                 {
                     // Another object to harvest in line - fire it anyway
                     continue;
@@ -226,9 +235,12 @@
             return new Vector2D(0, 0);
         }
 
-        private void StopItemUse()
+        private void SelectedItemChanged(IItem item)
         {
-            SelectedItem?.ProtoItem.ClientItemUseFinish(SelectedItem);
+            if (!CheckPrecondition())
+            {
+                StopAttack();
+            }
         }
 
         /// <summary>
@@ -236,11 +248,19 @@
         /// </summary>
         public override void Stop()
         {
-            if (attackInProgress)
-            {
-                attackInProgress = false;
-                StopItemUse();
-            }
+            StopAttack();
+
+            ClientHotbarSelectedItemManager.SelectedItemChanged -= SelectedItemChanged;
+        }
+
+        /// <summary>
+        /// Init on component enabled.
+        /// </summary>
+        public override void Start(ClientComponent parentComponent)
+        {
+            base.Start(parentComponent);
+
+            ClientHotbarSelectedItemManager.SelectedItemChanged += SelectedItemChanged;
         }
     }
 }
