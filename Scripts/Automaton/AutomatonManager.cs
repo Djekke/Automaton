@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using AtomicTorch.CBND.CoreMod.Systems.Notifications;
+    using AtomicTorch.CBND.GameApi.Extensions;
     using AtomicTorch.CBND.GameApi.Scripting;
     using AtomicTorch.CBND.GameApi.ServicesClient;
     using CryoFall.Automaton.ClientSettings;
@@ -45,16 +46,26 @@
             LoadVersionFromClientStorage();
             LoadIsEnabledFromClientStorage();
 
-            // TODO: try to use Api.Shared.GetFilePathsInFolder()
-            AddFeature(FeatureAutoPickUp.Instance);
-            AddFeature(FeatureAutoGather.Instance);
-            AddFeature(FeatureAutoMining.Instance);
-            AddFeature(FeatureAutoWoodcutting.Instance);
-            AddFeature(FeatureAutoFill.Instance);
-            AddFeature(FeatureAutoFishing.Instance);
-            AddFeature(FeatureAutoFishCleaner.Instance);
-            AddFeature(FeatureToolPreservation.Instance);
-            AddFeature(FeatureDroneCommander.Instance);
+            using var featureNamesList =
+                Api.Shared.GetFilePathsInFolder(
+                    folderPath: "Scripts/Automaton/Features",
+                    includeSubfolders: false,
+                    stripFolderPathFromFilePaths: true,
+                    withoutExtensions: true);
+            foreach (var name in featureNamesList.AsList())
+            {
+                Type featureType = Type.GetType("CryoFall.Automaton.Features." + name);
+                while (featureType != null)
+                {
+                    if (featureType.ScriptingGetProperty("Instance")?.GetValue(null, null) is IProtoFeature feature)
+                    {
+                        Api.Logger.Warning("Automaton: Feature added: " + feature);
+                        AddFeature(feature);
+                        break;
+                    }
+                    featureType = featureType.BaseType;
+                }
+            }
 
             AddAndInitCustomSettingsTab(SettingsGlobal.Instance);
             AddAndInitCustomSettingsTab(SettingsInformation.Instance);
