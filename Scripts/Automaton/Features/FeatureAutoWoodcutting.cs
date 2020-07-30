@@ -3,7 +3,6 @@
     using System.Collections.Generic;
     using AtomicTorch.CBND.CoreMod.Items.Tools;
     using AtomicTorch.CBND.CoreMod.Items.Tools.Axes;
-    using AtomicTorch.CBND.CoreMod.StaticObjects.Vegetation;
     using AtomicTorch.CBND.CoreMod.StaticObjects.Vegetation.Trees;
     using AtomicTorch.CBND.GameApi.Data;
     using AtomicTorch.CBND.GameApi.Data.World;
@@ -19,9 +18,9 @@
 
         public override string Description => "Auto-attack near trees if axe in hands.";
 
-        public string ChopOnlyFullyGrownText => "Chop only fully grown trees";
+        public double AllowedTreeGrowthFractionLevel { get; set; }
 
-        public bool ChopOnlyFullyGrown { get; set; }
+        public string AllowedTreeGrowthFractionLevelText => "Allowed tree growth level";
 
         protected override void PrepareFeature(List<IProtoEntity> entityList, List<IProtoEntity> requiredItemList)
         {
@@ -35,14 +34,14 @@
             // Full override of default settings because we need to change order of some options.
             AddOptionIsEnabled(settingsFeature);
             Options.Add(new OptionSeparator());
-            Options.Add(new OptionCheckBox(
+            Options.Add(new OptionSlider(
                 parentSettings: settingsFeature,
-                id: "ChopOnlyFullyGrown",
-                label: ChopOnlyFullyGrownText,
-                defaultValue: true,
+                id: "AllowedTreeGrowthFractionLevel",
+                label: AllowedTreeGrowthFractionLevelText,
+                defaultValue: 1.0,
                 valueChangedCallback: value =>
                 {
-                    ChopOnlyFullyGrown = value;
+                    AllowedTreeGrowthFractionLevel = value;
                 }));
             Options.Add(new OptionSeparator());
             AddOptionEntityList(settingsFeature);
@@ -50,9 +49,8 @@
 
         protected override bool AdditionalValidation(IStaticWorldObject testWorldObject)
         {
-            return !ChopOnlyFullyGrown ||
-                   testWorldObject.GetPublicState<VegetationPublicState>()
-                    .IsFullGrown((IProtoObjectTree) testWorldObject.ProtoStaticWorldObject);
+            return testWorldObject.ProtoStaticWorldObject is IProtoObjectTree tree
+                   && tree.SharedGetGrowthProgress(testWorldObject) >= AllowedTreeGrowthFractionLevel;
         }
 
         protected override double GetCurrentWeaponRange()

@@ -45,6 +45,7 @@
             LoadVersionFromClientStorage();
             LoadIsEnabledFromClientStorage();
 
+            // TODO: try to use Api.Shared.GetFilePathsInFolder()
             AddFeature(FeatureAutoPickUp.Instance);
             AddFeature(FeatureAutoGather.Instance);
             AddFeature(FeatureAutoMining.Instance);
@@ -53,6 +54,7 @@
             AddFeature(FeatureAutoFishing.Instance);
             AddFeature(FeatureAutoFishCleaner.Instance);
             AddFeature(FeatureToolPreservation.Instance);
+            AddFeature(FeatureDroneCommander.Instance);
 
             AddAndInitCustomSettingsTab(SettingsGlobal.Instance);
             AddAndInitCustomSettingsTab(SettingsInformation.Instance);
