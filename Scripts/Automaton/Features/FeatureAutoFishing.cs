@@ -23,7 +23,7 @@
 
         private List<IProtoEntity> PermittedTiles = new List<IProtoEntity>();
 
-        private bool alreadyPulling = false;
+        private bool isAlreadyPulling = false;
 
         protected override void PrepareFeature(List<IProtoEntity> entityList, List<IProtoEntity> requiredItemList)
         {
@@ -44,7 +44,7 @@
         {
             // Check if fish biting, try to pull
             if (IsEnabled
-                && !alreadyPulling
+                && !isAlreadyPulling
                 && PrivateState.CurrentActionState != null
                 && PrivateState.CurrentActionState is FishingActionState fishingActionState)
             {
@@ -53,7 +53,7 @@
                 {
                     // fish baiting, request pulling
                     fishingActionState.ClientOnItemUse();
-                    alreadyPulling = true;
+                    isAlreadyPulling = true;
                 }
             }
         }
@@ -66,10 +66,10 @@
             //Try to start fishing
             if (IsEnabled
                 && CheckPrecondition()
-                && FindPermitedTilesNearby.Any()
+                && FindPermittedTilesNearby.Any()
                 && PrivateState.CurrentActionState == null)
             {
-                alreadyPulling = false;
+                isAlreadyPulling = false;
                 if(ComponentFishingVisualizer.TryGetFor(CurrentCharacter, out _))
                 {
                     // Wait for animation
@@ -82,9 +82,10 @@
                     return;
                 }
 
-                var sortedByDistancePermitedTiles =
-                    FindPermitedTilesNearby.OrderBy(t => GetTileCenterPosition(t).DistanceTo(CurrentCharacter.Position));
-                var fishingTargetPosition = GetTileCenterPosition(sortedByDistancePermitedTiles.First());
+                var fishingTargetPosition = FindPermittedTilesNearby
+                    .Select(GetTileCenterPosition)
+                    .OrderBy(t => t.DistanceTo(CurrentCharacter.Position))
+                    .First();
 
                 var request = new FishingActionRequest(CurrentCharacter, SelectedItem, fishingTargetPosition);
                 FishingSystem.Instance.SharedStartAction(request);
@@ -110,7 +111,7 @@
             return true;
         }
 
-        private IEnumerable<Tile> FindPermitedTilesNearby
+        private IEnumerable<Tile> FindPermittedTilesNearby
             => CurrentCharacter.Tile.EightNeighborTiles.Where(t => PermittedTiles.Contains(t.ProtoTile));
 
         private Vector2D GetTileCenterPosition(Tile tile) => tile.Position.ToVector2D() + (0.5, 0.5);
@@ -124,7 +125,7 @@
                 && PrivateState.CurrentActionState is FishingActionState fishingActionState)
             {
                 fishingActionState.Cancel();
-                alreadyPulling = false;
+                isAlreadyPulling = false;
             }
         }
     }

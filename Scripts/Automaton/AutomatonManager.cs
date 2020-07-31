@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using AtomicTorch.CBND.CoreMod.Systems.Notifications;
     using AtomicTorch.CBND.GameApi.Extensions;
     using AtomicTorch.CBND.GameApi.Scripting;
@@ -46,24 +47,21 @@
             LoadVersionFromClientStorage();
             LoadIsEnabledFromClientStorage();
 
-            using var featureNamesList =
-                Api.Shared.GetFilePathsInFolder(
-                    folderPath: "Scripts/Automaton/Features",
-                    includeSubfolders: false,
-                    stripFolderPathFromFilePaths: true,
-                    withoutExtensions: true);
-            foreach (var name in featureNamesList.AsList())
+            var featuresTypesList =
+                Api.Shared.FindScriptingTypes<IProtoFeature>()
+                    .Select(f => f.Type);
+            foreach (var featureType in featuresTypesList)
             {
-                Type featureType = Type.GetType("CryoFall.Automaton.Features." + name);
-                while (featureType != null)
+                Type currentType = featureType;
+                while (currentType != null)
                 {
-                    if (featureType.ScriptingGetProperty("Instance")?.GetValue(null, null) is IProtoFeature feature)
+                    if (currentType.ScriptingGetProperty("Instance")?.GetValue(null, null) is IProtoFeature feature)
                     {
                         Api.Logger.Warning("Automaton: Feature added: " + feature);
                         AddFeature(feature);
                         break;
                     }
-                    featureType = featureType.BaseType;
+                    currentType = currentType.BaseType;
                 }
             }
 
