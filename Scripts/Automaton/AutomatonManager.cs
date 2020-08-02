@@ -47,9 +47,7 @@
             LoadVersionFromClientStorage();
             LoadIsEnabledFromClientStorage();
 
-            var featuresTypesList =
-                Api.Shared.FindScriptingTypes<IProtoFeature>()
-                    .Select(f => f.Type);
+            var featuresTypesList = Api.Shared.FindScriptingTypes<IProtoFeature>().Select(f => f.Type);
             foreach (var featureType in featuresTypesList)
             {
                 Type currentType = featureType;
@@ -57,7 +55,7 @@
                 {
                     if (currentType.ScriptingGetProperty("Instance")?.GetValue(null, null) is IProtoFeature feature)
                     {
-                        Api.Logger.Warning("Automaton: Feature added: " + feature);
+                        Api.Logger.Important("Automaton: Feature added: " + feature);
                         AddFeature(feature);
                         break;
                     }
@@ -75,7 +73,7 @@
         private static void LoadVersionFromClientStorage()
         {
             // Load settings.
-            versionStorage = Api.Client.Storage.GetStorage("Mods/" + ModId + "/ Version");
+            versionStorage = Api.Client.Storage.GetStorage("Mods/" + ModId + "/Version");
             versionStorage.RegisterType(typeof(Version));
             versionStorage.TryLoad(out VersionFromClientStorage);
 

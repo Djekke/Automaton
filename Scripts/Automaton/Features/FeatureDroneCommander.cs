@@ -22,7 +22,7 @@
 
         public override string Name => "DroneCommander";
 
-        public override string Description => "Automatically commands drones to harvest selected ressources";
+        public override string Description => "Automatically commands drones to harvest selected resources";
 
         public double AllowedTreeGrowthFractionLevel { get; set; }
 
@@ -32,10 +32,18 @@
 
         public string DroneDurabilityThresholdText => "Max allowed drone durability";
 
+        public List<IProtoEntity> MineralList { get; set; }
+
+        public List<IProtoEntity> EnabledMineralList { get; set; }
+
+        public List<IProtoEntity> TreeList { get; set; }
+
+        public List<IProtoEntity> EnabledTreeList { get; set; }
+
         protected override void PrepareFeature(List<IProtoEntity> entityList, List<IProtoEntity> requiredItemList)
         {
-            entityList.AddRange(Api.FindProtoEntities<IProtoObjectMineral>().Where(m => m.IsAllowDroneMining));
-            entityList.AddRange(Api.FindProtoEntities<IProtoObjectTree>());
+            MineralList = new List<IProtoEntity>(Api.FindProtoEntities<IProtoObjectMineral>().Where(m => m.IsAllowDroneMining));
+            TreeList = new List<IProtoEntity>(Api.FindProtoEntities<IProtoObjectTree>());
 
             requiredItemList.AddRange(Api.FindProtoEntities<IProtoItemDroneControl>());
         }
@@ -63,7 +71,19 @@
                     DroneDurabilityThreshold = value;
                 }));
             Options.Add(new OptionSeparator());
-            AddOptionEntityList(settingsFeature);
+            Options.Add(new OptionEntityList(
+                parentSettings: settingsFeature,
+                id: "EnabledMineralList",
+                entityList: MineralList.OrderBy(entity => entity.Id),
+                defaultEnabledList: new List<string>(),
+                onEnabledListChanged: enabledList => EnabledMineralList = enabledList));
+            Options.Add(new OptionSeparator());
+            Options.Add(new OptionEntityList(
+                parentSettings: settingsFeature,
+                id: "EnabledTreeList",
+                entityList: TreeList.OrderBy(entity => entity.Id),
+                defaultEnabledList: new List<string>(),
+                onEnabledListChanged: enabledList => EnabledTreeList = enabledList));
         }
 
         public override void Execute()
@@ -122,7 +142,8 @@
 
         private bool IsValidObject(IStaticWorldObject staticWorldObject)
         {
-            return EnabledEntityList.Contains(staticWorldObject.ProtoStaticWorldObject)
+            return (EnabledMineralList.Contains(staticWorldObject.ProtoStaticWorldObject)
+                    || EnabledTreeList.Contains(staticWorldObject.ProtoStaticWorldObject))
                    && CharacterDroneControlSystem.SharedIsValidStartLocation(
                        CurrentCharacter,
                        staticWorldObject.TilePosition,

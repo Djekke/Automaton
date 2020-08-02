@@ -17,7 +17,7 @@
     {
         private FeatureAutoFishing() { }
 
-        public override string Name => "AutoFising";
+        public override string Name => "AutoFishing";
 
         public override string Description => "AutoFishing near water.";
 
