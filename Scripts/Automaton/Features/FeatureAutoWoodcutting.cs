@@ -39,10 +39,7 @@
                 id: "AllowedTreeGrowthFractionLevel",
                 label: AllowedTreeGrowthFractionLevelText,
                 defaultValue: 1.0,
-                valueChangedCallback: value =>
-                {
-                    AllowedTreeGrowthFractionLevel = value;
-                }));
+                valueChangedCallback: value => AllowedTreeGrowthFractionLevel = value));
             Options.Add(new OptionSeparator());
             AddOptionEntityList(settingsFeature);
         }

@@ -55,7 +55,7 @@
                 {
                     if (currentType.ScriptingGetProperty("Instance")?.GetValue(null, null) is IProtoFeature feature)
                     {
-                        Api.Logger.Important("Automaton: Feature added: " + feature);
+                        Api.Logger.Important($"Automaton: Feature added: {feature}");
                         AddFeature(feature);
                         break;
                     }
@@ -122,7 +122,7 @@
         {
             if (featuresList.Contains(feature))
             {
-                Api.Logger.Error("Automaton: This feature already added: '" + feature + "'");
+                Api.Logger.Error($"Automaton: This feature already added: {feature}");
                 return false;
             }
 

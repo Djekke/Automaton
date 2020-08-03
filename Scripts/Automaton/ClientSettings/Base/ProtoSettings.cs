@@ -89,7 +89,7 @@
             if (!clientStorage.TryLoad<Dictionary<string, object>>(out var snapshot))
             {
                 Api.Logger.Important(
-                    $"There are no options snapshot for {Id} or it cannot be deserialized - applying default values");
+                    $"Automaton: There are no options snapshot for {Id} or it cannot be deserialized - applying default values");
                 Reset();
                 return;
             }

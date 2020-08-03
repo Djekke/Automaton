@@ -37,15 +37,15 @@
                 AutomatonButton.Toggle.GetDescription()));
             Options.Add(new OptionSeparator());
             Options.Add(new OptionInformationText(
-                "[b]" + AllKeybindingsConfigurable + "[/b]",
-                12));
+                text: "[b]" + AllKeybindingsConfigurable + "[/b]",
+                fontSize: 12));
             Options.Add(new OptionSeparatorWithTitle("[b]" + Links + ":[b]"));
             Options.Add(new OptionInformationText(
-                ForumThread + ": [url=" + forumLink + "]" + forumLink + "[/url]",
-                12));
+                text: ForumThread + ": [url=" + forumLink + "]" + forumLink + "[/url]",
+                fontSize: 12));
             Options.Add(new OptionInformationText(
-                GithubLink + ": [url=" + githubLink + "]" + githubLink + "[/url]",
-                12));
+                text: GithubLink + ": [url=" + githubLink + "]" + githubLink + "[/url]",
+                fontSize: 12));
         }
     }
 }

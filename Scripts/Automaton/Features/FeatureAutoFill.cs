@@ -32,7 +32,7 @@
         private IItem usedItem = null;
 
         // Wait for server to update item count.
-        private bool waitingForServer = false;
+        private bool isWaitingForServer = false;
 
         // For hard reset failed action.
         private double fillingActionDuration = 0.0;
@@ -60,12 +60,12 @@
         public override void Update(double deltaTime)
         {
             fillingActionDuration += deltaTime;
-            if (waitingForServer &&
-                lastActionState is BottleRefillAction bottleRefillAction &&
-                fillingActionDuration > bottleRefillAction.DurationSeconds * 2)
+            if (isWaitingForServer
+                && lastActionState is BottleRefillAction bottleRefillAction
+                && fillingActionDuration > bottleRefillAction.DurationSeconds * 2)
             {
                 // Hard reset for cases of action never started on server or canceled with exception.
-                waitingForServer = false;
+                isWaitingForServer = false;
             }
         }
 
@@ -79,8 +79,11 @@
 
         private void TryToStartFillAction()
         {
-            if (IsEnabled && CheckPrecondition() && IsWaterNearby() && !waitingForServer &&
-                PrivateState.CurrentActionState == null)
+            if (IsEnabled
+                && CheckPrecondition()
+                && IsWaterNearby()
+                && !isWaitingForServer
+                && PrivateState.CurrentActionState is null)
             {
                 BottleRefillSystem.Instance.ClientTryStartAction();
             }
@@ -112,7 +115,7 @@
                 lastActionState.Cancel();
             }
 
-            waitingForServer = false;
+            isWaitingForServer = false;
             usedItem = null;
 
             ContainerHotbar.ItemRemoved -= ContainerHotbarOnItemRemoved;
@@ -151,9 +154,10 @@
 
         private void ContainerHotbarOnItemCountChanged(IItem item, ushort previousCount, ushort currentCount)
         {
-            if (usedItem == item && currentCount < previousCount)
+            if (usedItem == item
+                && currentCount < previousCount)
             {
-                waitingForServer = false;
+                isWaitingForServer = false;
                 TryToStartFillAction();
             }
         }
@@ -162,7 +166,7 @@
         {
             if (usedItem == item)
             {
-                waitingForServer = false;
+                isWaitingForServer = false;
             }
         }
 
@@ -175,7 +179,7 @@
                 if (lastActionState is BottleRefillAction bottleRefillAction)
                 {
                     usedItem = bottleRefillAction.ItemEmptyBottle;
-                    waitingForServer = true;
+                    isWaitingForServer = true;
                     fillingActionDuration = 0.0;
                 }
             }
@@ -183,19 +187,20 @@
             {
                 if (lastActionState is BottleRefillAction bottleRefillAction)
                 {
-                    if (!IsWaterNearby() ||
-                        bottleRefillAction.IsCancelled || bottleRefillAction.IsCancelledByServer)
+                    if (!IsWaterNearby()
+                        || bottleRefillAction.IsCancelled
+                        || bottleRefillAction.IsCancelledByServer)
                     {
                         // Action failed: no water nearby or cancelled on server.
                         usedItem = null;
-                        waitingForServer = false;
+                        isWaitingForServer = false;
                     }
                 }
                 else
                 {
                     // Other action finished - reset waiting status just in case.
                     usedItem = null;
-                    waitingForServer = false;
+                    isWaitingForServer = false;
                 }
             }
         }

@@ -99,7 +99,7 @@
             }
 
             Api.Logger.Warning(
-                $"Option {Id} cannot apply abstract value - type mismatch. Will reset option to the default value");
+                $"Automaton: Option {Id} cannot apply abstract value - type mismatch. Will reset option to the default value");
             Reset(apply: true);
         }
 

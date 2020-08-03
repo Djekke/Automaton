@@ -38,15 +38,17 @@
 
         protected virtual void FillInteractionQueue()
         {
-            using var objectsInCharacterInteractionArea = InteractionCheckerSystem
-                .SharedGetTempObjectsInCharacterInteractionArea(this.CurrentCharacter);
+            using var objectsInCharacterInteractionArea =
+                InteractionCheckerSystem.SharedGetTempObjectsInCharacterInteractionArea(CurrentCharacter);
             if (objectsInCharacterInteractionArea == null)
             {
                 return;
             }
-            var objectOfInterest = objectsInCharacterInteractionArea.AsList()
-                                                                    .Where(t => this.EnabledEntityList.Contains(t.PhysicsBody?.AssociatedWorldObject?.ProtoGameObject))
-                                                                    .ToList();
+            var objectOfInterest =
+                objectsInCharacterInteractionArea
+                    .AsList()
+                    .Where(t => EnabledEntityList.Contains(t.PhysicsBody?.AssociatedWorldObject?.ProtoGameObject))
+                    .ToList();
             if (!(objectOfInterest.Count > 0))
             {
                 return;
@@ -54,11 +56,11 @@
             foreach (var obj in objectOfInterest)
             {
                 var testObject = obj.PhysicsBody.AssociatedWorldObject as IStaticWorldObject;
-                if (this.TestObject(testObject))
+                if (TestObject(testObject))
                 {
-                    if (!this.interactionQueue.Contains(testObject))
+                    if (!interactionQueue.Contains(testObject))
                     {
-                        this.interactionQueue.Add(testObject);
+                        interactionQueue.Add(testObject);
                     }
                 }
             }

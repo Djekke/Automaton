@@ -137,8 +137,8 @@
 
         protected virtual double GetCurrentWeaponRange()
         {
-            if(SelectedItem.ProtoItem is IProtoItemWeaponMelee toolItem &&
-               toolItem.OverrideDamageDescription != null)
+            if(SelectedItem.ProtoItem is IProtoItemWeaponMelee toolItem
+               && toolItem.OverrideDamageDescription != null)
             {
                 return toolItem.OverrideDamageDescription.RangeMax;
             }

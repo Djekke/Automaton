@@ -72,16 +72,15 @@
             //  - if object not IProtoObjectGatherable
             //  - if we can not interact with object right now
             //  - if we can not gather anything from object
-            while (interactionQueue.Count != 0 && EnabledEntityList.Contains(interactionQueue[0].ProtoGameObject) &&
-                   (interactionQueue[0].IsDestroyed ||
-                    (lastActionState != null &&
-                     lastActionState.TargetWorldObject == interactionQueue[0] &&
-                     lastActionState.IsCompleted &&
-                     !lastActionState.IsCancelled &&
-                     !lastActionState.IsCancelledByServer) ||
-                    !(interactionQueue[0].ProtoGameObject is IProtoObjectGatherable protoGatherable) ||
-                    !protoGatherable.SharedCanInteract(CurrentCharacter, interactionQueue[0], false) ||
-                    !protoGatherable.SharedIsCanGather(interactionQueue[0])))
+            while (interactionQueue.Count != 0
+                   && EnabledEntityList.Contains(interactionQueue[0].ProtoGameObject)
+                   && (interactionQueue[0].IsDestroyed
+                       || !TestObject(interactionQueue[0])
+                       || (lastActionState != null
+                           && lastActionState.TargetWorldObject == interactionQueue[0]
+                           && lastActionState.IsCompleted
+                           && !lastActionState.IsCancelled
+                           && !lastActionState.IsCancelledByServer)))
             {
                 interactionQueue.RemoveAt(0);
             }
@@ -97,9 +96,9 @@
 
         protected override bool TestObject(IStaticWorldObject staticWorldObject)
         {
-            return staticWorldObject.ProtoGameObject is IProtoObjectGatherable protoGatherable &&
-                   protoGatherable.SharedIsCanGather(staticWorldObject) &&
-                   protoGatherable.SharedCanInteract(CurrentCharacter, staticWorldObject, false);
+            return staticWorldObject.ProtoGameObject is IProtoObjectGatherable protoGatherable
+                   && protoGatherable.SharedIsCanGather(staticWorldObject)
+                   && protoGatherable.SharedCanInteract(CurrentCharacter, staticWorldObject, false);
         }
 
         /// <summary>
@@ -166,10 +165,11 @@
             {
                 // Action is finished.
                 // Check if we opened a loot container.
-                if (lastActionState != null &&
-                    lastActionState.IsCompleted &&
-                    !lastActionState.IsCancelled && !lastActionState.IsCancelledByServer &&
-                    lastActionState.TargetWorldObject?.ProtoGameObject is ProtoObjectLootContainer)
+                if (lastActionState != null
+                    && lastActionState.IsCompleted
+                    && !lastActionState.IsCancelled
+                    && !lastActionState.IsCancelledByServer
+                    && lastActionState.TargetWorldObject?.ProtoGameObject is ProtoObjectLootContainer)
                 {
                     openedLootContainer = lastActionState.TargetWorldObject;
                 }

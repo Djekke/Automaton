@@ -26,8 +26,8 @@
         {
             while (interactionQueue.Count != 0)
             {
-                if (!interactionQueue[0].IsDestroyed &&
-                    interactionQueue[0].ProtoStaticWorldObject
+                if (!interactionQueue[0].IsDestroyed
+                    && interactionQueue[0].ProtoStaticWorldObject
                         .SharedCanInteract(CurrentCharacter, interactionQueue[0], false))
                 {
                     if (interactionQueue[0].ProtoWorldObject is ObjectGroundItemsContainer)

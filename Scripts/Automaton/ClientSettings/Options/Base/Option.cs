@@ -51,7 +51,8 @@
         {
             this.parentSettings = parentSettings;
             Id = id;
-            SavedValue = this.defaultValue = defaultValue;
+            this.defaultValue = defaultValue;
+            SavedValue = defaultValue;
             onValueChanged = valueChangedCallback;
             optionValueHolder = new OptionValueHolder(this, SavedValue);
         }
@@ -89,7 +90,7 @@
             }
 
             Api.Logger.Warning(
-                $"Option {Id} cannot apply abstract value - type mismatch. Will reset option to the default value");
+                $"Automaton: Option {Id} cannot apply abstract value - type mismatch. Will reset option to the default value");
             Reset(apply: true);
         }
 

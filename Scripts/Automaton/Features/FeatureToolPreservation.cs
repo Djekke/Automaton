@@ -65,56 +65,38 @@
                 id: "IsAlertNotificationEnabled",
                 label: IsAlertNotificationEnabledText,
                 defaultValue: true,
-                valueChangedCallback: value =>
-                {
-                    IsAlertNotificationEnabled = value;
-                }));
+                valueChangedCallback: value => IsAlertNotificationEnabled = value));
             Options.Add(new OptionSlider(
                 parentSettings: settingsFeature,
                 id: "AlertThreshold",
                 label: AlertThresholdText,
                 defaultValue: 0.3,
-                valueChangedCallback: value =>
-                {
-                    AlertThreshold = value;
-                }));
+                valueChangedCallback: value => AlertThreshold = value));
             Options.Add(new OptionSlider(
                 parentSettings: settingsFeature,
                 id: "AlertStep",
                 label: AlertStepText,
                 defaultValue: 0.05,
-                valueChangedCallback: value =>
-                {
-                    AlertStep = value;
-                }));
+                valueChangedCallback: value => AlertStep = value));
             Options.Add(new OptionTextBox<double>(
                 parentSettings: settingsFeature,
                 id: "AlertTimeout",
                 label: AlertTimeoutText,
-                defaultValue: 15d,
-                valueChangedCallback: value =>
-                {
-                    AlertTimeout = value;
-                }));
+                defaultValue: 30d,
+                valueChangedCallback: value => AlertTimeout = value));
             Options.Add(new OptionSeparator());
             Options.Add(new OptionCheckBox(
                 parentSettings: settingsFeature,
                 id: "IsUnequipEnabled",
                 label: IsUnequipEnabledText,
                 defaultValue: true,
-                valueChangedCallback: value =>
-                {
-                    IsUnequipEnabled = value;
-                }));
+                valueChangedCallback: value => IsUnequipEnabled = value));
             Options.Add(new OptionSlider(
                 parentSettings: settingsFeature,
                 id: "UnequipThreshold",
                 label: UnequipThresholdText,
                 defaultValue: 0.1,
-                valueChangedCallback: value =>
-                {
-                    UnequipThreshold = value;
-                }));
+                valueChangedCallback: value => UnequipThreshold = value));
             Options.Add(new OptionSeparator());
             AddOptionEntityList(settingsFeature);
         }
@@ -187,7 +169,7 @@
                 .Items.Where(item => EnabledEntityList.Contains(item.ProtoItem)).ToList();
             foreach (var item in equimpentItems)
             {
-                if (item == null)
+                if (item is null)
                 {
                     continue;
                 }

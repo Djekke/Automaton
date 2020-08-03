@@ -57,19 +57,13 @@
                 id: "AllowedTreeGrowthFractionLevel",
                 label: AllowedTreeGrowthFractionLevelText,
                 defaultValue: 1.0,
-                valueChangedCallback: value =>
-                {
-                    AllowedTreeGrowthFractionLevel = value;
-                }));
+                valueChangedCallback: value => AllowedTreeGrowthFractionLevel = value));
             Options.Add(new OptionSlider(
                 parentSettings: settingsFeature,
                 id: "DroneDurabilityThreshold",
                 label: DroneDurabilityThresholdText,
                 defaultValue: 0.1,
-                valueChangedCallback: value =>
-                {
-                    DroneDurabilityThreshold = value;
-                }));
+                valueChangedCallback: value => DroneDurabilityThreshold = value));
             Options.Add(new OptionSeparator());
             Options.Add(new OptionEntityList(
                 parentSettings: settingsFeature,
