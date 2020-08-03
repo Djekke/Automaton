@@ -4,6 +4,7 @@
     using System.Linq;
     using AtomicTorch.CBND.CoreMod.Items.Weapons;
     using AtomicTorch.CBND.CoreMod.Systems.Physics;
+    using AtomicTorch.CBND.CoreMod.Systems.PvE;
     using AtomicTorch.CBND.CoreMod.Systems.Weapons;
     using AtomicTorch.CBND.CoreMod.UI.Controls.Game.Items.Controls;
     using AtomicTorch.CBND.GameApi.Data.Items;
@@ -96,6 +97,12 @@
         private bool ValidateTarget(IStaticWorldObject targetObject, out Vector2D targetPoint)
         {
             targetPoint = Vector2D.Zero;
+            if (!PveSystem.SharedIsAllowStaticObjectDamage(CurrentCharacter,
+                                                           targetObject,
+                                                           showClientNotification: false))
+            {
+                return false;
+            }
             var shape = targetObject.PhysicsBody.Shapes.FirstOrDefault(s => s.CollisionGroup == CollisionGroups.HitboxMelee);
             if (shape == null)
             {
