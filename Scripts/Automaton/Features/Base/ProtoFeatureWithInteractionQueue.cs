@@ -78,7 +78,7 @@
             if (interactionQueue?.Count > 0)
             {
                 interactionQueue.Clear();
-                InteractionCheckerSystem.CancelCurrentInteraction(CurrentCharacter);
+                InteractionCheckerSystem.SharedAbortCurrentInteraction(CurrentCharacter);
             }
         }
     }

@@ -69,7 +69,7 @@
                         switch (Entity)
                         {
                             case IProtoStaticWorldObject staticWorldObject:
-                                iconResource = staticWorldObject.Icon ?? staticWorldObject.DefaultTexture;
+                                iconResource = staticWorldObject.Icon;
                                 break;
                             case IProtoItem protoItem:
                                 iconResource = protoItem.Icon;

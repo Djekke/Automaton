@@ -36,7 +36,7 @@
         {
             if (openedLootContainer != null)
             {
-                if (InteractionCheckerSystem.SharedHasInteraction(CurrentCharacter, openedLootContainer, true))
+                if (InteractionCheckerSystem.SharedIsInteracting(CurrentCharacter, openedLootContainer, true))
                 {
                     // We get container private state, now take all items from container.
                     var q = openedLootContainer.GetPrivateState<LootContainerPrivateState>();
@@ -49,7 +49,7 @@
                                 .GroupBy(p => p.Key.ProtoItem)
                                 .ToDictionary(p => p.Key, p => p.Sum(v => v.Value)));
                     }
-                    InteractionCheckerSystem.CancelCurrentInteraction(CurrentCharacter);
+                    InteractionCheckerSystem.SharedAbortCurrentInteraction(CurrentCharacter);
                 }
                 else if (openedLootContainer.ProtoWorldObject
                                             .SharedCanInteract(CurrentCharacter, openedLootContainer, false))
@@ -110,7 +110,7 @@
             if (interactionQueue?.Count > 0)
             {
                 interactionQueue.Clear();
-                InteractionCheckerSystem.CancelCurrentInteraction(CurrentCharacter);
+                InteractionCheckerSystem.SharedAbortCurrentInteraction(CurrentCharacter);
             }
             readyForInteraction = true;
             lastActionState = null;
