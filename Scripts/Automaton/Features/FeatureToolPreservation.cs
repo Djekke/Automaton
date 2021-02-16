@@ -15,7 +15,7 @@
     using CryoFall.Automaton.ClientSettings.Options;
     using JetBrains.Annotations;
 
-    class FeatureToolPreservation : ProtoFeature<FeatureToolPreservation>
+    public class FeatureToolPreservation : ProtoFeature<FeatureToolPreservation>
     {
         private FeatureToolPreservation() { }
 

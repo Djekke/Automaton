@@ -31,5 +31,53 @@ Scripts/Automaton/Features/FeatureAutoWoodcutting@Name:
 Scripts/Automaton/Features/FeatureAutoWoodcutting@Description:
 Автоматически рубит ближайшие деревья, если топор в руках.
 
-Scripts/Automaton/Features/FeatureAutoWoodcutting@ChopOnlyFullyGrownText:
-Рубить только полностью выросшие деревья
+Scripts/Automaton/Features/FeatureAutoWoodcutting@AllowedTreeGrowthFractionLevelText:
+Зрелость деревьев на сруб
+
+Scripts/Automaton/Features/FeatureAutoFishCleaner@Name:
+АвтоРазделкаРыбы
+
+Scripts/Automaton/Features/FeatureAutoFishCleaner@Description:
+Автоматически использует рыбу и разделывает её.
+
+Scripts/Automaton/Features/FeatureAutoFishing@Name:
+АвтоРыбалка
+
+Scripts/Automaton/Features/FeatureAutoFishing@Description:
+Автоматически ловит рыбу рядом с водой, если удочка в руках.
+
+Scripts/Automaton/Features/FeatureDroneCommander@Name:
+ДронИИ
+
+Scripts/Automaton/Features/FeatureDroneCommander@Description:
+Автоматически посылает дронов на сбор выбранных ресурсов.
+
+Scripts/Automaton/Features/FeatureDroneCommander@AllowedTreeGrowthFractionLevelText:
+Зрелость деревьев на сруб
+
+Scripts/Automaton/Features/FeatureDroneCommander@DroneDurabilityThresholdText:
+Мин. прочность дронов
+
+Scripts/Automaton/Features/FeatureToolPreservation@Name:
+КонтрольПрочности
+
+Scripts/Automaton/Features/FeatureToolPreservation@Description:
+Предупреждает о малой прочности предметов и сохраняет их.
+
+Scripts/Automaton/Features/FeatureToolPreservation@IsAlertNotificationEnabledText:
+Показывать уведомления
+
+Scripts/Automaton/Features/FeatureToolPreservation@AlertThresholdText:
+Если прочность ниже чем
+
+Scripts/Automaton/Features/FeatureToolPreservation@AlertStepText:
+Шаг доп. потери прочности
+
+Scripts/Automaton/Features/FeatureToolPreservation@AlertTimeoutText:
+Напоминать каждые Х секунд
+
+Scripts/Automaton/Features/FeatureToolPreservation@IsUnequipEnabledText:
+Попытаться снять поломанную вещь
+
+Scripts/Automaton/Features/FeatureToolPreservation@UnequipThresholdText:
+При прочности ниже чем

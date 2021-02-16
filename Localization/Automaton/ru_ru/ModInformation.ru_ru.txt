@@ -4,7 +4,7 @@
 Scripts/Automaton/ClientSettings/SettingsInformation@Description:
 Информация о моде
 
-Scripts/Automaton/ClientSettings/SettingsInformation@AvaiableKeybindings:
+Scripts/Automaton/ClientSettings/SettingsInformation@AvailableKeybindings:
 Доступные горячие клавиши
 
 Scripts/Automaton/ClientSettings/SettingsInformation@AllKeybindingsConfigurable:

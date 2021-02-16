@@ -19,7 +19,7 @@
 
         public override string Name => "AutoFishing";
 
-        public override string Description => "AutoFishing near water.";
+        public override string Description => "AutoFishing near water if fishing rod in hands.";
 
         private List<IProtoEntity> PermittedTiles = new List<IProtoEntity>();
 

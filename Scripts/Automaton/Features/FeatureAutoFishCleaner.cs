@@ -7,7 +7,7 @@
     using AtomicTorch.CBND.GameApi.Data.Items;
     using AtomicTorch.CBND.GameApi.Scripting;
 
-    class FeatureAutoFishCleaner : ProtoFeature<FeatureAutoFishCleaner>
+    public class FeatureAutoFishCleaner : ProtoFeature<FeatureAutoFishCleaner>
     {
         private FeatureAutoFishCleaner() { }
 
