@@ -79,10 +79,6 @@
                 // any window opened and we don't allow movement with the opened window
                 return true;
             }
-            //if(FeatureAutoWoodcutting.Instance.BlockedInput)
-            //{
-            //    return true;
-            //}    
 
             return false;
         }

@@ -1,8 +1,11 @@
 ﻿namespace CryoFall.Automaton.ClientSettings.Options
 {
     using System;
+    using System.Collections.Generic;
+    using System.Globalization;
     using System.Windows;
     using System.Windows.Controls;
+    using System.Windows.Data;
     using AtomicTorch.CBND.CoreMod.UI.Controls.Core;
     using AtomicTorch.CBND.GameApi.ServicesClient;
     using AtomicTorch.GameEngine.Common.Client.MonoGame.UI;
@@ -12,6 +15,11 @@
         public string Label { get; }
 
         public string ToolTip { get; }
+
+        private OptionTextBoxValueHolder optionTextBoxValueHolder;
+
+        public override bool IsModified =>
+            optionTextBoxValueHolder.StringValue != Convert.ToString(CurrentValue, CultureInfo.CurrentUICulture);
 
         public OptionTextBox(
             ProtoSettings parentSettings,
@@ -24,6 +32,8 @@
         {
             Label = label;
             ToolTip = toolTip;
+            optionTextBoxValueHolder = new OptionTextBoxValueHolder(this, defaultValue);
+            optionValueHolder = optionTextBoxValueHolder;
         }
 
         public override void RegisterValueType(IClientStorage storage)
@@ -75,6 +85,115 @@
             Grid.SetColumn(textbox, 1);
 
             control = mainGrid;
+        }
+
+        public override void Apply()
+        {
+            CurrentValue = optionTextBoxValueHolder.Value;
+            ResetStringValue();
+            onValueChanged?.Invoke(CurrentValue);
+            ParentSettings.OnOptionModified(this);
+        }
+
+        public override void Cancel()
+        {
+            optionTextBoxValueHolder.Value = CurrentValue;
+            ResetStringValue();
+        }
+
+        public override void Reset(bool apply)
+        {
+            optionTextBoxValueHolder.Value = defaultValue;
+            optionTextBoxValueHolder.StringValue = Convert.ToString(defaultValue, CultureInfo.CurrentUICulture);
+            if (apply)
+            {
+                Apply();
+            }
+        }
+
+        private void ResetStringValue()
+        {
+            optionTextBoxValueHolder.StringValue = optionTextBoxValueHolder.ResetValue();
+        }
+
+        protected override void SetupOptionToControlValueBinding(FrameworkElement control, DependencyProperty valueProperty)
+        {
+            control.SetBinding(valueProperty, new Binding()
+            {
+                Path = new PropertyPath(nameof(optionTextBoxValueHolder.StringValue)),
+                Mode = BindingMode.TwoWay,
+                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+            });
+            control.DataContext = optionTextBoxValueHolder;
+        }
+
+        /// <summary>
+        /// Option value holder is used for data binding between UI control and the option.
+        /// </summary>
+        protected class OptionTextBoxValueHolder : OptionValueHolder
+        {
+            private string stringValue;
+
+            public OptionTextBoxValueHolder(Option<TValue> owner, TValue initialValue) : base(owner, initialValue)
+            {
+                stringValue = Convert.ToString(initialValue, CultureInfo.CurrentUICulture);
+            }
+
+            public override TValue Value
+            {
+                get => this.value;
+                set
+                {
+                    if (EqualityComparer<TValue>.Default.Equals(value, Value))
+                    {
+                        return;
+                    }
+
+                    this.value = value;
+                    StringValue = ResetValue();
+
+                    owner.ParentSettings.OnOptionModified(owner);
+
+                    // call property changed notification to notify UI about the change
+                    NotifyPropertyChanged(nameof(Value));
+                }
+            }
+
+            public string StringValue
+            {
+                get => stringValue;
+                set
+                {
+                    if (value == stringValue)
+                    {
+                        return;
+                    }
+                    stringValue = value;
+
+                    owner.ParentSettings.OnOptionModified(owner);
+
+                    // call property changed notification to notify UI about the change
+                    NotifyPropertyChanged(nameof(StringValue));
+
+                    try
+                    {
+                        var convertedValue = (TValue)Convert.ChangeType(value, typeof(TValue), CultureInfo.CurrentUICulture);
+                        if (!EqualityComparer<TValue>.Default.Equals(convertedValue, Value))
+                        {
+                            Value = convertedValue;
+                        }
+                    }
+                    catch
+                    {
+                        return;
+                    }
+                }
+            }
+
+            public string ResetValue()
+            {
+                return Convert.ToString(Value, CultureInfo.CurrentUICulture);
+            }
         }
     }
 }

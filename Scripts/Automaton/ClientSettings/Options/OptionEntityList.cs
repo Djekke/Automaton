@@ -22,6 +22,8 @@
 
         private readonly OptionValueHolder optionValueHolder;
 
+        public ProtoSettings ParentSettings => parentSettings;
+
         public bool IsModified => optionValueHolder.EntityCollection.Any(viewModelEntity =>
             EntityDictionary[viewModelEntity.Entity] != viewModelEntity.IsEnabled);
 

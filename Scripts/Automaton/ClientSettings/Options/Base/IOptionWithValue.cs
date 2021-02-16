@@ -8,6 +8,8 @@
 
         string Id { get; }
 
+        ProtoSettings ParentSettings { get; }
+
         void Apply();
 
         void Cancel();

@@ -10,7 +10,7 @@
 
     public abstract class Option<TValue> : IOptionWithValue
     {
-        private readonly OptionValueHolder optionValueHolder;
+        protected OptionValueHolder optionValueHolder;
 
         protected TValue SavedValue { get; private set; }
 
@@ -21,9 +21,11 @@
 
         protected Action<TValue> onValueChanged;
 
-        protected ProtoSettings parentSettings;
+        private ProtoSettings parentSettings;
 
-        public bool IsModified => !optionValueHolder.Value.Equals(CurrentValue);
+        public ProtoSettings ParentSettings => parentSettings;
+
+        public virtual bool IsModified => !optionValueHolder.Value.Equals(CurrentValue);
 
         public string Id { get; protected set; }
 
@@ -61,7 +63,7 @@
         {
             CurrentValue = optionValueHolder.Value;
             onValueChanged?.Invoke(CurrentValue);
-            parentSettings.OnOptionModified(this);
+            ParentSettings.OnOptionModified(this);
         }
 
         public virtual void Cancel()
@@ -106,7 +108,7 @@
 
         protected abstract void CreateControlInternal(out FrameworkElement control);
 
-        protected void SetupOptionToControlValueBinding(FrameworkElement control, DependencyProperty valueProperty)
+        protected virtual void SetupOptionToControlValueBinding(FrameworkElement control, DependencyProperty valueProperty)
         {
             control.SetBinding(valueProperty, new Binding()
             {
@@ -122,9 +124,9 @@
         /// </summary>
         protected class OptionValueHolder : INotifyPropertyChanged
         {
-            private readonly Option<TValue> owner;
+            protected readonly IOptionWithValue owner;
 
-            private TValue value;
+            protected TValue value;
 
             public OptionValueHolder(Option<TValue> owner, TValue initialValue)
             {
@@ -134,12 +136,12 @@
 
             public event PropertyChangedEventHandler PropertyChanged;
 
-            public TValue Value
+            public virtual TValue Value
             {
-                get => value;
+                get => this.value;
                 set
                 {
-                    if (EqualityComparer<TValue>.Default.Equals(value, this.value))
+                    if (EqualityComparer<TValue>.Default.Equals(value, Value))
                     {
                         return;
                     }
@@ -147,10 +149,15 @@
                     this.value = value;
 
                     // call property changed notification to notify UI about the change
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
+                    NotifyPropertyChanged(nameof(Value));
 
-                    owner.parentSettings.OnOptionModified(owner);
+                    owner.ParentSettings.OnOptionModified(owner);
                 }
+            }
+
+            public void NotifyPropertyChanged(string propertyName)
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
         }
     }
