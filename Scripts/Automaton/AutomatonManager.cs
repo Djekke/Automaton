@@ -32,7 +32,7 @@
 
         public const string ModId = "Automaton";
 
-        public static Version CurrentVersion => new Version("0.4.0");
+        public static Version CurrentVersion => new Version("0.4.1");
 
         public const string RssFeed = //"http://github.com/Djekke/Automaton/releases.atom";
             "https://feedmix.novaclic.com/atom2rss.php?source=https%3A%2F%2Fgithub.com%2FDjekke%2FAutomaton%2Freleases.atom";
