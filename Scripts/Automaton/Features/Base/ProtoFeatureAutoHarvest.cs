@@ -2,6 +2,7 @@
 {
     using System;
     using System.Linq;
+    using AtomicTorch.CBND.CoreMod.Characters.Player;
     using AtomicTorch.CBND.CoreMod.Items.Weapons;
     using AtomicTorch.CBND.CoreMod.Systems.Physics;
     using AtomicTorch.CBND.CoreMod.Systems.PvE;
@@ -38,6 +39,11 @@
                     && ValidateTarget(currentTargetObject, out Vector2D targetPoint))
                 {
                     MovementManager.RotationTargetPos = targetPoint;
+                    if (!PlayerCharacter.GetPrivateState(CurrentCharacter).WeaponState.IsFiring)
+                    {
+                        // On mouse button release firing is stopped, set it on again
+                        WeaponSystem.ClientChangeWeaponFiringMode(true);
+                    }
                 }
                 else
                 {
